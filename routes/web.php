@@ -110,6 +110,64 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/partner/dashboard', [App\Http\Controllers\Dashboard\PartnerDashboardController::class, 'index'])->name('partner.dashboard');
 });
 
+// Reports Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Admin Reports
+    Route::prefix('admin/reports')->middleware('role:admin')->group(function () {
+        Route::get('/revenue', [App\Http\Controllers\ReportController::class, 'adminRevenueReport'])->name('admin.reports.revenue');
+        Route::get('/merchant-performance', [App\Http\Controllers\ReportController::class, 'merchantPerformanceReport'])->name('admin.reports.merchant-performance');
+    });
+    
+    // Merchant Reports
+    Route::prefix('merchant/reports')->middleware('role:merchant')->group(function () {
+        Route::get('/bookings', [App\Http\Controllers\ReportController::class, 'merchantBookingsReport'])->name('merchant.reports.bookings');
+    });
+    
+    // Partner Reports
+    Route::prefix('partner/reports')->middleware('role:partner')->group(function () {
+        Route::get('/commission', [App\Http\Controllers\ReportController::class, 'partnerCommissionReport'])->name('partner.reports.commission');
+    });
+});
+
+// Notifications Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{notification}', [App\Http\Controllers\NotificationController::class, 'show'])->name('notifications.show');
+    Route::patch('/notifications/{notification}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{notification}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    
+    // API endpoints for notifications
+    Route::get('/api/notifications/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('api.notifications.unread-count');
+    Route::get('/api/notifications/recent', [App\Http\Controllers\NotificationController::class, 'getRecent'])->name('api.notifications.recent');
+    
+    // Admin notification management
+    Route::prefix('admin/notifications')->middleware('role:admin')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'adminIndex'])->name('admin.notifications.index');
+        Route::post('/send-bulk', [App\Http\Controllers\NotificationController::class, 'sendBulkNotification'])->name('admin.notifications.send-bulk');
+    });
+});
+
+// Content Management Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Public content routes
+    Route::get('/content', [App\Http\Controllers\ContentController::class, 'index'])->name('content.index');
+    Route::get('/content/{slug}', [App\Http\Controllers\ContentController::class, 'show'])->name('content.show');
+    Route::get('/search-content', [App\Http\Controllers\ContentController::class, 'searchContent'])->name('content.search');
+    Route::get('/api/content/{slug}', [App\Http\Controllers\ContentController::class, 'getContent'])->name('api.content.get');
+    
+    // Admin content management
+    Route::prefix('admin/content')->middleware('role:admin')->group(function () {
+        Route::get('/', [App\Http\Controllers\ContentController::class, 'adminIndex'])->name('admin.content.index');
+        Route::get('/create', [App\Http\Controllers\ContentController::class, 'create'])->name('admin.content.create');
+        Route::post('/', [App\Http\Controllers\ContentController::class, 'store'])->name('admin.content.store');
+        Route::get('/{slug}/edit', [App\Http\Controllers\ContentController::class, 'edit'])->name('admin.content.edit');
+        Route::put('/{slug}', [App\Http\Controllers\ContentController::class, 'update'])->name('admin.content.update');
+        Route::delete('/{slug}', [App\Http\Controllers\ContentController::class, 'destroy'])->name('admin.content.destroy');
+        Route::post('/create-predefined', [App\Http\Controllers\ContentController::class, 'createPredefinedContent'])->name('admin.content.create-predefined');
+    });
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
