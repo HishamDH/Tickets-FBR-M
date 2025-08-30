@@ -71,6 +71,22 @@ class Merchant extends Model
     }
 
     /**
+     * Payment settings relationship
+     */
+    public function paymentSettings(): HasMany
+    {
+        return $this->hasMany(MerchantPaymentSetting::class);
+    }
+
+    /**
+     * Payments relationship
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
      * Check if merchant is verified
      */
     public function isVerified(): bool

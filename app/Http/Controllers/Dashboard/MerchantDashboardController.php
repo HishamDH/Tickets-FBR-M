@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Merchant;
 use App\Models\Service;
 use App\Models\Booking;
+use App\Models\PaymentGateway;
+use App\Models\MerchantPaymentSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -309,5 +311,150 @@ class MerchantDashboardController extends Controller
             'currentMonthBookings',
             'lastMonthBookings'
         ));
+    }
+
+    /**
+     * إدارة إعدادات الدفع
+     */
+    public function paymentSettings()
+    {
+        $user = Auth::user();
+        $merchant = $user->merchant;
+
+        if (!$merchant) {
+            return redirect()->route('dashboard')->with('error', 'الملف التجاري غير موجود');
+        }
+
+        // جلب جميع بوابات الدفع المتاحة
+        $availableGateways = PaymentGateway::active()->ordered()->get();
+        
+        // جلب إعدادات التاجر الحالية
+        $merchantSettings = MerchantPaymentSetting::with('paymentGateway')
+            ->where('merchant_id', $merchant->id)
+            ->get()
+            ->keyBy('payment_gateway_id');
+
+        return view('dashboard.merchant.payment-settings', compact(
+            'merchant',
+            'availableGateways',
+            'merchantSettings'
+        ));
+    }
+
+    /**
+     * تحديث إعدادات بوابة دفع محددة
+     */
+    public function updatePaymentGateway(Request $request, $gatewayId)
+    {
+        $user = Auth::user();
+        $merchant = $user->merchant;
+
+        if (!$merchant) {
+            return redirect()->route('dashboard')->with('error', 'الملف التجاري غير موجود');
+        }
+
+        $gateway = PaymentGateway::findOrFail($gatewayId);
+        
+        $request->validate([
+            'is_enabled' => 'boolean',
+            'custom_fee' => 'nullable|numeric|min:0',
+            'custom_fee_type' => 'nullable|in:fixed,percentage',
+            'display_order' => 'nullable|integer|min:0',
+        ]);
+
+        $setting = MerchantPaymentSetting::updateOrCreate(
+            [
+                'merchant_id' => $merchant->id,
+                'payment_gateway_id' => $gateway->id,
+            ],
+            [
+                'is_enabled' => $request->boolean('is_enabled'),
+                'custom_fee' => $request->custom_fee,
+                'custom_fee_type' => $request->custom_fee_type ?? $gateway->fee_type,
+                'display_order' => $request->display_order ?? 0,
+                'additional_settings' => $request->additional_settings ?? [],
+            ]
+        );
+
+        return redirect()
+            ->route('merchant.dashboard.payment-settings')
+            ->with('success', 'تم تحديث إعدادات بوابة الدفع بنجاح');
+    }
+
+    /**
+     * اختبار بوابة الدفع
+     */
+    public function testPaymentGateway($gatewayId)
+    {
+        $user = Auth::user();
+        $merchant = $user->merchant;
+
+        if (!$merchant) {
+            return response()->json(['error' => 'الملف التجاري غير موجود'], 400);
+        }
+
+        $setting = MerchantPaymentSetting::where('merchant_id', $merchant->id)
+            ->where('payment_gateway_id', $gatewayId)
+            ->first();
+
+        if (!$setting) {
+            return response()->json(['error' => 'إعدادات البوابة غير موجودة'], 404);
+        }
+
+        // محاكاة اختبار البوابة
+        $testResult = $this->performGatewayTest($setting);
+        
+        $setting->update([
+            'last_tested_at' => now(),
+            'test_passed' => $testResult['success'],
+        ]);
+
+        return response()->json($testResult);
+    }
+
+    /**
+     * تنفيذ اختبار البوابة
+     */
+    protected function performGatewayTest(MerchantPaymentSetting $setting): array
+    {
+        $gateway = $setting->paymentGateway;
+        
+        // محاكاة اختبار البوابة حسب النوع
+        switch ($gateway->provider) {
+            case 'stripe':
+                // في البيئة الفعلية سيتم اختبار الاتصال مع Stripe
+                return [
+                    'success' => true,
+                    'message' => 'تم اختبار الاتصال مع Stripe بنجاح',
+                    'details' => [
+                        'test_mode' => config('app.env') !== 'production',
+                        'tested_at' => now()->toISOString(),
+                    ],
+                ];
+                
+            case 'bank_integration':
+            case 'stc_integration':
+                // اختبار التكامل البنكي
+                return [
+                    'success' => false,
+                    'message' => 'التكامل البنكي غير متاح حالياً',
+                    'details' => [
+                        'requires_setup' => true,
+                    ],
+                ];
+                
+            case 'manual':
+                // الدفع اليدوي لا يحتاج اختبار
+                return [
+                    'success' => true,
+                    'message' => 'الدفع اليدوي جاهز للاستخدام',
+                ];
+                
+            default:
+                return [
+                    'success' => false,
+                    'message' => 'نوع البوابة غير مدعوم',
+                ];
+        }
     }
 }

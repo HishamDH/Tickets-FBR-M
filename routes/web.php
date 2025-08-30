@@ -20,7 +20,7 @@ use App\Http\Controllers\PublicBookingController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
@@ -80,6 +80,11 @@ Route::middleware(['auth', 'verified'])->prefix('merchant')->name('merchant.dash
     Route::patch('/bookings/{booking}/status', [App\Http\Controllers\Dashboard\MerchantDashboardController::class, 'updateBookingStatus'])->name('update-booking-status');
     Route::get('/revenue-report', [App\Http\Controllers\Dashboard\MerchantDashboardController::class, 'revenueReport'])->name('revenue-report');
     Route::get('/analytics', [App\Http\Controllers\Dashboard\MerchantDashboardController::class, 'analytics'])->name('analytics');
+    
+    // Payment Gateway Settings
+    Route::get('/payment-settings', [App\Http\Controllers\Dashboard\MerchantDashboardController::class, 'paymentSettings'])->name('payment-settings');
+    Route::post('/payment-gateway/{gateway}', [App\Http\Controllers\Dashboard\MerchantDashboardController::class, 'updatePaymentGateway'])->name('update-payment-gateway');
+    Route::post('/payment-gateway/{gateway}/test', [App\Http\Controllers\Dashboard\MerchantDashboardController::class, 'testPaymentGateway'])->name('test-payment-gateway');
 });
 
 // Customer Dashboard Routes
@@ -166,6 +171,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{slug}', [App\Http\Controllers\ContentController::class, 'destroy'])->name('admin.content.destroy');
         Route::post('/create-predefined', [App\Http\Controllers\ContentController::class, 'createPredefinedContent'])->name('admin.content.create-predefined');
     });
+});
+
+// Payment Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payment/checkout/{booking}', function ($bookingId) {
+        $booking = App\Models\Booking::findOrFail($bookingId);
+        return view('payment.checkout', compact('booking'));
+    })->name('payment.checkout');
+    
+    Route::post('/payment/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
 });
 
 Route::middleware('auth')->group(function () {
