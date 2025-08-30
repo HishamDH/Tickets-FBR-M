@@ -1,6 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --primary-color: #f9682e;
+        --primary-hover: #ff7842;
+        --background: #faf7f4;
+        --text-primary: #1a1a1a;
+        --text-secondary: #666666;
+        --border-color: #e5e7eb;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        font-family: 'Cairo', sans-serif;
+        background-color: var(--background);
+        color: var(--text-primary);
+    }
+}
+
+@layer components {
+    .gradient-bg {
+        background: linear-gradient(135deg, #f9682e 0%, #ff7842 100%);
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #f9682e 0%, #ff7842 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .card-hover {
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-primary {
+        @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl;
+    }
+    
+    .nav-link {
+        @apply text-gray-700 hover:text-orange-500 font-medium transition-all duration-300 relative;
+    }
+    
+    .nav-link.active {
+        @apply text-orange-500;
+    }
+    
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(135deg, #f9682e 0%, #ff7842 100%);
+        border-radius: 1px;
+    }
+}
 
 @layer utilities {
     .line-clamp-3 {
@@ -8,5 +79,53 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+    
+    .floating-animation {
+        animation: floating 4s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .pulse-glow {
+        animation: pulse-glow 2.5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes pulse-glow {
+        from {
+            box-shadow: 0 0 15px rgba(249, 104, 46, 0.4);
+        }
+        to {
+            box-shadow: 0 0 25px rgba(249, 104, 46, 0.6);
+        }
+    }
+    
+    .hero-pattern {
+        background-image: 
+            radial-gradient(circle at 15% 20%, rgba(249, 104, 46, 0.05) 0%, transparent 40%),
+            radial-gradient(circle at 85% 75%, rgba(255, 120, 66, 0.05) 0%, transparent 40%);
+    }
+    
+    .page-transition {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .rtl-flip {
+        transform: scaleX(-1);
     }
 }
