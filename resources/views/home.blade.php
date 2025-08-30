@@ -223,7 +223,14 @@
                     <!-- Price and CTA -->
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="text-2xl font-bold gradient-text">{{ number_format($service['price']) }}</span>
+                            @php
+                                $price = $service['price'];
+                                // Convert string with commas to integer
+                                if (is_string($price)) {
+                                    $price = (int) str_replace(',', '', $price);
+                                }
+                            @endphp
+                            <span class="text-2xl font-bold gradient-text">{{ number_format($price) }}</span>
                             <span class="text-gray-500 text-sm">ريال سعودي</span>
                         </div>
                         <a href="{{ route('services.index') }}" 

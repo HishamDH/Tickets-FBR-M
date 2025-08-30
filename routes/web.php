@@ -20,7 +20,40 @@ use App\Http\Controllers\PublicBookingController;
 */
 
 Route::get('/', function () {
-    return view('home');
+    // Get featured services for homepage
+    $services = \App\Models\Service::where('is_featured', true)
+                                  ->orWhere('is_active', true)
+                                  ->take(3)
+                                  ->get();
+    
+    // If no services exist, provide demo data
+    if ($services->isEmpty()) {
+        $services = collect([
+            [
+                'name' => 'تنظيم الحفلات',
+                'price' => 5000,
+                'image' => '🎉',
+                'badge' => 'شائع',
+                'features' => ['تخطيط شامل', 'ديكورات فاخرة', 'تنسيق الطعام']
+            ],
+            [
+                'name' => 'الخدمات التقنية',
+                'price' => 3000,
+                'image' => '💻',
+                'badge' => 'متقدم',
+                'features' => ['أجهزة صوتية', 'شاشات عرض', 'دعم تقني']
+            ],
+            [
+                'name' => 'التصوير والإنتاج',
+                'price' => 8000,
+                'image' => '📸',
+                'badge' => 'محترف',
+                'features' => ['كاميرات 4K', 'مونتاج احترافي', 'فريق متخصص']
+            ]
+        ]);
+    }
+    
+    return view('home', compact('services'));
 });
 
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
