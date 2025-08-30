@@ -121,6 +121,39 @@ Route::middleware(['auth', 'verified'])->prefix('merchant')->name('merchant.dash
     Route::post('/payment-gateway/{gateway}/test', [App\Http\Controllers\Dashboard\MerchantDashboardController::class, 'testPaymentGateway'])->name('test-payment-gateway');
 });
 
+// Customer Routes - العملاء
+Route::middleware(['auth', 'verified', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Services
+    Route::get('/services', [App\Http\Controllers\Customer\ServiceController::class, 'index'])->name('services.index');
+    Route::get('/services/{service}', [App\Http\Controllers\Customer\ServiceController::class, 'show'])->name('services.show');
+    Route::post('/services/{service}/favorite', [App\Http\Controllers\Customer\ServiceController::class, 'addToFavorites'])->name('services.favorite');
+    Route::delete('/services/{service}/favorite', [App\Http\Controllers\Customer\ServiceController::class, 'removeFromFavorites'])->name('services.unfavorite');
+    
+    // Bookings
+    Route::get('/bookings', [App\Http\Controllers\Customer\BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{booking}', [App\Http\Controllers\Customer\BookingController::class, 'show'])->name('bookings.show');
+    Route::get('/services/{service}/book', [App\Http\Controllers\Customer\BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/services/{service}/book', [App\Http\Controllers\Customer\BookingController::class, 'store'])->name('bookings.store');
+    Route::patch('/bookings/{booking}/cancel', [App\Http\Controllers\Customer\BookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::get('/bookings/{booking}/invoice', [App\Http\Controllers\Customer\BookingController::class, 'downloadInvoice'])->name('bookings.invoice');
+    
+    // AJAX endpoints for bookings
+    Route::get('/services/{service}/slots', [App\Http\Controllers\Customer\BookingController::class, 'getAvailableSlots'])->name('services.slots');
+    Route::post('/services/{service}/calculate-price', [App\Http\Controllers\Customer\BookingController::class, 'calculatePrice'])->name('services.calculate-price');
+    
+    // Payments
+    Route::get('/bookings/{booking}/payment', [App\Http\Controllers\Customer\PaymentController::class, 'show'])->name('payments.show');
+    Route::post('/bookings/{booking}/payment', [App\Http\Controllers\Customer\PaymentController::class, 'process'])->name('payments.process');
+    Route::get('/bookings/{booking}/payment/success', [App\Http\Controllers\Customer\PaymentController::class, 'success'])->name('payments.success');
+    Route::get('/bookings/{booking}/payment/failed', [App\Http\Controllers\Customer\PaymentController::class, 'failed'])->name('payments.failed');
+    Route::get('/payments/history', [App\Http\Controllers\Customer\PaymentController::class, 'history'])->name('payments.history');
+    Route::get('/payments/{payment}/receipt', [App\Http\Controllers\Customer\PaymentController::class, 'downloadReceipt'])->name('payments.receipt');
+    Route::post('/payments/{payment}/refund', [App\Http\Controllers\Customer\PaymentController::class, 'requestRefund'])->name('payments.refund');
+});
+
 // Customer Dashboard Routes
 Route::middleware(['auth', 'verified'])->prefix('customer')->name('customer.dashboard.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Dashboard\CustomerDashboardController::class, 'index'])->name('index');
