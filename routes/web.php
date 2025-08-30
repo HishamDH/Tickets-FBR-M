@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PublicBookingController;
+use App\Http\Controllers\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -211,6 +212,70 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{slug}', [App\Http\Controllers\ContentController::class, 'update'])->name('admin.content.update');
         Route::delete('/{slug}', [App\Http\Controllers\ContentController::class, 'destroy'])->name('admin.content.destroy');
         Route::post('/create-predefined', [App\Http\Controllers\ContentController::class, 'createPredefinedContent'])->name('admin.content.create-predefined');
+    });
+});
+
+// Advanced Analytics Routes - نظام التحليلات المتقدم
+Route::middleware(['auth', 'verified'])->prefix('analytics')->name('analytics.')->group(function () {
+    // Main Analytics Dashboard
+    Route::get('/', [App\Http\Controllers\AnalyticsController::class, 'index'])->name('index');
+    
+    // Specialized Analytics Pages
+    Route::get('/revenue', [App\Http\Controllers\AnalyticsController::class, 'revenue'])->name('revenue');
+    Route::get('/customers', [App\Http\Controllers\AnalyticsController::class, 'customers'])->name('customers');
+    Route::get('/merchants', [App\Http\Controllers\AnalyticsController::class, 'merchants'])->name('merchants');
+    Route::get('/operations', [App\Http\Controllers\AnalyticsController::class, 'operations'])->name('operations');
+    
+    // Real-time Analytics APIs
+    Route::get('/real-time', [App\Http\Controllers\AnalyticsController::class, 'realTimeData'])->name('real-time');
+    Route::get('/predictive', [App\Http\Controllers\AnalyticsController::class, 'predictiveAnalytics'])->name('predictive');
+    
+    // Custom Query Builder
+    Route::get('/custom-query', [App\Http\Controllers\AnalyticsController::class, 'customQuery'])->name('custom-query');
+    Route::post('/custom-query/execute', [App\Http\Controllers\AnalyticsController::class, 'executeCustomQuery'])->name('custom-query.execute');
+    
+    // Export Functionality
+    Route::get('/export', [App\Http\Controllers\AnalyticsController::class, 'export'])->name('export');
+    Route::post('/export/schedule', [App\Http\Controllers\AnalyticsController::class, 'scheduleExport'])->name('export.schedule');
+    
+    // Dashboard Configuration
+    Route::get('/dashboard/configure', [App\Http\Controllers\AnalyticsController::class, 'configureDashboard'])->name('dashboard.configure');
+    Route::post('/dashboard/save-layout', [App\Http\Controllers\AnalyticsController::class, 'saveDashboardLayout'])->name('dashboard.save-layout');
+    
+    // Alert Management
+    Route::post('/alerts/{alert}/dismiss', [App\Http\Controllers\AnalyticsController::class, 'dismissAlert'])->name('alerts.dismiss');
+    Route::get('/alerts/configure', [App\Http\Controllers\AnalyticsController::class, 'configureAlerts'])->name('alerts.configure');
+    Route::post('/alerts/save', [App\Http\Controllers\AnalyticsController::class, 'saveAlertSettings'])->name('alerts.save');
+    
+    // Performance Monitoring
+    Route::get('/performance/monitor', [App\Http\Controllers\AnalyticsController::class, 'performanceMonitor'])->name('performance.monitor');
+    Route::get('/performance/logs', [App\Http\Controllers\AnalyticsController::class, 'performanceLogs'])->name('performance.logs');
+    
+    // API Endpoints for Chart Data
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('/dashboard-data', [App\Http\Controllers\AnalyticsController::class, 'getDashboardData'])->name('dashboard-data');
+        Route::get('/revenue-data', [App\Http\Controllers\AnalyticsController::class, 'getRevenueData'])->name('revenue-data');
+        Route::get('/customer-data', [App\Http\Controllers\AnalyticsController::class, 'getCustomerData'])->name('customer-data');
+        Route::get('/merchant-data', [App\Http\Controllers\AnalyticsController::class, 'getMerchantData'])->name('merchant-data');
+        Route::get('/operations-data', [App\Http\Controllers\AnalyticsController::class, 'getOperationsData'])->name('operations-data');
+        Route::get('/chart-data/{type}', [App\Http\Controllers\AnalyticsController::class, 'getChartData'])->name('chart-data');
+    });
+    
+    // Admin-only Advanced Features
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/system-health', [App\Http\Controllers\AnalyticsController::class, 'systemHealth'])->name('system-health');
+        Route::get('/advanced-reports', [App\Http\Controllers\AnalyticsController::class, 'advancedReports'])->name('advanced-reports');
+        Route::post('/benchmark/run', [App\Http\Controllers\AnalyticsController::class, 'runBenchmark'])->name('benchmark.run');
+        Route::get('/database-analytics', [App\Http\Controllers\AnalyticsController::class, 'databaseAnalytics'])->name('database-analytics');
+    });
+    
+    // Role-based Access Control
+    Route::middleware('role:merchant')->group(function () {
+        Route::get('/merchant-specific', [App\Http\Controllers\AnalyticsController::class, 'merchantSpecificAnalytics'])->name('merchant-specific');
+    });
+    
+    Route::middleware('role:partner')->group(function () {
+        Route::get('/partner-analytics', [App\Http\Controllers\AnalyticsController::class, 'partnerAnalytics'])->name('partner-analytics');
     });
 });
 

@@ -18,6 +18,13 @@
                     <x-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                         {{ __('Services') }}
                     </x-nav-link>
+                    @auth
+                        @if(Auth::user()->user_type === 'admin' || Auth::user()->user_type === 'merchant' || Auth::user()->user_type === 'partner')
+                        <x-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')">
+                            📊 {{ __('Analytics') }}
+                        </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
@@ -76,6 +83,13 @@
             <x-responsive-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                 {{ __('Services') }}
             </x-responsive-nav-link>
+            @auth
+                @if(Auth::user()->user_type === 'admin' || Auth::user()->user_type === 'merchant' || Auth::user()->user_type === 'partner')
+                <x-responsive-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')">
+                    📊 {{ __('Analytics') }}
+                </x-responsive-nav-link>
+                @endif
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->
