@@ -175,9 +175,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::delete('/notifications/{notification}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
     
+    // New Advanced Notification Routes
+    Route::post('/notifications/bulk-action', [App\Http\Controllers\NotificationController::class, 'bulkAction'])->name('notifications.bulk-action');
+    Route::get('/notifications/preferences', function() {
+        return view('notifications.preferences');
+    })->name('notifications.preferences');
+    Route::post('/notifications/preferences', [App\Http\Controllers\NotificationController::class, 'updatePreferences'])->name('notifications.update-preferences');
+    
     // API endpoints for notifications
     Route::get('/api/notifications/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('api.notifications.unread-count');
     Route::get('/api/notifications/recent', [App\Http\Controllers\NotificationController::class, 'getRecent'])->name('api.notifications.recent');
+    Route::get('/api/notifications/realtime', [App\Http\Controllers\NotificationController::class, 'getRealtimeNotifications'])->name('notifications.realtime');
     
     // Admin notification management
     Route::prefix('admin/notifications')->middleware('role:admin')->group(function () {

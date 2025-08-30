@@ -3,17 +3,38 @@
 @section('title', 'الإشعارات')
 
 @section('content')
-<div class="min-h-screen bg-gray-50" dir="rtl">
-    <div class="container mx-auto px-4 py-8">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8" dir="rtl">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="mb-8 flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">الإشعارات</h1>
-                <p class="text-gray-600">إدارة إشعاراتك ومتابعة التحديثات</p>
+        <div class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl mb-8 p-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
+                        📢 مركز الإشعارات
+                    </h1>
+                    <p class="text-slate-600 text-lg">إدارة جميع إشعاراتك وتحديثاتك</p>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="mt-6 lg:mt-0 grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 rounded-2xl p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-600">{{ $counts['all'] }}</div>
+                        <div class="text-sm text-blue-500">الكل</div>
+                    </div>
+                    <div class="bg-orange-50 rounded-2xl p-4 text-center">
+                        <div class="text-2xl font-bold text-orange-600">{{ $counts['unread'] }}</div>
+                        <div class="text-sm text-orange-500">غير مقروء</div>
+                    </div>
+                    <div class="bg-red-50 rounded-2xl p-4 text-center">
+                        <div class="text-2xl font-bold text-red-600">{{ $counts['urgent'] ?? 0 }}</div>
+                        <div class="text-sm text-red-500">عاجل</div>
+                    </div>
+                    <div class="bg-green-50 rounded-2xl p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600">{{ $analytics['read_percentage'] ?? 0 }}%</div>
+                        <div class="text-sm text-green-500">معدل القراءة</div>
+                    </div>
+                </div>
             </div>
-            <button onclick="markAllAsRead()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                تمييز الكل كمقروء
-            </button>
         </div>
 
         <!-- Filter Tabs -->
