@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use App\Events\BookingCreated;
+use App\Events\BookingStatusChanged;
+use App\Events\PaymentReceived;
+use App\Listeners\SendBookingNotifications;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
@@ -17,6 +21,15 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        BookingCreated::class => [
+            'App\Listeners\SendBookingNotifications@handleBookingCreated',
+        ],
+        BookingStatusChanged::class => [
+            'App\Listeners\SendBookingNotifications@handleBookingStatusChanged',
+        ],
+        PaymentReceived::class => [
+            'App\Listeners\SendBookingNotifications@handlePaymentReceived',
         ],
     ];
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class NotificationController extends Controller
 {
@@ -17,12 +19,16 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         $type = $request->get('type', 'all'); // all, unread, read
-        $priority = $request->get('priority');
-        
-        $query = Notification::where('notifiable_type', get_class($user))
-                            ->where('notifiable_id', $user->id)
-                            ->orderBy('created_at', 'desc');
+        $priority = $request->get('priority'); // normal, high, urgent
+        $category = $request->get('category'); // booking, payment, system
+        $dateRange = $request->get('date_range', '30'); // 7, 30, 90 days
 
+        // Build query
+        $query = Notification::where('notifiable_type', get_class($user))
+                           ->where('notifiable_id', $user->id)
+                           ->orderBy('created_at', 'desc');
+
+        // Apply filters
         if ($type === 'unread') {
             $query->unread();
         } elseif ($type === 'read') {
@@ -33,19 +39,31 @@ class NotificationController extends Controller
             $query->byPriority($priority);
         }
 
-        $notifications = $query->paginate(20);
-        
-        // Get counts for filtering
-        $counts = [
-            'all' => Notification::where('notifiable_type', get_class($user))
-                                ->where('notifiable_id', $user->id)->count(),
-            'unread' => Notification::where('notifiable_type', get_class($user))
-                                  ->where('notifiable_id', $user->id)->unread()->count(),
-            'read' => Notification::where('notifiable_type', get_class($user))
-                                ->where('notifiable_id', $user->id)->read()->count(),
-        ];
+        if ($category) {
+            $query->where('type', 'like', $category . '%');
+        }
 
-        return view('notifications.index', compact('notifications', 'counts', 'type', 'priority'));
+        if ($dateRange !== 'all') {
+            $query->where('created_at', '>=', Carbon::now()->subDays((int)$dateRange));
+        }
+
+        $notifications = $query->paginate(20);
+
+        // Get counts for filters
+        $counts = $this->getNotificationCounts($user);
+
+        // Get analytics data
+        $analytics = $this->getNotificationAnalytics($user);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'notifications' => $notifications,
+                'counts' => $counts,
+                'analytics' => $analytics,
+            ]);
+        }
+
+        return view('notifications.index', compact('notifications', 'counts', 'type', 'priority', 'category', 'analytics'));
     }
 
     public function show(Notification $notification)
@@ -215,6 +233,161 @@ class NotificationController extends Controller
             default:
                 return \App\Models\User::all();
         }
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:mark_read,delete',
+            'notification_ids' => 'required|array',
+            'notification_ids.*' => 'exists:notifications,id'
+        ]);
+
+        $user = Auth::user();
+        $action = $request->action;
+        $notificationIds = $request->notification_ids;
+
+        // Ensure user owns all notifications
+        $notifications = Notification::whereIn('id', $notificationIds)
+                                   ->where('notifiable_type', get_class($user))
+                                   ->where('notifiable_id', $user->id);
+
+        $count = 0;
+        if ($action === 'mark_read') {
+            $count = $notifications->unread()->update(['read_at' => now()]);
+            $message = "تم وضع علامة على {$count} إشعار كمقروء";
+        } elseif ($action === 'delete') {
+            $count = $notifications->count();
+            $notifications->delete();
+            $message = "تم حذف {$count} إشعار";
+        }
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'count' => $count,
+                'message' => $message,
+                'unread_count' => $this->getUnreadCountForUser()
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    public function getRealtimeNotifications()
+    {
+        $user = Auth::user();
+        
+        $notifications = Notification::where('notifiable_type', get_class($user))
+                                   ->where('notifiable_id', $user->id)
+                                   ->unread()
+                                   ->orderBy('created_at', 'desc')
+                                   ->limit(10)
+                                   ->get();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'count' => $notifications->count(),
+            'total_unread' => $this->getUnreadCountForUser()
+        ]);
+    }
+
+    public function updatePreferences(Request $request)
+    {
+        $request->validate([
+            'email_notifications' => 'boolean',
+            'sms_notifications' => 'boolean',
+            'push_notifications' => 'boolean',
+            'marketing_notifications' => 'boolean',
+            'booking_notifications' => 'boolean',
+            'payment_notifications' => 'boolean',
+            'system_notifications' => 'boolean',
+        ]);
+
+        $user = Auth::user();
+        $preferences = $request->only([
+            'email_notifications',
+            'sms_notifications', 
+            'push_notifications',
+            'marketing_notifications',
+            'booking_notifications',
+            'payment_notifications',
+            'system_notifications'
+        ]);
+
+        $user->update(['notification_preferences' => $preferences]);
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'preferences' => $preferences
+            ]);
+        }
+
+        return back()->with('success', 'تم تحديث تفضيلات الإشعارات');
+    }
+
+    protected function getUnreadCountForUser()
+    {
+        $user = Auth::user();
+        
+        return Notification::where('notifiable_type', get_class($user))
+                         ->where('notifiable_id', $user->id)
+                         ->unread()
+                         ->count();
+    }
+
+    protected function getNotificationCounts($user)
+    {
+        $base = Notification::where('notifiable_type', get_class($user))
+                          ->where('notifiable_id', $user->id);
+
+        return [
+            'all' => (clone $base)->count(),
+            'unread' => (clone $base)->unread()->count(),
+            'read' => (clone $base)->read()->count(),
+            'urgent' => (clone $base)->byPriority('urgent')->count(),
+            'high' => (clone $base)->byPriority('high')->count(),
+            'booking' => (clone $base)->where('type', 'like', 'booking%')->count(),
+            'payment' => (clone $base)->where('type', 'like', 'payment%')->count(),
+        ];
+    }
+
+    protected function getNotificationAnalytics($user)
+    {
+        $base = Notification::where('notifiable_type', get_class($user))
+                          ->where('notifiable_id', $user->id);
+
+        // Last 30 days activity
+        $dailyStats = (clone $base)
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Notification types breakdown
+        $typeStats = (clone $base)
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->selectRaw('type, COUNT(*) as count')
+            ->groupBy('type')
+            ->get();
+
+        // Read vs Unread percentage
+        $readStats = [
+            'read' => (clone $base)->read()->count(),
+            'unread' => (clone $base)->unread()->count(),
+        ];
+
+        return [
+            'daily_stats' => $dailyStats,
+            'type_stats' => $typeStats,
+            'read_stats' => $readStats,
+            'total_notifications' => $readStats['read'] + $readStats['unread'],
+            'read_percentage' => $readStats['read'] + $readStats['unread'] > 0 
+                ? round(($readStats['read'] / ($readStats['read'] + $readStats['unread'])) * 100, 1)
+                : 0,
+        ];
     }
 
     // Notification Templates for different events
