@@ -47,6 +47,14 @@ class Merchant extends Model
     }
 
     /**
+     * Offerings relationship (alias for services)
+     */
+    public function offerings(): HasMany
+    {
+        return $this->hasMany(Offering::class);
+    }
+
+    /**
      * Bookings relationship
      */
     public function bookings(): HasMany
@@ -92,6 +100,22 @@ class Merchant extends Model
     public function isVerified(): bool
     {
         return $this->verification_status === 'approved';
+    }
+
+    /**
+     * Status accessor - maps verification_status to status
+     */
+    public function getStatusAttribute()
+    {
+        return $this->verification_status === 'approved' ? 'active' : 'inactive';
+    }
+
+    /**
+     * Slug accessor - simple slug generation
+     */
+    public function getSlugAttribute()
+    {
+        return $this->id; // For now, just use ID as slug
     }
 
     /**

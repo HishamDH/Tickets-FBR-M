@@ -66,5 +66,7 @@ class Kernel extends HttpKernel
         'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'merchant.status' => \App\Http\Middleware\CheckMerchantStatus::class,
+        'merchant.role' => \App\Http\Middleware\EnsureMerchantRole::class,
+        'customer.role' => \App\Http\Middleware\EnsureCustomerRole::class,
     ];
 }

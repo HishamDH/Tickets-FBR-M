@@ -78,11 +78,23 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Check if user can access Filament admin panel
+     * Check if user can access Filament panels
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return in_array($this->user_type, ['admin', 'merchant', 'partner']);
+        // Handle different panel access requirements
+        switch ($panel->getId()) {
+            case 'admin':
+                return $this->hasRole('Admin') || $this->user_type === 'admin';
+            case 'merchant':
+                return $this->hasRole('Merchant') || $this->user_type === 'merchant';
+            case 'customer':
+                return $this->hasRole('Customer') || $this->user_type === 'customer';
+            default:
+                // Fallback for other panels
+                return $this->hasRole(['Admin', 'Merchant', 'Customer']) || 
+                       in_array($this->user_type, ['admin', 'merchant', 'customer', 'partner']);
+        }
     }
 
     /**
@@ -127,27 +139,54 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Check if user is admin
+     * Check if user is admin (using Spatie roles or legacy user_type)
      */
     public function isAdmin(): bool
     {
-        return $this->user_type === 'admin';
+        return $this->hasRole('Admin') || $this->user_type === 'admin';
     }
 
     /**
-     * Check if user is merchant
+     * Check if user is merchant (using Spatie roles or legacy user_type)
      */
     public function isMerchant(): bool
     {
-        return $this->user_type === 'merchant';
+        return $this->hasRole('Merchant') || $this->user_type === 'merchant';
     }
 
     /**
-     * Check if user is customer
+     * Check if user is customer (using Spatie roles or legacy user_type)
      */
     public function isCustomer(): bool
     {
-        return $this->user_type === 'customer';
+        return $this->hasRole('Customer') || $this->user_type === 'customer';
+    }
+
+    /**
+     * Sync user's Spatie role with user_type field for backward compatibility
+     */
+    public function syncRoleWithUserType(): void
+    {
+        if ($this->user_type && !$this->roles->isNotEmpty()) {
+            $roleMapping = [
+                'admin' => 'Admin',
+                'merchant' => 'Merchant', 
+                'customer' => 'Customer'
+            ];
+
+            if (isset($roleMapping[$this->user_type])) {
+                $this->assignRole($roleMapping[$this->user_type]);
+            }
+        }
+    }
+
+    /**
+     * Get primary role name
+     */
+    public function getPrimaryRole(): ?string
+    {
+        $firstRole = $this->roles->first();
+        return $firstRole ? $firstRole->name : null;
     }
 
     /**

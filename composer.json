@@ -14,7 +14,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.6",
         "phpoffice/phpspreadsheet": "^5.0",
-        "spatie/laravel-permission": "^6.21",
+        "spatie/laravel-permission": "*",
         "stripe/stripe-php": "^17.6"
     },
     "require-dev": {

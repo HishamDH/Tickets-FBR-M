@@ -14,4 +14,12 @@ class Category extends Model
         'slug',
         'description',
     ];
+
+    /**
+     * Get all offerings in this category
+     */
+    public function offerings()
+    {
+        return $this->hasMany(Offering::class, 'category', 'name');
+    }
 }

@@ -83,6 +83,46 @@ class Offering extends Model
      */
     public function merchant()
     {
-        return $this->user();
+        return $this->user()->merchant ?? $this->user();
+    }
+
+    /**
+     * Get the merchant model directly
+     */
+    public function merchantModel()
+    {
+        return $this->hasOneThrough(Merchant::class, User::class, 'id', 'user_id', 'user_id');
+    }
+
+    /**
+     * Title accessor (alias for name)
+     */
+    public function getTitleAttribute()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Image URL accessor
+     */
+    public function getImageUrlAttribute()
+    {
+        return $this->image;
+    }
+
+    /**
+     * Rating accessor (calculated from reviews)
+     */
+    public function getRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?? 5.0;
+    }
+
+    /**
+     * Reviews count accessor
+     */
+    public function getReviewsCountAttribute()
+    {
+        return $this->reviews()->count();
     }
 }

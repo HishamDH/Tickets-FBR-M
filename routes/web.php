@@ -8,6 +8,8 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\BookingController as FrontendBookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +22,21 @@ use App\Http\Controllers\AnalyticsController;
 |
 */
 
-Route::get('/', function () {
+// Frontend Public Routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/merchants', [HomeController::class, 'merchants'])->name('merchants.index');
+Route::get('/search', [HomeController::class, 'search'])->name('search');
+Route::get('/merchant/{id}', [HomeController::class, 'merchantShow'])->name('merchant.show');
+
+// Customer Booking Routes (protected)
+Route::middleware(['auth', 'customer.role'])->group(function () {
+    Route::get('/book/{offering}', [FrontendBookingController::class, 'show'])->name('booking.show');
+    Route::post('/book/{offering}', [FrontendBookingController::class, 'store'])->name('booking.store');
+    Route::get('/booking/{booking}/confirmation', [FrontendBookingController::class, 'confirmation'])->name('booking.confirmation');
+    Route::patch('/booking/{booking}/cancel', [FrontendBookingController::class, 'cancel'])->name('booking.cancel');
+});
+
+Route::get('/old-home', function () {
     // Get featured services for homepage
     $services = \App\Models\Service::where('is_featured', true)
                                   ->orWhere('is_active', true)
