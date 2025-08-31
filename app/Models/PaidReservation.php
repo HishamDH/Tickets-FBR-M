@@ -4,50 +4,54 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class PaidReservation extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'item_id', // offering_id
-        'user_id', // customer_id
-        'booking_date',
-        'booking_time',
-        'guest_count',
-        'total_amount',
-        'payment_status',
-        'reservation_status',
-        'special_requests',
-        'qr_code',
+        'user_id',
+        'item_id',
+        'item_type',
+        'quantity',
+        'price',
+        'discount',
+        'code',
+        'status',
+        'additional_data',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        'booking_date' => 'date',
-        'total_amount' => 'decimal:2',
+        'price' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'additional_data' => 'array',
     ];
 
     /**
-     * Offering relationship
+     * Get the user that owns the reservation.
      */
-    public function offering()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Offering::class, 'item_id');
+        return $this->belongsTo(User::class);
     }
 
     /**
-     * Customer relationship
+     * Get the parent item model (polymorphic).
      */
-    public function customer()
+    public function item(): MorphTo
     {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**
-     * Alias for offering relationship to match reference naming
-     */
-    public function item()
-    {
-        return $this->offering();
+        return $this->morphTo();
     }
 }

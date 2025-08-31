@@ -25,6 +25,8 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'name',
+        'f_name',
+        'l_name',
         'email',
         'password',
         'phone',
@@ -154,5 +156,29 @@ class User extends Authenticatable implements FilamentUser
     public function isPartner(): bool
     {
         return $this->user_type === 'partner';
+    }
+
+    /**
+     * Get the branches for the user (merchant).
+     */
+    public function branches(): HasMany
+    {
+        return $this->hasMany(Branch::class);
+    }
+
+    /**
+     * Get the wallet for the user (merchant).
+     */
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(MerchantWallet::class);
+    }
+
+    /**
+     * Get the shopping cart items for the user.
+     */
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class);
     }
 }

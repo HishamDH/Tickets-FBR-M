@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,27 +24,19 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $arabicNames = [
-            'أحمد محمد العلي',
-            'فاطمة سعد الأحمد',
-            'محمد عبدالله القحطاني',
-            'نورا علي العتيبي',
-            'خالد أحمد المطيري',
-            'هند محمد الشهري',
-            'عبدالرحمن يوسف الغامدي',
-            'مريم حسن العمري',
-            'فيصل سلمان الدوسري',
-            'رهف عبدالعزيز الراشد'
-        ];
-
         $saudiPhones = [
             '0501234567', '0551234567', '0561234567', '0591234567',
             '0502345678', '0552345678', '0562345678', '0592345678',
             '0503456789', '0553456789', '0563456789', '0593456789'
         ];
 
+        $firstName = $this->faker->firstName;
+        $lastName = $this->faker->lastName;
+
         return [
-            'name' => $this->faker->randomElement($arabicNames),
+            'f_name' => $firstName,
+            'l_name' => $lastName,
+            'name' => $firstName . ' ' . $lastName, // Set name directly here
             'email' => fake()->unique()->safeEmail(),
             'phone' => $this->faker->randomElement($saudiPhones),
             'user_type' => 'customer',
@@ -55,6 +48,18 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'push_notifications_enabled' => $this->faker->boolean(80),
         ];
+    }
+
+    /**
+     * Configure the model factory.
+     */
+    public function configure(): static
+    {
+        return $this->afterMaking(function (User $user) {
+            //
+        })->afterCreating(function (User $user) {
+            // No longer needed to set name here
+        });
     }
 
     /**
@@ -74,12 +79,6 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'user_type' => 'admin',
-            'name' => $this->faker->randomElement([
-                'أحمد محمد الإدارة',
-                'فاطمة علي التطوير',
-                'محمد سعد التقنية',
-                'نورا خالد العمليات'
-            ]),
         ]);
     }
 
@@ -90,13 +89,6 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'user_type' => 'merchant',
-            'name' => $this->faker->randomElement([
-                'أحمد محمد التجاري',
-                'فاطمة علي الأعمال',
-                'محمد سعد الخدمات',
-                'نورا خالد المناسبات',
-                'خالد أحمد الضيافة'
-            ]),
         ]);
     }
 
@@ -117,12 +109,6 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'user_type' => 'partner',
-            'name' => $this->faker->randomElement([
-                'أحمد محمد الشراكات',
-                'فاطمة علي التسويق',
-                'محمد سعد المبيعات',
-                'نورا خالد التطوير'
-            ]),
         ]);
     }
 }

@@ -30,6 +30,11 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @auth
+                    <div class="me-4">
+                        <livewire:mini-cart-component />
+                    </div>
+                @endauth
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -82,6 +87,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                 {{ __('Services') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
+                {{ __('Cart') }}
             </x-responsive-nav-link>
             @auth
                 @if(Auth::user()->user_type === 'admin' || Auth::user()->user_type === 'merchant' || Auth::user()->user_type === 'partner')

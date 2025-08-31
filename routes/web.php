@@ -73,6 +73,22 @@ Route::prefix('merchant/{merchant}')->group(function () {
 Route::get('/booking/confirmation/{bookingNumber}', [PublicBookingController::class, 'confirmation'])
     ->name('booking.confirmation');
 
+Route::get('/cart', function () {
+    return view('cart');
+})->middleware(['auth'])->name('cart.index');
+
+Route::get('/checkout', function () {
+    return view('checkout');
+})->middleware(['auth'])->name('checkout.index');
+
+Route::get('/checkout/confirmation/{reservation}', function (App\Models\PaidReservation $reservation) {
+    // Add authorization check to ensure only the user who made the reservation can see this page
+    if ($reservation->user_id !== auth()->id()) {
+        abort(403);
+    }
+    return view('checkout-confirmation', ['reservation' => $reservation]);
+})->middleware(['auth'])->name('checkout.confirmation');
+
 Route::get('/dashboard', function () {
     $user = Auth::user();
     
@@ -321,6 +337,9 @@ Route::middleware(['auth'])->group(function () {
     
     Route::post('/payment/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
 });
+
+// This route will handle the redirect back from the payment gateway
+Route::get('/payment/callback', [App\Http\Controllers\PaymentController::class, 'handleCallback'])->name('payment.callback');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

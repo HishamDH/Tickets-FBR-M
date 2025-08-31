@@ -8,8 +8,10 @@ use App\Models\Service;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
+use App\Models\Offering;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,18 +21,25 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create admin user
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@shubak.sa'],
-            [
+        if (!DB::table('users')->where('email', 'admin@shubak.sa')->exists()) {
+            DB::table('users')->insert([
                 'name' => 'مدير النظام',
+                'f_name' => 'مدير',
+                'l_name' => 'النظام',
+                'email' => 'admin@shubak.sa',
                 'phone' => '0501234567',
                 'password' => Hash::make('password'),
                 'user_type' => 'admin',
                 'email_verified_at' => now(),
-            ]
-        );
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         echo "✅ تم إنشاء مدير النظام\n";
+
+        $this->call(CategorySeeder::class);
+        echo "✅ تم إنشاء الفئات\n";
 
         // Create payment gateways
         $gateways = [
@@ -149,6 +158,16 @@ class DatabaseSeeder extends Seeder
         });
 
         echo "✅ تم إنشاء " . $services->count() . " خدمة\n";
+
+        // Create offerings for merchants
+        $merchantUsers = User::where('user_type', 'merchant')->get();
+        $merchantUsers->each(function ($merchantUser) {
+            Offering::factory()->count(rand(2, 5))->create([
+                'user_id' => $merchantUser->id,
+            ]);
+        });
+
+        echo "✅ تم إنشاء العروض\n";
 
         // Create customers
         $customers = User::factory()->customer()->count(50)->create();

@@ -178,6 +178,10 @@
                             <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 px-6 rounded-lg font-bold text-lg transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                 🎯 احجز الآن - {{ $service->price_formatted }}
                             </button>
+
+                            <div class="mt-4">
+                                @livewire('add-to-cart-button', ['offering' => $service])
+                            </div>
                         </form>
 
                         <div class="mt-6 pt-4 border-t border-gray-200">
