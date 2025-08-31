@@ -44,7 +44,7 @@ class Booking extends Model
 
     protected $casts = [
         'booking_date' => 'date',
-        'booking_time' => 'time',
+        'booking_time' => 'string', // سنحفظه كـ string بصيغة H:i
         'total_amount' => 'decimal:2',
         'commission_amount' => 'decimal:2',
         'commission_rate' => 'decimal:2',
@@ -179,7 +179,7 @@ class Booking extends Model
             'customer_name' => $this->customer_name ?? $this->customer?->name,
             'service_name' => $this->service->name,
             'booking_date' => $this->booking_date?->format('Y-m-d'),
-            'booking_time' => $this->booking_time?->format('H:i'),
+            'booking_time' => $this->booking_time, // احفظه كما هو (string)
             'verification_code' => $this->qr_code
         ]);
 

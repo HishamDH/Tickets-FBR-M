@@ -119,7 +119,7 @@ class ServiceFactory extends Factory
         $name = $this->faker->randomElement($categoryData['names']);
         $description = $this->faker->randomElement($categoryData['descriptions']);
         
-        $pricingModels = ['fixed', 'per_person', 'per_table', 'hourly'];
+        $pricingModels = ['fixed', 'per_person', 'per_hour'];
         $pricingModel = $this->faker->randomElement($pricingModels);
         
         // Set base price based on category and pricing model
@@ -137,9 +137,7 @@ class ServiceFactory extends Factory
         // Adjust price for pricing model
         if ($pricingModel === 'per_person') {
             $basePrice = $this->faker->numberBetween(50, 300);
-        } elseif ($pricingModel === 'per_table') {
-            $basePrice = $this->faker->numberBetween(500, 2000);
-        } elseif ($pricingModel === 'hourly') {
+        } elseif ($pricingModel === 'per_hour') {
             $basePrice = $this->faker->numberBetween(200, 1500);
         }
 
@@ -206,12 +204,12 @@ class ServiceFactory extends Factory
             'price' => $basePrice,
             'price_type' => $pricingModel,
             'category' => $selectedCategory,
-            'service_type' => $this->faker->randomElement(['event', 'exhibition', 'restaurant', 'experience']),
+            'service_type' => $this->faker->randomElement(['package', 'individual', 'addon']),
             'pricing_model' => $pricingModel,
             'base_price' => $basePrice,
             'currency' => 'SAR',
-            'duration_hours' => $pricingModel === 'hourly' ? $this->faker->numberBetween(2, 12) : $this->faker->optional()->numberBetween(2, 8),
-            'capacity' => $selectedCategory === 'Venues' ? $this->faker->numberBetween(50, 1000) : null,
+            'duration_hours' => $pricingModel === 'per_hour' ? $this->faker->numberBetween(2, 12) : $this->faker->optional()->numberBetween(2, 8),
+            'capacity' => $selectedCategory === 'Venues' ? $this->faker->numberBetween(50, 1000) : $this->faker->numberBetween(10, 500),
             'features' => json_encode($this->faker->randomElements($features[$selectedCategory], $this->faker->numberBetween(3, 6))),
             'images' => json_encode([]),
             'status' => $this->faker->randomElement(['active', 'inactive', 'draft']),
@@ -265,6 +263,16 @@ class ServiceFactory extends Factory
             'category' => 'Catering',
             'pricing_model' => 'per_person',
             'base_price' => $this->faker->numberBetween(80, 300),
+        ]);
+    }
+
+    /**
+     * Associate service with a specific merchant.
+     */
+    public function forMerchant($merchant): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'merchant_id' => is_object($merchant) ? $merchant->id : $merchant,
         ]);
     }
 }

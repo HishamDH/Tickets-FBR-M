@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\DynamicSettingResource\Pages;
+use App\Filament\Resources\DynamicSettingResource\RelationManagers;
+use App\Models\DynamicSetting;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class DynamicSettingResource extends Resource
+{
+    protected static ?string $model = DynamicSetting::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('key')
+                    ->required()
+                    ->unique()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('value')
+                    ->required(),
+                Forms\Components\TextInput::make('description')
+                    ->maxLength(255),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('key')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('value')->limit(50),
+                Tables\Columns\TextColumn::make('description')->limit(50),
+                Tables\Columns\TextColumn::make('created_at')->dateTime(),
+            ])
+            ->filters([
+                // Add filters if needed
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListDynamicSettings::route('/'),
+            'create' => Pages\CreateDynamicSetting::route('/create'),
+            'edit' => Pages\EditDynamicSetting::route('/{record}/edit'),
+        ];
+    }
+}

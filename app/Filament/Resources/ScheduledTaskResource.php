@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\ScheduledTaskResource\Pages;
+use App\Filament\Resources\ScheduledTaskResource\RelationManagers;
+use App\Models\ScheduledTask;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class ScheduledTaskResource extends Resource
+{
+    protected static ?string $model = ScheduledTask::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->label('اسم المهمة')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('description')
+                    ->label('الوصف')
+                    ->rows(3),
+                Forms\Components\TextInput::make('cron_expression')
+                    ->label('تعبير Cron')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('نشطة')
+                    ->default(true),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('name')->label('اسم المهمة')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('description')->label('الوصف')->limit(50),
+                Tables\Columns\TextColumn::make('cron_expression')->label('تعبير Cron'),
+                Tables\Columns\IconColumn::make('is_active')->label('نشطة')->boolean(),
+                Tables\Columns\TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime(),
+            ])
+            ->filters([
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('الحالة')
+                    ->trueLabel('نشطة')
+                    ->falseLabel('غير نشطة')
+                    ->placeholder('الكل'),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListScheduledTasks::route('/'),
+            'create' => Pages\CreateScheduledTask::route('/create'),
+            'edit' => Pages\EditScheduledTask::route('/{record}/edit'),
+        ];
+    }
+}

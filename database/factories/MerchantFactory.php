@@ -157,4 +157,14 @@ class MerchantFactory extends Factory
             'city' => $city,
         ]);
     }
+
+    /**
+     * Associate merchant with a specific user.
+     */
+    public function forUser($user): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'user_id' => is_object($user) ? $user->id : $user,
+        ]);
+    }
 }

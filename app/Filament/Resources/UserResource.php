@@ -24,17 +24,30 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('الاسم')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
+                    ->label('البريد الإلكتروني')
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\TextInput::make('phone')
+                    ->label('رقم الهاتف')
+                    ->tel()
+                    ->maxLength(15),
+                Forms\Components\Select::make('role')
+                    ->label('الدور')
+                    ->options([
+                        'admin' => 'مدير',
+                        'merchant' => 'تاجر',
+                        'customer' => 'عميل',
+                        'partner' => 'شريك',
+                    ])
+                    ->required(),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('نشط')
+                    ->default(true),
             ]);
     }
 
@@ -42,24 +55,32 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('name')->label('الاسم')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('email')->label('البريد الإلكتروني')->searchable(),
+                Tables\Columns\TextColumn::make('phone')->label('رقم الهاتف'),
+                Tables\Columns\TextColumn::make('role')->label('الدور')->enum([
+                    'admin' => 'مدير',
+                    'merchant' => 'تاجر',
+                    'customer' => 'عميل',
+                    'partner' => 'شريك',
+                ]),
+                Tables\Columns\IconColumn::make('is_active')->label('نشط')->boolean(),
+                Tables\Columns\TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('role')
+                    ->label('الدور')
+                    ->options([
+                        'admin' => 'مدير',
+                        'merchant' => 'تاجر',
+                        'customer' => 'عميل',
+                        'partner' => 'شريك',
+                    ]),
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('الحالة')
+                    ->trueLabel('نشط')
+                    ->falseLabel('غير نشط')
+                    ->placeholder('الكل'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -19,22 +19,110 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create admin user
-        $admin = User::create([
-            'name' => 'مدير النظام',
-            'email' => 'admin@shubak.sa',
-            'phone' => '0501234567',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-            'email_verified_at' => now(),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@shubak.sa'],
+            [
+                'name' => 'مدير النظام',
+                'phone' => '0501234567',
+                'password' => Hash::make('password'),
+                'user_type' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
 
         echo "✅ تم إنشاء مدير النظام\n";
 
         // Create payment gateways
-        PaymentGateway::factory()->stripe()->active()->create();
-        PaymentGateway::factory()->hyperpay()->active()->create();
-        PaymentGateway::factory()->tap()->active()->create();
-        PaymentGateway::factory()->stcPay()->active()->create();
+        $gateways = [
+            [
+                'name' => 'Stripe',
+                'code' => 'stripe',
+                'display_name_ar' => 'Stripe (بطاقات ائتمانية)',
+                'display_name_en' => 'Stripe (Credit Cards)',
+                'description' => 'بوابة دفع عالمية تدعم جميع البطاقات الائتمانية والمحافظ الرقمية',
+                'provider' => 'stripe',
+                'transaction_fee' => 2.9,
+                'fee_type' => 'percentage',
+                'is_active' => true,
+                'supports_refund' => true,
+                'settings' => json_encode([
+                    'public_key' => 'pk_test_example',
+                    'secret_key' => 'sk_test_example',
+                    'webhook_secret' => 'whsec_example',
+                    'api_version' => '2022-11-15',
+                ]),
+                'sort_order' => 1,
+            ],
+            [
+                'name' => 'HyperPay',
+                'code' => 'hyperpay',
+                'display_name_ar' => 'HyperPay (MADA & فيزا)',
+                'display_name_en' => 'HyperPay (MADA & VISA)',
+                'description' => 'بوابة دفع سعودية متخصصة في MADA والبطاقات المحلية',
+                'provider' => 'hyperpay',
+                'transaction_fee' => 2.75,
+                'fee_type' => 'percentage',
+                'is_active' => true,
+                'supports_refund' => true,
+                'settings' => json_encode([
+                    'entity_id' => 'test_entity',
+                    'access_token' => 'test_token',
+                    'test_mode' => true,
+                ]),
+                'sort_order' => 2,
+            ],
+            [
+                'name' => 'MADA',
+                'code' => 'mada',
+                'display_name_ar' => 'مدى',
+                'display_name_en' => 'MADA',
+                'description' => 'شبكة المدفوعات السعودية للبطاقات المصرفية المحلية',
+                'provider' => 'hyperpay',
+                'transaction_fee' => 1.5,
+                'fee_type' => 'percentage',
+                'is_active' => true,
+                'supports_refund' => true,
+                'sort_order' => 3,
+            ],
+            [
+                'name' => 'Apple Pay',
+                'code' => 'apple_pay',
+                'display_name_ar' => 'آبل باي',
+                'display_name_en' => 'Apple Pay',
+                'description' => 'محفظة رقمية من آبل للدفع السريع والآمن',
+                'provider' => 'stripe',
+                'transaction_fee' => 2.9,
+                'fee_type' => 'percentage',
+                'is_active' => true,
+                'supports_refund' => true,
+                'sort_order' => 4,
+            ],
+            [
+                'name' => 'STC Pay',
+                'code' => 'stc_pay',
+                'display_name_ar' => 'STC Pay',
+                'display_name_en' => 'STC Pay',
+                'description' => 'محفظة STC الرقمية للعملاء في المملكة العربية السعودية',
+                'provider' => 'stc',
+                'transaction_fee' => 0.0,
+                'fee_type' => 'fixed',
+                'is_active' => false, // معطل حتى يتم التكامل
+                'supports_refund' => false,
+                'settings' => json_encode([
+                    'merchant_id' => 'test_merchant',
+                    'api_key' => 'test_api_key',
+                    'environment' => 'sandbox'
+                ]),
+                'sort_order' => 5,
+            ]
+        ];
+
+        foreach ($gateways as $gatewayData) {
+            PaymentGateway::firstOrCreate(
+                ['code' => $gatewayData['code']],
+                $gatewayData
+            );
+        }
 
         echo "✅ تم إنشاء بوابات الدفع\n";
 

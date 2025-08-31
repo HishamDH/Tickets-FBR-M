@@ -12,6 +12,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -53,7 +54,26 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'status' => 'string',
+        'notification_preferences' => 'array',
+        'push_notifications_enabled' => 'boolean',
+        'last_notification_read_at' => 'datetime',
     ];
+
+    /**
+     * Accessor for role attribute (alias for user_type)
+     */
+    public function getRoleAttribute(): string
+    {
+        return $this->user_type;
+    }
+
+    /**
+     * Mutator for role attribute (alias for user_type)
+     */
+    public function setRoleAttribute($value): void
+    {
+        $this->attributes['user_type'] = $value;
+    }
 
     /**
      * Check if user can access Filament admin panel
@@ -82,9 +102,26 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Customer bookings relationship
      */
-    public function customerBookings(): HasMany
+    public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class, 'customer_id');
+    }
+
+    /**
+     * Customer bookings relationship (alias)
+     */
+    public function customerBookings(): HasMany
+    {
+        return $this->bookings();
+    }
+
+    /**
+     * Favorite services relationship
+     */
+    public function favoriteServices(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class, 'user_favorite_services')
+                    ->withTimestamps();
     }
 
     /**
