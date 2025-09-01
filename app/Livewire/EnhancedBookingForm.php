@@ -2,39 +2,49 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\Service;
 use App\Models\Booking;
 use App\Models\PaymentGateway;
+use App\Models\Service;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use Livewire\Component;
 
 class EnhancedBookingForm extends Component
 {
     public Service $service;
+
     public $step = 1;
+
     public $maxSteps = 4;
-    
+
     // Step 1: Service Details
     public $selectedDate;
+
     public $selectedTime;
+
     public $guestCount = 1;
+
     public $specialRequests = '';
-    
+
     // Step 2: Customer Information
     public $customerName = '';
+
     public $customerEmail = '';
+
     public $customerPhone = '';
+
     public $customerAddress = '';
-    
+
     // Step 3: Payment Gateway Selection
     public $selectedGateway = null;
+
     public $paymentGateways = [];
-    
+
     // Step 4: Confirmation
     public $booking = null;
+
     public $totalAmount = 0;
+
     public $processingPayment = false;
 
     protected $rules = [
@@ -67,7 +77,7 @@ class EnhancedBookingForm extends Component
         $this->service = $service;
         $this->calculateTotal();
         $this->loadPaymentGateways();
-        
+
         // Pre-fill user data if authenticated
         if (Auth::check()) {
             $user = Auth::user();
@@ -81,10 +91,10 @@ class EnhancedBookingForm extends Component
         $this->paymentGateways = PaymentGateway::active()
             ->where(function ($query) {
                 $query->whereDoesntHave('merchantSettings')
-                      ->orWhereHas('merchantSettings', function ($subQuery) {
-                          $subQuery->where('merchant_id', $this->service->user_id)
-                                   ->where('is_enabled', true);
-                      });
+                    ->orWhereHas('merchantSettings', function ($subQuery) {
+                        $subQuery->where('merchant_id', $this->service->user_id)
+                            ->where('is_enabled', true);
+                    });
             })
             ->get();
     }
@@ -92,24 +102,24 @@ class EnhancedBookingForm extends Component
     public function calculateTotal()
     {
         $basePrice = $this->service->price * $this->guestCount;
-        
+
         // Add any additional fees based on guest count or date
         $additionalFees = 0;
         if ($this->guestCount > 100) {
             $additionalFees += 500; // Large event fee
         }
-        
+
         $this->totalAmount = $basePrice + $additionalFees;
     }
 
     public function nextStep()
     {
         $this->validateCurrentStep();
-        
+
         if ($this->step < $this->maxSteps) {
             $this->step++;
         }
-        
+
         if ($this->step == 3) {
             $this->calculateTotal();
         }
@@ -151,10 +161,10 @@ class EnhancedBookingForm extends Component
     public function processBooking()
     {
         $this->processingPayment = true;
-        
+
         try {
             $this->validateCurrentStep();
-            
+
             // Create booking
             $this->booking = Booking::create([
                 'service_id' => $this->service->id,
@@ -170,13 +180,13 @@ class EnhancedBookingForm extends Component
                 'customer_email' => $this->customerEmail,
                 'customer_phone' => $this->customerPhone,
                 'customer_address' => $this->customerAddress,
-                'booking_number' => 'BK-' . strtoupper(uniqid()),
+                'booking_number' => 'BK-'.strtoupper(uniqid()),
             ]);
 
             // Initialize payment
-            $paymentService = new PaymentService();
+            $paymentService = new PaymentService;
             $gateway = PaymentGateway::find($this->selectedGateway);
-            
+
             $paymentResult = $paymentService->createPayment(
                 $this->booking,
                 $gateway,
@@ -187,15 +197,15 @@ class EnhancedBookingForm extends Component
                 $this->step = 4;
                 $this->dispatch('booking-created', [
                     'booking_id' => $this->booking->id,
-                    'booking_number' => $this->booking->booking_number
+                    'booking_number' => $this->booking->booking_number,
                 ]);
             } else {
-                $this->addError('payment', 'حدث خطأ في معالجة الدفع: ' . $paymentResult['message']);
+                $this->addError('payment', 'حدث خطأ في معالجة الدفع: '.$paymentResult['message']);
             }
-            
+
         } catch (\Exception $e) {
             $this->addError('general', 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.');
-            \Log::error('Booking Error: ' . $e->getMessage());
+            \Log::error('Booking Error: '.$e->getMessage());
         } finally {
             $this->processingPayment = false;
         }
@@ -213,7 +223,7 @@ class EnhancedBookingForm extends Component
         return [
             '09:00', '10:00', '11:00', '12:00',
             '13:00', '14:00', '15:00', '16:00',
-            '17:00', '18:00', '19:00', '20:00'
+            '17:00', '18:00', '19:00', '20:00',
         ];
     }
 

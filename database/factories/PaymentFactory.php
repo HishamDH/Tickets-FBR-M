@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Payment;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\PaymentGateway;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,14 +24,14 @@ class PaymentFactory extends Factory
         $amount = $this->faker->randomFloat(2, 100, 15000);
         $gatewayFee = $amount * 0.029; // 2.9% gateway fee
         $platformFee = $amount * 0.025; // 2.5% platform fee
-        
+
         $transactionIds = [
-            'pi_3M' . $this->faker->randomNumber(8) . '_' . $this->faker->randomNumber(6),
-            'txn_' . $this->faker->randomNumber(8),
-            'pay_' . $this->faker->randomNumber(10),
-            'stripe_' . $this->faker->randomNumber(8),
-            'hyperpay_' . $this->faker->randomNumber(8),
-            'tap_' . $this->faker->randomNumber(8),
+            'pi_3M'.$this->faker->randomNumber(8).'_'.$this->faker->randomNumber(6),
+            'txn_'.$this->faker->randomNumber(8),
+            'pay_'.$this->faker->randomNumber(10),
+            'stripe_'.$this->faker->randomNumber(8),
+            'hyperpay_'.$this->faker->randomNumber(8),
+            'tap_'.$this->faker->randomNumber(8),
         ];
 
         $paymentMethods = ['card', 'bank_transfer', 'apple_pay', 'stc_pay', 'mada'];
@@ -43,7 +43,7 @@ class PaymentFactory extends Factory
             'البنك السعودي للاستثمار',
             'البنك السعودي الفرنسي',
             'بنك ساب',
-            'البنك الأول'
+            'البنك الأول',
         ];
 
         return [
@@ -63,17 +63,17 @@ class PaymentFactory extends Factory
                 'created' => now()->timestamp,
                 'metadata' => [
                     'booking_id' => null, // Will be set when booking is created
-                    'platform' => 'shubak_tickets'
-                ]
+                    'platform' => 'shubak_tickets',
+                ],
             ]),
             'processed_at' => function (array $attributes) {
-                return in_array($attributes['status'], ['completed', 'failed']) 
-                    ? $this->faker->dateTimeBetween('-30 days', 'now') 
+                return in_array($attributes['status'], ['completed', 'failed'])
+                    ? $this->faker->dateTimeBetween('-30 days', 'now')
                     : null;
             },
             'failed_at' => function (array $attributes) {
-                return $attributes['status'] === 'failed' 
-                    ? $this->faker->dateTimeBetween('-30 days', 'now') 
+                return $attributes['status'] === 'failed'
+                    ? $this->faker->dateTimeBetween('-30 days', 'now')
                     : null;
             },
             'failure_reason' => function (array $attributes) {
@@ -84,19 +84,20 @@ class PaymentFactory extends Factory
                         'expired_card',
                         'invalid_cvc',
                         'network_error',
-                        'processing_error'
+                        'processing_error',
                     ]);
                 }
+
                 return null;
             },
             'refunded_at' => function (array $attributes) {
-                return $attributes['status'] === 'refunded' 
-                    ? $this->faker->dateTimeBetween('-15 days', 'now') 
+                return $attributes['status'] === 'refunded'
+                    ? $this->faker->dateTimeBetween('-15 days', 'now')
                     : null;
             },
             'refund_amount' => function (array $attributes) {
-                return $attributes['status'] === 'refunded' 
-                    ? $this->faker->randomFloat(2, $attributes['amount'] * 0.5, $attributes['amount']) 
+                return $attributes['status'] === 'refunded'
+                    ? $this->faker->randomFloat(2, $attributes['amount'] * 0.5, $attributes['amount'])
                     : null;
             },
             'refund_reason' => function (array $attributes) {
@@ -106,42 +107,43 @@ class PaymentFactory extends Factory
                         'cancelled_booking',
                         'duplicate_charge',
                         'merchant_request',
-                        'technical_issue'
+                        'technical_issue',
                     ]);
                 }
+
                 return null;
             },
             'gateway_fee' => round($gatewayFee, 2),
             'platform_fee' => round($platformFee, 2),
             'net_amount' => round($amount - $gatewayFee - $platformFee, 2),
-            
+
             // Payment method specific details
             'card_last4' => function (array $attributes) {
-                return in_array($attributes['payment_method'], ['card', 'apple_pay', 'mada']) 
-                    ? $this->faker->numerify('####') 
+                return in_array($attributes['payment_method'], ['card', 'apple_pay', 'mada'])
+                    ? $this->faker->numerify('####')
                     : null;
             },
             'card_brand' => function (array $attributes) {
-                return in_array($attributes['payment_method'], ['card', 'apple_pay', 'mada']) 
-                    ? $this->faker->randomElement($cardBrands) 
+                return in_array($attributes['payment_method'], ['card', 'apple_pay', 'mada'])
+                    ? $this->faker->randomElement($cardBrands)
                     : null;
             },
             'bank_name' => function (array $attributes) {
-                return $attributes['payment_method'] === 'bank_transfer' 
-                    ? $this->faker->randomElement($bankNames) 
+                return $attributes['payment_method'] === 'bank_transfer'
+                    ? $this->faker->randomElement($bankNames)
                     : null;
             },
-            
+
             'receipt_url' => function () {
                 return $this->faker->optional(0.8)->url();
             },
             'receipt_number' => $this->faker->unique()->numerify('RCP-########'),
-            
+
             'metadata' => json_encode([
                 'ip_address' => $this->faker->ipv4(),
                 'user_agent' => $this->faker->userAgent(),
                 'platform' => 'web',
-                'payment_flow' => $this->faker->randomElement(['direct', 'redirect', 'hosted'])
+                'payment_flow' => $this->faker->randomElement(['direct', 'redirect', 'hosted']),
             ]),
         ];
     }
@@ -171,7 +173,7 @@ class PaymentFactory extends Factory
                 'insufficient_funds',
                 'card_declined',
                 'expired_card',
-                'invalid_cvc'
+                'invalid_cvc',
             ]),
             'processed_at' => null,
         ]);
@@ -238,7 +240,7 @@ class PaymentFactory extends Factory
             'البنك الأهلي التجاري',
             'بنك الراجحي',
             'بنك الرياض',
-            'البنك السعودي للاستثمار'
+            'البنك السعودي للاستثمار',
         ];
 
         return $this->state(fn (array $attributes) => [

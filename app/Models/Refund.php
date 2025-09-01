@@ -37,11 +37,11 @@ class Refund extends Model
     protected static function booted()
     {
         static::creating(function ($refund) {
-            if (!$refund->refund_reference) {
-                $refund->refund_reference = 'REF-' . strtoupper(uniqid());
+            if (! $refund->refund_reference) {
+                $refund->refund_reference = 'REF-'.strtoupper(uniqid());
             }
-            
-            if (!$refund->net_amount) {
+
+            if (! $refund->net_amount) {
                 $refund->net_amount = $refund->amount - $refund->fee;
             }
         });
@@ -64,7 +64,7 @@ class Refund extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'warning',
             'processing' => 'info',
             'completed' => 'success',
@@ -76,7 +76,7 @@ class Refund extends Model
 
     public function getStatusLabelAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'Pending',
             'processing' => 'Processing',
             'completed' => 'Completed',
@@ -88,7 +88,7 @@ class Refund extends Model
 
     public function getTypeLabelAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'full' => 'Full Refund',
             'partial' => 'Partial Refund',
             'service_fee' => 'Service Fee Only',

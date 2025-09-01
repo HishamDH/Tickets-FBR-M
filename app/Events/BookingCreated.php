@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\Booking;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -33,8 +31,8 @@ class BookingCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('merchant.' . $this->booking->service->merchant_id),
-            new PrivateChannel('customer.' . $this->booking->customer_id),
+            new PrivateChannel('merchant.'.$this->booking->service->merchant_id),
+            new PrivateChannel('customer.'.$this->booking->customer_id),
         ];
     }
 

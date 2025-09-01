@@ -2,13 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class AuthController extends Controller
 {
+    /**
+     * Show the registration form.
+     */
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
+    /**
+     * Show the login form.
+     */
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
     /**
      * Handle user registration.
      */

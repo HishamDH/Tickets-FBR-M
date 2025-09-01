@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('services', function (Blueprint $table) {
             // Add merchant relationship
             $table->foreignId('merchant_id')->nullable()->after('id')->constrained()->onDelete('cascade');
-            
+
             // Enhanced service details
             $table->enum('service_type', ['package', 'individual', 'addon'])->default('individual')->after('category');
             $table->enum('pricing_model', ['fixed', 'per_person', 'per_hour'])->default('fixed')->after('price_type');
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive', 'draft'])->default('draft')->after('is_active');
             $table->boolean('online_booking_enabled')->default(false)->after('status');
             $table->boolean('is_available')->default(true)->after('is_featured');
-            
+
             // Add indexes for performance
             $table->index(['category', 'status']);
             $table->index(['merchant_id', 'online_booking_enabled']);
@@ -44,9 +44,9 @@ return new class extends Migration
             $table->dropIndex(['merchant_id', 'online_booking_enabled']);
             $table->dropForeign(['merchant_id']);
             $table->dropColumn([
-                'merchant_id', 'service_type', 'pricing_model', 'base_price', 
+                'merchant_id', 'service_type', 'pricing_model', 'base_price',
                 'currency', 'duration_hours', 'capacity', 'features', 'images',
-                'status', 'online_booking_enabled', 'is_available'
+                'status', 'online_booking_enabled', 'is_available',
             ]);
         });
     }

@@ -49,7 +49,7 @@ class WalletTransaction extends Model
 
     public function getTypeColorAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'credit' => 'success',
             'debit' => 'warning',
             default => 'secondary',
@@ -58,7 +58,7 @@ class WalletTransaction extends Model
 
     public function getCategoryLabelAttribute(): string
     {
-        return match($this->category) {
+        return match ($this->category) {
             'commission' => 'Commission',
             'payout' => 'Payout',
             'refund' => 'Refund',
@@ -71,7 +71,7 @@ class WalletTransaction extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'warning',
             'completed' => 'success',
             'failed' => 'danger',
@@ -83,6 +83,7 @@ class WalletTransaction extends Model
     public function getFormattedAmountAttribute(): string
     {
         $sign = $this->type === 'credit' ? '+' : '-';
-        return $sign . '$' . number_format($this->amount, 2);
+
+        return $sign.'$'.number_format($this->amount, 2);
     }
 }

@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Booking;
 use App\Models\Service;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class CustomerDashboardController extends Controller
 {
@@ -46,10 +45,10 @@ class CustomerDashboardController extends Controller
             ->get();
 
         // الخدمات المفضلة (الأكثر حجزاً)
-        $favoriteServices = Service::whereHas('bookings', function($query) use ($user) {
-                $query->where('customer_id', $user->id);
-            })
-            ->withCount(['bookings' => function($query) use ($user) {
+        $favoriteServices = Service::whereHas('bookings', function ($query) use ($user) {
+            $query->where('customer_id', $user->id);
+        })
+            ->withCount(['bookings' => function ($query) use ($user) {
                 $query->where('customer_id', $user->id);
             }])
             ->with('merchant')
@@ -92,10 +91,10 @@ class CustomerDashboardController extends Controller
         // البحث في اسم الخدمة أو التاجر
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->whereHas('service', function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%');
-            })->orWhereHas('merchant', function($q) use ($search) {
-                $q->where('business_name', 'like', '%' . $search . '%');
+            $query->whereHas('service', function ($q) use ($search) {
+                $q->where('name', 'like', '%'.$search.'%');
+            })->orWhereHas('merchant', function ($q) use ($search) {
+                $q->where('business_name', 'like', '%'.$search.'%');
             });
         }
 
@@ -126,13 +125,13 @@ class CustomerDashboardController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'cancellation_reason' => 'required|string|max:500'
+            'cancellation_reason' => 'required|string|max:500',
         ]);
 
         $booking = $user->customerBookings()->findOrFail($bookingId);
 
         // التحقق من إمكانية الإلغاء (مثلاً، قبل 24 ساعة من الموعد)
-        $bookingDateTime = Carbon::parse($booking->booking_date . ' ' . $booking->booking_time);
+        $bookingDateTime = Carbon::parse($booking->booking_date.' '.$booking->booking_time);
         if ($bookingDateTime->diffInHours(Carbon::now()) < 24) {
             return redirect()->back()->with('error', 'لا يمكن إلغاء الحجز قبل أقل من 24 ساعة من الموعد');
         }
@@ -161,7 +160,7 @@ class CustomerDashboardController extends Controller
         $request->validate([
             'new_booking_date' => 'required|date|after:today',
             'new_booking_time' => 'required',
-            'reschedule_reason' => 'required|string|max:500'
+            'reschedule_reason' => 'required|string|max:500',
         ]);
 
         $booking = $user->customerBookings()->findOrFail($bookingId);
@@ -190,7 +189,7 @@ class CustomerDashboardController extends Controller
 
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'review' => 'nullable|string|max:1000'
+            'review' => 'nullable|string|max:1000',
         ]);
 
         $booking = $user->customerBookings()->findOrFail($bookingId);
@@ -256,7 +255,7 @@ class CustomerDashboardController extends Controller
         // إعادة توجيه لصفحة حجز الخدمة
         return redirect()->route('merchant.service.booking', [
             'merchant' => $originalBooking->merchant_id,
-            'service' => $originalBooking->service_id
+            'service' => $originalBooking->service_id,
         ])->with('rebook_data', [
             'customer_name' => $originalBooking->customer_name,
             'customer_phone' => $originalBooking->customer_phone,

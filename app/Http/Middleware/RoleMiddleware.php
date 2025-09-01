@@ -16,10 +16,11 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'غير مصرح لك بالوصول'], 401);
             }
+
             return redirect()->route('login');
         }
 
@@ -35,7 +36,7 @@ class RoleMiddleware
             return response()->json([
                 'message' => 'ليس لديك صلاحية للوصول إلى هذه الصفحة',
                 'required_roles' => $roles,
-                'user_role' => $user->role
+                'user_role' => $user->role,
             ], 403);
         }
 
@@ -44,15 +45,15 @@ class RoleMiddleware
             case 'admin':
                 return redirect()->route('filament.admin.pages.dashboard')
                     ->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
-            
+
             case 'merchant':
                 return redirect()->route('merchant.dashboard')
                     ->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
-            
+
             case 'partner':
                 return redirect()->route('partner.dashboard')
                     ->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
-            
+
             case 'customer':
             default:
                 return redirect()->route('customer.dashboard')

@@ -27,7 +27,7 @@ class UserFactory extends Factory
         $saudiPhones = [
             '0501234567', '0551234567', '0561234567', '0591234567',
             '0502345678', '0552345678', '0562345678', '0592345678',
-            '0503456789', '0553456789', '0563456789', '0593456789'
+            '0503456789', '0553456789', '0563456789', '0593456789',
         ];
 
         $firstName = $this->faker->firstName;
@@ -36,7 +36,7 @@ class UserFactory extends Factory
         return [
             'f_name' => $firstName,
             'l_name' => $lastName,
-            'name' => $firstName . ' ' . $lastName, // Set name directly here
+            'name' => $firstName.' '.$lastName, // Set name directly here
             'email' => fake()->unique()->safeEmail(),
             'phone' => $this->faker->randomElement($saudiPhones),
             'user_type' => 'customer',

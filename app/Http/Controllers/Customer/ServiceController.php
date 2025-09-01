@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
 use App\Models\Merchant;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,7 +37,7 @@ class ServiceController extends Controller
         if ($request->filled('min_price')) {
             $query->where('price', '>=', $request->min_price);
         }
-        
+
         if ($request->filled('max_price')) {
             $query->where('price', '<=', $request->max_price);
         }
@@ -47,10 +47,10 @@ class ServiceController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('merchant', function ($mq) use ($search) {
-                      $mq->where('business_name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('merchant', function ($mq) use ($search) {
+                        $mq->where('business_name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -83,7 +83,7 @@ class ServiceController extends Controller
             ->map(function ($category) {
                 return [
                     'value' => $category,
-                    'label' => $this->getCategoryLabel($category)
+                    'label' => $this->getCategoryLabel($category),
                 ];
             });
 
@@ -105,7 +105,7 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        if (!$service->is_active || $service->merchant->status !== 'active') {
+        if (! $service->is_active || $service->merchant->status !== 'active') {
             abort(404, 'الخدمة غير متاحة');
         }
 
@@ -115,13 +115,13 @@ class ServiceController extends Controller
             'availability',
             'bookings' => function ($query) {
                 $query->where('booking_status', 'completed')
-                      ->with(['customer' => function ($q) {
-                          $q->select('id', 'name');
-                      }])
-                      ->whereNotNull('review')
-                      ->latest()
-                      ->limit(5);
-            }
+                    ->with(['customer' => function ($q) {
+                        $q->select('id', 'name');
+                    }])
+                    ->whereNotNull('review')
+                    ->latest()
+                    ->limit(5);
+            },
         ]);
 
         // Get related services from same merchant
@@ -163,19 +163,19 @@ class ServiceController extends Controller
     public function addToFavorites(Service $service)
     {
         $user = Auth::user();
-        
-        if (!$user->favoriteServices()->where('service_id', $service->id)->exists()) {
+
+        if (! $user->favoriteServices()->where('service_id', $service->id)->exists()) {
             $user->favoriteServices()->attach($service->id);
-            
+
             return response()->json([
                 'success' => true,
-                'message' => 'تمت إضافة الخدمة إلى المفضلة'
+                'message' => 'تمت إضافة الخدمة إلى المفضلة',
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'الخدمة موجودة بالفعل في المفضلة'
+            'message' => 'الخدمة موجودة بالفعل في المفضلة',
         ]);
     }
 
@@ -185,12 +185,12 @@ class ServiceController extends Controller
     public function removeFromFavorites(Service $service)
     {
         $user = Auth::user();
-        
+
         $user->favoriteServices()->detach($service->id);
-        
+
         return response()->json([
             'success' => true,
-            'message' => 'تم حذف الخدمة من المفضلة'
+            'message' => 'تم حذف الخدمة من المفضلة',
         ]);
     }
 

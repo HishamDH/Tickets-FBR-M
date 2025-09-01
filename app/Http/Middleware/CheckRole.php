@@ -16,15 +16,15 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
         $user = Auth::user();
-        
+
         // التحقق من نوع المستخدم
         if ($user->user_type !== $role) {
-            abort(403, 'Unauthorized access. Required role: ' . $role);
+            abort(403, 'Unauthorized access. Required role: '.$role);
         }
 
         return $next($request);

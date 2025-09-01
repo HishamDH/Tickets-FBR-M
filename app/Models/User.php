@@ -3,20 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -92,7 +92,7 @@ class User extends Authenticatable implements FilamentUser
                 return $this->hasRole('Customer') || $this->user_type === 'customer';
             default:
                 // Fallback for other panels
-                return $this->hasRole(['Admin', 'Merchant', 'Customer']) || 
+                return $this->hasRole(['Admin', 'Merchant', 'Customer']) ||
                        in_array($this->user_type, ['admin', 'merchant', 'customer', 'partner']);
         }
     }
@@ -135,7 +135,7 @@ class User extends Authenticatable implements FilamentUser
     public function favoriteServices(): BelongsToMany
     {
         return $this->belongsToMany(Service::class, 'user_favorite_services')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     /**
@@ -167,11 +167,11 @@ class User extends Authenticatable implements FilamentUser
      */
     public function syncRoleWithUserType(): void
     {
-        if ($this->user_type && !$this->roles->isNotEmpty()) {
+        if ($this->user_type && ! $this->roles->isNotEmpty()) {
             $roleMapping = [
                 'admin' => 'Admin',
-                'merchant' => 'Merchant', 
-                'customer' => 'Customer'
+                'merchant' => 'Merchant',
+                'customer' => 'Customer',
             ];
 
             if (isset($roleMapping[$this->user_type])) {
@@ -186,6 +186,7 @@ class User extends Authenticatable implements FilamentUser
     public function getPrimaryRole(): ?string
     {
         $firstRole = $this->roles->first();
+
         return $firstRole ? $firstRole->name : null;
     }
 

@@ -29,12 +29,12 @@ class SupportTicketResponse extends Model
     {
         static::created(function ($response) {
             $ticket = $response->supportTicket;
-            
+
             // Update first response time if this is the first response
-            if (!$ticket->first_response_at && !$response->is_internal && $response->user_id !== $ticket->user_id) {
+            if (! $ticket->first_response_at && ! $response->is_internal && $response->user_id !== $ticket->user_id) {
                 $ticket->update(['first_response_at' => now()]);
             }
-            
+
             // Update ticket status based on who responded
             if ($response->user_id === $ticket->user_id) {
                 // Customer responded, set to waiting response if staff was involved
@@ -67,12 +67,12 @@ class SupportTicketResponse extends Model
 
     public function isFromStaff(): bool
     {
-        return !$this->isFromCustomer();
+        return ! $this->isFromCustomer();
     }
 
     public function markAsRead(): void
     {
-        if (!$this->read_at) {
+        if (! $this->read_at) {
             $this->update(['read_at' => now()]);
         }
     }
@@ -84,7 +84,7 @@ class SupportTicketResponse extends Model
 
     public function hasAttachments(): bool
     {
-        return !empty($this->attachments);
+        return ! empty($this->attachments);
     }
 
     public function getAttachmentCount(): int

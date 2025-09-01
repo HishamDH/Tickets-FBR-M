@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Booking;
 use App\Models\Merchant;
 use App\Models\Partner;
 use App\Models\Service;
-use App\Models\Booking;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
@@ -37,10 +37,10 @@ class AdminDashboardController extends Controller
             DB::raw('COUNT(*) as count'),
             DB::raw('SUM(total_amount) as revenue')
         )
-        ->whereYear('created_at', Carbon::now()->year)
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+            ->whereYear('created_at', Carbon::now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
         // أفضل الخدمات حجزاً
         $topServices = Service::withCount('bookings')
@@ -56,10 +56,10 @@ class AdminDashboardController extends Controller
             ->get();
 
         // إحصائيات التجار النشطين
-        $activeMerchants = Merchant::whereHas('bookings', function($query) {
-                $query->where('created_at', '>=', Carbon::now()->subDays(30));
-            })
-            ->withCount(['bookings' => function($query) {
+        $activeMerchants = Merchant::whereHas('bookings', function ($query) {
+            $query->where('created_at', '>=', Carbon::now()->subDays(30));
+        })
+            ->withCount(['bookings' => function ($query) {
                 $query->where('created_at', '>=', Carbon::now()->subDays(30));
             }])
             ->orderBy('bookings_count', 'desc')
@@ -72,18 +72,18 @@ class AdminDashboardController extends Controller
             ->get();
 
         // إيرادات الشركاء
-        $partnerRevenues = Partner::with(['merchants.bookings' => function($query) {
-                $query->where('payment_status', 'paid');
-            }])
+        $partnerRevenues = Partner::with(['merchants.bookings' => function ($query) {
+            $query->where('payment_status', 'paid');
+        }])
             ->get()
-            ->map(function($partner) {
-                $totalRevenue = $partner->merchants->sum(function($merchant) {
+            ->map(function ($partner) {
+                $totalRevenue = $partner->merchants->sum(function ($merchant) {
                     return $merchant->bookings->sum('total_amount');
                 });
-                $totalCommission = $partner->merchants->sum(function($merchant) {
+                $totalCommission = $partner->merchants->sum(function ($merchant) {
                     return $merchant->bookings->sum('commission_amount');
                 });
-                
+
                 return [
                     'partner' => $partner,
                     'total_revenue' => $totalRevenue,
@@ -120,11 +120,11 @@ class AdminDashboardController extends Controller
             DB::raw('SUM(total_amount) as total_revenue'),
             DB::raw('SUM(commission_amount) as total_commission')
         )
-        ->where('payment_status', 'paid')
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get();
+            ->where('payment_status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
 
         // إيرادات حسب نوع الخدمة
         $revenueByServiceType = Booking::join('services', 'bookings.service_id', '=', 'services.id')
@@ -157,7 +157,7 @@ class AdminDashboardController extends Controller
 
         return view('dashboard.admin.revenue-report', compact(
             'dailyRevenue',
-            'revenueByServiceType', 
+            'revenueByServiceType',
             'topMerchantsByRevenue',
             'startDate',
             'endDate'
@@ -171,10 +171,10 @@ class AdminDashboardController extends Controller
     {
         $merchants = Merchant::with(['user', 'partner'])
             ->withCount(['services', 'bookings'])
-            ->withSum(['bookings as total_revenue' => function($query) {
+            ->withSum(['bookings as total_revenue' => function ($query) {
                 $query->where('payment_status', 'paid');
             }], 'total_amount')
-            ->withSum(['bookings as total_commission' => function($query) {
+            ->withSum(['bookings as total_commission' => function ($query) {
                 $query->where('payment_status', 'paid');
             }], 'commission_amount')
             ->orderBy('total_revenue', 'desc')
@@ -191,16 +191,16 @@ class AdminDashboardController extends Controller
         $partners = Partner::with('user')
             ->withCount('merchants')
             ->get()
-            ->map(function($partner) {
-                $totalRevenue = $partner->merchants->sum(function($merchant) {
+            ->map(function ($partner) {
+                $totalRevenue = $partner->merchants->sum(function ($merchant) {
                     return $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount');
                 });
-                
-                $totalCommission = $partner->merchants->sum(function($merchant) {
+
+                $totalCommission = $partner->merchants->sum(function ($merchant) {
                     return $merchant->bookings()->where('payment_status', 'paid')->sum('commission_amount');
                 });
 
-                $totalBookings = $partner->merchants->sum(function($merchant) {
+                $totalBookings = $partner->merchants->sum(function ($merchant) {
                     return $merchant->bookings()->count();
                 });
 
@@ -228,13 +228,14 @@ class AdminDashboardController extends Controller
             ->get();
 
         // أعلى الخدمات إيراداً
-        $highestRevenueServices = Service::with(['merchant', 'bookings' => function($query) {
-                $query->where('payment_status', 'paid');
-            }])
+        $highestRevenueServices = Service::with(['merchant', 'bookings' => function ($query) {
+            $query->where('payment_status', 'paid');
+        }])
             ->get()
-            ->map(function($service) {
+            ->map(function ($service) {
                 $service->total_revenue = $service->bookings->sum('total_amount');
                 $service->total_bookings = $service->bookings->count();
+
                 return $service;
             })
             ->sortByDesc('total_revenue')
@@ -252,8 +253,8 @@ class AdminDashboardController extends Controller
             DB::raw('MIN(base_price) as min_price'),
             DB::raw('MAX(base_price) as max_price')
         )
-        ->groupBy('service_type')
-        ->get();
+            ->groupBy('service_type')
+            ->get();
 
         return view('dashboard.admin.services-analytics', compact(
             'mostBookedServices',

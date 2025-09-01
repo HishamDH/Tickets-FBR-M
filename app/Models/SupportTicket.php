@@ -39,8 +39,8 @@ class SupportTicket extends Model
     protected static function booted()
     {
         static::creating(function ($ticket) {
-            if (!$ticket->ticket_number) {
-                $ticket->ticket_number = 'TKT-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            if (! $ticket->ticket_number) {
+                $ticket->ticket_number = 'TKT-'.str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
             }
         });
     }
@@ -67,7 +67,7 @@ class SupportTicket extends Model
 
     public function getPriorityColorAttribute(): string
     {
-        return match($this->priority) {
+        return match ($this->priority) {
             'low' => 'secondary',
             'normal' => 'primary',
             'high' => 'warning',
@@ -78,7 +78,7 @@ class SupportTicket extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'open' => 'danger',
             'in_progress' => 'warning',
             'waiting_response' => 'info',
@@ -90,7 +90,7 @@ class SupportTicket extends Model
 
     public function getPriorityLabelAttribute(): string
     {
-        return match($this->priority) {
+        return match ($this->priority) {
             'low' => 'Low',
             'normal' => 'Normal',
             'high' => 'High',
@@ -101,7 +101,7 @@ class SupportTicket extends Model
 
     public function getStatusLabelAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'open' => 'Open',
             'in_progress' => 'In Progress',
             'waiting_response' => 'Waiting Response',
@@ -113,7 +113,7 @@ class SupportTicket extends Model
 
     public function getCategoryLabelAttribute(): string
     {
-        return match($this->category) {
+        return match ($this->category) {
             'general' => 'General',
             'booking' => 'Booking',
             'payment' => 'Payment',
@@ -127,19 +127,19 @@ class SupportTicket extends Model
 
     public function getResponseTimeAttribute(): ?int
     {
-        if (!$this->first_response_at) {
+        if (! $this->first_response_at) {
             return null;
         }
-        
+
         return $this->created_at->diffInHours($this->first_response_at);
     }
 
     public function getResolutionTimeAttribute(): ?int
     {
-        if (!$this->resolved_at) {
+        if (! $this->resolved_at) {
             return null;
         }
-        
+
         return $this->created_at->diffInHours($this->resolved_at);
     }
 
@@ -158,7 +158,7 @@ class SupportTicket extends Model
         return $this->status === 'closed' && $this->closed_at && $this->closed_at->diffInDays(now()) <= 30;
     }
 
-    public function markAsResolved(string $resolutionNotes = null): void
+    public function markAsResolved(?string $resolutionNotes = null): void
     {
         $this->update([
             'status' => 'resolved',

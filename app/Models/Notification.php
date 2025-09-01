@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Notification extends Model
 {
@@ -21,7 +21,7 @@ class Notification extends Model
         'channel',
         'read_at',
         'sent_at',
-        'is_sent'
+        'is_sent',
     ];
 
     protected $casts = [
@@ -76,7 +76,7 @@ class Notification extends Model
 
     public function isRead()
     {
-        return !is_null($this->read_at);
+        return ! is_null($this->read_at);
     }
 
     public function isSent()

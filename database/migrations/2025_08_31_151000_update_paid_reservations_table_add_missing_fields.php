@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('paid_reservations', function (Blueprint $table) {
-            if (!Schema::hasColumn('paid_reservations', 'item_type')) {
+            if (! Schema::hasColumn('paid_reservations', 'item_type')) {
                 $table->string('item_type')->after('item_id');
             }
-            if (!Schema::hasColumn('paid_reservations', 'quantity')) {
+            if (! Schema::hasColumn('paid_reservations', 'quantity')) {
                 $table->double('quantity')->default(1)->after('item_type');
             }
-            if (!Schema::hasColumn('paid_reservations', 'discount')) {
+            if (! Schema::hasColumn('paid_reservations', 'discount')) {
                 $table->double('discount')->default(0.0)->after('quantity');
             }
-            if (!Schema::hasColumn('paid_reservations', 'code')) {
+            if (! Schema::hasColumn('paid_reservations', 'code')) {
                 $table->string('code')->unique()->after('discount');
             }
         });

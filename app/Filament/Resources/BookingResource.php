@@ -3,17 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BookingResource\Pages;
-use App\Filament\Resources\BookingResource\RelationManagers;
 use App\Models\Booking;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 
 class BookingResource extends Resource
 {
@@ -41,8 +39,8 @@ class BookingResource extends Resource
                                 ->required()
                                 ->maxLength(20)
                                 ->unique(ignoreRecord: true)
-                                ->default(fn () => 'BK-' . strtoupper(substr(uniqid(), -6))),
-                                
+                                ->default(fn () => 'BK-'.strtoupper(substr(uniqid(), -6))),
+
                             Forms\Components\Select::make('booking_source')
                                 ->label('مصدر الحجز')
                                 ->options([
@@ -54,7 +52,7 @@ class BookingResource extends Resource
                                 ->required()
                                 ->native(false),
                         ]),
-                        
+
                         Grid::make(3)->schema([
                             Forms\Components\Select::make('customer_id')
                                 ->label('العميل')
@@ -62,14 +60,14 @@ class BookingResource extends Resource
                                 ->searchable()
                                 ->preload()
                                 ->required(),
-                                
+
                             Forms\Components\Select::make('service_id')
                                 ->label('الخدمة')
                                 ->relationship('service', 'name')
                                 ->searchable()
                                 ->preload()
                                 ->required(),
-                                
+
                             Forms\Components\Select::make('merchant_id')
                                 ->label('التاجر')
                                 ->relationship('merchant', 'business_name')
@@ -77,17 +75,17 @@ class BookingResource extends Resource
                                 ->preload()
                                 ->required(),
                         ]),
-                        
+
                         Grid::make(3)->schema([
                             Forms\Components\DatePicker::make('booking_date')
                                 ->label('تاريخ الحجز')
                                 ->required()
                                 ->native(false),
-                                
+
                             Forms\Components\TimePicker::make('booking_time')
                                 ->label('وقت الحجز')
                                 ->seconds(false),
-                                
+
                             Forms\Components\TextInput::make('guest_count')
                                 ->label('عدد الضيوف')
                                 ->numeric()
@@ -95,7 +93,7 @@ class BookingResource extends Resource
                                 ->suffix('شخص'),
                         ]),
                     ]),
-                    
+
                 Section::make('المعلومات المالية')
                     ->schema([
                         Grid::make(3)->schema([
@@ -104,7 +102,7 @@ class BookingResource extends Resource
                                 ->required()
                                 ->numeric()
                                 ->prefix('ريال'),
-                                
+
                             Forms\Components\TextInput::make('commission_rate')
                                 ->label('نسبة العمولة')
                                 ->required()
@@ -112,14 +110,14 @@ class BookingResource extends Resource
                                 ->suffix('%')
                                 ->minValue(0)
                                 ->maxValue(100),
-                                
+
                             Forms\Components\TextInput::make('commission_amount')
                                 ->label('مبلغ العمولة')
                                 ->required()
                                 ->numeric()
                                 ->prefix('ريال'),
                         ]),
-                        
+
                         Grid::make(2)->schema([
                             Forms\Components\Select::make('payment_status')
                                 ->label('حالة الدفع')
@@ -132,7 +130,7 @@ class BookingResource extends Resource
                                 ->default('pending')
                                 ->required()
                                 ->native(false),
-                                
+
                             Forms\Components\Select::make('status')
                                 ->label('حالة الحجز')
                                 ->options([
@@ -147,31 +145,31 @@ class BookingResource extends Resource
                                 ->native(false),
                         ]),
                     ]),
-                    
+
                 Section::make('معلومات إضافية')
                     ->schema([
                         Forms\Components\Textarea::make('special_requests')
                             ->label('طلبات خاصة')
                             ->rows(2)
                             ->columnSpanFull(),
-                            
+
                         Forms\Components\Textarea::make('cancellation_reason')
                             ->label('سبب الإلغاء')
                             ->rows(2)
                             ->columnSpanFull(),
-                            
+
                         Grid::make(2)->schema([
                             Forms\Components\DateTimePicker::make('cancelled_at')
                                 ->label('تاريخ الإلغاء')
                                 ->native(false),
-                                
+
                             Forms\Components\Select::make('cancelled_by')
                                 ->label('ألغي بواسطة')
                                 ->relationship('cancelledBy', 'name')
                                 ->searchable()
                                 ->preload(),
                         ]),
-                        
+
                         Forms\Components\TextInput::make('qr_code')
                             ->label('رمز QR')
                             ->maxLength(255)
@@ -191,13 +189,13 @@ class BookingResource extends Resource
                     ->sortable()
                     ->weight('bold')
                     ->copyable(),
-                    
+
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('العميل')
                     ->searchable()
                     ->sortable()
                     ->description(fn (Booking $record): string => $record->customer->email ?? ''),
-                    
+
                 Tables\Columns\TextColumn::make('service.name')
                     ->label('الخدمة')
                     ->searchable()
@@ -208,34 +206,35 @@ class BookingResource extends Resource
                         if (strlen($state) <= 30) {
                             return null;
                         }
+
                         return $state;
                     }),
-                    
+
                 Tables\Columns\TextColumn::make('merchant.business_name')
                     ->label('التاجر')
                     ->searchable()
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('booking_date')
                     ->label('التاريخ')
                     ->date('d/m/Y')
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('booking_time')
                     ->label('الوقت')
                     ->time('H:i'),
-                    
+
                 Tables\Columns\TextColumn::make('guest_count')
                     ->label('الضيوف')
                     ->numeric()
                     ->suffix(' شخص')
                     ->alignCenter(),
-                    
+
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('المبلغ')
                     ->money('SAR')
                     ->sortable(),
-                    
+
                 Tables\Columns\BadgeColumn::make('payment_status')
                     ->label('حالة الدفع')
                     ->colors([
@@ -251,7 +250,7 @@ class BookingResource extends Resource
                         'refunded' => 'مسترد',
                         default => $state,
                     }),
-                    
+
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('حالة الحجز')
                     ->colors([
@@ -269,7 +268,7 @@ class BookingResource extends Resource
                         'no_show' => 'لم يحضر',
                         default => $state,
                     }),
-                    
+
                 Tables\Columns\BadgeColumn::make('booking_source')
                     ->label('المصدر')
                     ->colors([
@@ -283,7 +282,7 @@ class BookingResource extends Resource
                         'pos' => 'نقاط البيع',
                         default => $state,
                     }),
-                    
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime('d/m/Y H:i')
@@ -299,7 +298,7 @@ class BookingResource extends Resource
                         'failed' => 'فشل',
                         'refunded' => 'مسترد',
                     ]),
-                    
+
                 Tables\Filters\SelectFilter::make('status')
                     ->label('حالة الحجز')
                     ->options([
@@ -309,7 +308,7 @@ class BookingResource extends Resource
                         'cancelled' => 'ملغي',
                         'no_show' => 'لم يحضر',
                     ]),
-                    
+
                 Tables\Filters\SelectFilter::make('booking_source')
                     ->label('مصدر الحجز')
                     ->options([
@@ -317,7 +316,7 @@ class BookingResource extends Resource
                         'manual' => 'يدوي',
                         'pos' => 'نقاط البيع',
                     ]),
-                    
+
                 Tables\Filters\Filter::make('booking_date')
                     ->form([
                         Forms\Components\DatePicker::make('from')

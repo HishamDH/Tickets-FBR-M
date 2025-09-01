@@ -22,11 +22,11 @@ class RefundProcessed extends Notification implements ShouldQueue
     public function via(object $notifiable): array
     {
         $channels = ['database'];
-        
+
         if ($notifiable->email) {
             $channels[] = 'mail';
         }
-        
+
         return $channels;
     }
 
@@ -37,17 +37,17 @@ class RefundProcessed extends Notification implements ShouldQueue
     {
         $booking = $this->refundPayment->booking;
         $refundAmount = abs($this->refundPayment->amount);
-        
+
         return (new MailMessage)
-            ->subject('تأكيد الاسترداد - ' . $booking->booking_number)
-            ->greeting('مرحباً ' . $notifiable->name)
+            ->subject('تأكيد الاسترداد - '.$booking->booking_number)
+            ->greeting('مرحباً '.$notifiable->name)
             ->line('تم معالجة طلب الاسترداد الخاص بك.')
-            ->line('رقم الحجز: ' . $booking->booking_number)
-            ->line('المبلغ المسترد: ' . number_format($refundAmount) . ' ريال')
-            ->line('رقم عملية الاسترداد: ' . $this->refundPayment->payment_number)
-            ->line('تاريخ المعالجة: ' . $this->refundPayment->completed_at?->format('d/m/Y H:i'))
+            ->line('رقم الحجز: '.$booking->booking_number)
+            ->line('المبلغ المسترد: '.number_format($refundAmount).' ريال')
+            ->line('رقم عملية الاسترداد: '.$this->refundPayment->payment_number)
+            ->line('تاريخ المعالجة: '.$this->refundPayment->completed_at?->format('d/m/Y H:i'))
             ->line('سيظهر المبلغ في حسابك خلال 3-5 أيام عمل حسب بنكك.')
-            ->action('عرض تفاصيل الحجز', url('/customer/dashboard/bookings/' . $booking->id))
+            ->action('عرض تفاصيل الحجز', url('/customer/dashboard/bookings/'.$booking->id))
             ->line('شكراً لاستخدامك منصة شباك.');
     }
 
@@ -58,7 +58,7 @@ class RefundProcessed extends Notification implements ShouldQueue
     {
         $booking = $this->refundPayment->booking;
         $refundAmount = abs($this->refundPayment->amount);
-        
+
         return [
             'type' => 'refund_processed',
             'payment_id' => $this->refundPayment->id,
@@ -68,8 +68,8 @@ class RefundProcessed extends Notification implements ShouldQueue
             'refund_amount' => $refundAmount,
             'completed_at' => $this->refundPayment->completed_at?->toISOString(),
             'title' => 'تم معالجة الاسترداد',
-            'message' => 'تم استرداد مبلغ ' . number_format($refundAmount) . ' ريال لحجزك رقم ' . $booking->booking_number,
-            'action_url' => '/customer/dashboard/bookings/' . $booking->id,
+            'message' => 'تم استرداد مبلغ '.number_format($refundAmount).' ريال لحجزك رقم '.$booking->booking_number,
+            'action_url' => '/customer/dashboard/bookings/'.$booking->id,
         ];
     }
 }

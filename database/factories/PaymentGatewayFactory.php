@@ -29,13 +29,13 @@ class PaymentGatewayFactory extends Factory
                 'currencies' => ['SAR', 'USD', 'EUR'],
                 'payment_methods' => ['card', 'apple_pay', 'google_pay'],
                 'config' => [
-                    'public_key' => 'pk_test_' . $this->faker->bothify('?????????????????????'),
-                    'secret_key' => 'sk_test_' . $this->faker->bothify('?????????????????????'),
-                    'webhook_secret' => 'whsec_' . $this->faker->bothify('????????????????'),
+                    'public_key' => 'pk_test_'.$this->faker->bothify('?????????????????????'),
+                    'secret_key' => 'sk_test_'.$this->faker->bothify('?????????????????????'),
+                    'webhook_secret' => 'whsec_'.$this->faker->bothify('????????????????'),
                     'api_version' => '2022-11-15',
                     'capture_method' => 'automatic',
-                    'payment_methods' => ['card', 'apple_pay']
-                ]
+                    'payment_methods' => ['card', 'apple_pay'],
+                ],
             ],
             'hyperpay' => [
                 'name' => 'HyperPay',
@@ -51,8 +51,8 @@ class PaymentGatewayFactory extends Factory
                     'test_mode' => true,
                     'webhook_secret' => $this->faker->bothify('????????????????'),
                     'payment_brands' => ['MADA', 'VISA', 'MASTER'],
-                    'checkout_mode' => 'redirect'
-                ]
+                    'checkout_mode' => 'redirect',
+                ],
             ],
             'tap' => [
                 'name' => 'Tap Payments',
@@ -63,13 +63,13 @@ class PaymentGatewayFactory extends Factory
                 'currencies' => ['SAR', 'KWD', 'AED'],
                 'payment_methods' => ['knet', 'benefit', 'mada', 'visa', 'mastercard'],
                 'config' => [
-                    'api_key' => 'sk_test_' . $this->faker->bothify('????????????????'),
-                    'public_key' => 'pk_test_' . $this->faker->bothify('????????????????'),
+                    'api_key' => 'sk_test_'.$this->faker->bothify('????????????????'),
+                    'public_key' => 'pk_test_'.$this->faker->bothify('????????????????'),
                     'secret_key' => $this->faker->bothify('????????????????'),
                     'webhook_secret' => $this->faker->bothify('????????????????'),
                     'payment_methods' => ['src_kw.knet', 'src_bh.benefit', 'src_sa.mada'],
-                    'save_card' => true
-                ]
+                    'save_card' => true,
+                ],
             ],
             'paypal' => [
                 'name' => 'PayPal',
@@ -85,8 +85,8 @@ class PaymentGatewayFactory extends Factory
                     'webhook_id' => $this->faker->bothify('??????????????'),
                     'mode' => 'sandbox',
                     'currency' => 'SAR',
-                    'locale' => 'ar_SA'
-                ]
+                    'locale' => 'ar_SA',
+                ],
             ],
             'stc_pay' => [
                 'name' => 'STC Pay',
@@ -101,9 +101,9 @@ class PaymentGatewayFactory extends Factory
                     'api_key' => $this->faker->bothify('????????????????'),
                     'secret_key' => $this->faker->bothify('????????????????'),
                     'webhook_secret' => $this->faker->bothify('????????????????'),
-                    'environment' => 'sandbox'
-                ]
-            ]
+                    'environment' => 'sandbox',
+                ],
+            ],
         ];
 
         $gatewayKey = $this->faker->randomElement(array_keys($gateways));
@@ -140,7 +140,7 @@ class PaymentGatewayFactory extends Factory
             'hyperpay' => 'بوابة دفع سعودية متخصصة في MADA والبطاقات المحلية',
             'tap' => 'بوابة دفع خليجية تدعم جميع وسائل الدفع في المنطقة',
             'paypal' => 'محفظة رقمية عالمية للدفع الآمن عبر الإنترنت',
-            'stc_pay' => 'محفظة STC الرقمية للعملاء في المملكة العربية السعودية'
+            'stc_pay' => 'محفظة STC الرقمية للعملاء في المملكة العربية السعودية',
         ];
 
         return $descriptions[$gateway] ?? 'بوابة دفع إلكتروني';

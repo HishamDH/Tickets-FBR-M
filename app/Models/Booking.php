@@ -34,7 +34,7 @@ class Booking extends Model
         'qr_code',
         // Additional fields for non-registered customers
         'customer_name',
-        'customer_phone', 
+        'customer_phone',
         'customer_email',
         'number_of_people',
         'number_of_tables',
@@ -59,7 +59,7 @@ class Booking extends Model
         parent::boot();
 
         static::creating(function ($booking) {
-            $booking->booking_number = 'TKT-' . date('Y') . '-' . str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+            $booking->booking_number = 'TKT-'.date('Y').'-'.str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
             $booking->qr_code = Str::uuid()->toString();
         });
     }
@@ -180,13 +180,13 @@ class Booking extends Model
             'service_name' => $this->service->name,
             'booking_date' => $this->booking_date?->format('Y-m-d'),
             'booking_time' => $this->booking_time, // احفظه كما هو (string)
-            'verification_code' => $this->qr_code
+            'verification_code' => $this->qr_code,
         ]);
 
         // For demonstration purposes, return a placeholder QR code
         // In production, replace this with actual QR code generation
-        $qrCodeContent = base64_encode("QR Code Data: " . $data);
-        
+        $qrCodeContent = base64_encode('QR Code Data: '.$data);
+
         return $qrCodeContent;
     }
 

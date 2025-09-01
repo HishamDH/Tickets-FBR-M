@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\AnalyticsService;
 use App\Services\ChartDataService;
-use App\Models\Booking;
-use App\Models\User;
-use App\Models\Service;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class AnalyticsController extends Controller
 {
     protected $analyticsService;
+
     protected $chartDataService;
 
     public function __construct(AnalyticsService $analyticsService, ChartDataService $chartDataService)
@@ -31,11 +28,11 @@ class AnalyticsController extends Controller
     {
         $period = $request->get('period', '30'); // 7, 30, 90, 365 days
         $comparison = $request->get('comparison', 'previous'); // previous, year_ago
-        
+
         // Cache key for analytics data
-        $cacheKey = "analytics_dashboard_{$period}_{$comparison}_" . auth()->id();
-        
-        $data = Cache::remember($cacheKey, 300, function() use ($period, $comparison) {
+        $cacheKey = "analytics_dashboard_{$period}_{$comparison}_".auth()->id();
+
+        $data = Cache::remember($cacheKey, 300, function () use ($period, $comparison) {
             return [
                 'kpis' => $this->analyticsService->getKPIs($period, $comparison),
                 'charts' => $this->chartDataService->getDashboardCharts($period),
@@ -60,7 +57,7 @@ class AnalyticsController extends Controller
         $startDate = Carbon::parse($request->get('start_date', Carbon::now()->subDays(30)));
         $endDate = Carbon::parse($request->get('end_date', Carbon::now()));
         $groupBy = $request->get('group_by', 'day'); // day, week, month
-        
+
         $data = [
             'revenue_chart' => $this->chartDataService->getRevenueChart($startDate, $endDate, $groupBy),
             'revenue_by_service' => $this->analyticsService->getRevenueByService($startDate, $endDate),
@@ -82,7 +79,7 @@ class AnalyticsController extends Controller
     public function customers(Request $request)
     {
         $period = $request->get('period', '30');
-        
+
         $data = [
             'customer_acquisition' => $this->analyticsService->getCustomerAcquisition($period),
             'customer_retention' => $this->analyticsService->getCustomerRetention($period),
@@ -106,7 +103,7 @@ class AnalyticsController extends Controller
     {
         $period = $request->get('period', '30');
         $sortBy = $request->get('sort_by', 'revenue'); // revenue, bookings, rating
-        
+
         $data = [
             'merchant_rankings' => $this->analyticsService->getMerchantRankings($period, $sortBy),
             'merchant_performance' => $this->analyticsService->getMerchantPerformanceMetrics($period),
@@ -128,7 +125,7 @@ class AnalyticsController extends Controller
     public function operations(Request $request)
     {
         $period = $request->get('period', '7');
-        
+
         $data = [
             'system_performance' => $this->analyticsService->getSystemPerformance($period),
             'booking_funnel' => $this->analyticsService->getBookingFunnel($period),
@@ -168,10 +165,10 @@ class AnalyticsController extends Controller
     {
         $type = $request->get('type', 'revenue'); // revenue, demand, churn
         $period = $request->get('period', '30');
-        
+
         $data = [
             'revenue_forecast' => $this->analyticsService->getRevenueForecast(
-                Carbon::now()->subDays($period), 
+                Carbon::now()->subDays($period),
                 Carbon::now()
             ),
             'demand_prediction' => $this->analyticsService->getDemandPrediction($period),
@@ -195,7 +192,7 @@ class AnalyticsController extends Controller
         $type = $request->get('type', 'dashboard'); // dashboard, revenue, customers, etc.
         $format = $request->get('format', 'pdf'); // pdf, excel, csv
         $period = $request->get('period', '30');
-        
+
         switch ($type) {
             case 'revenue':
                 return $this->exportRevenueAnalytics($format, $period);
@@ -216,9 +213,9 @@ class AnalyticsController extends Controller
         $chartType = $request->get('chart_type');
         $period = $request->get('period', '30');
         $filters = $request->get('filters', []);
-        
+
         $data = $this->chartDataService->getChartData($chartType, $period, $filters);
-        
+
         return response()->json($data);
     }
 
@@ -265,7 +262,7 @@ class AnalyticsController extends Controller
     public function loadDashboard($id)
     {
         $dashboard = auth()->user()->customDashboards()->findOrFail($id);
-        
+
         return response()->json(['dashboard' => $dashboard]);
     }
 
@@ -273,7 +270,7 @@ class AnalyticsController extends Controller
     protected function exportDashboardAnalytics($format, $period)
     {
         $data = $this->analyticsService->getKPIs($period, 'previous');
-        
+
         return $this->generateExport('dashboard', $data, $format);
     }
 
@@ -281,12 +278,12 @@ class AnalyticsController extends Controller
     {
         $startDate = Carbon::now()->subDays($period);
         $endDate = Carbon::now();
-        
+
         $data = [
             'revenue_chart' => $this->chartDataService->getRevenueChart($startDate, $endDate, 'day'),
             'revenue_by_service' => $this->analyticsService->getRevenueByService($startDate, $endDate),
         ];
-        
+
         return $this->generateExport('revenue', $data, $format);
     }
 
@@ -296,7 +293,7 @@ class AnalyticsController extends Controller
             'customer_acquisition' => $this->analyticsService->getCustomerAcquisition($period),
             'customer_retention' => $this->analyticsService->getCustomerRetention($period),
         ];
-        
+
         return $this->generateExport('customers', $data, $format);
     }
 
@@ -306,7 +303,7 @@ class AnalyticsController extends Controller
             'merchant_rankings' => $this->analyticsService->getMerchantRankings($period, 'revenue'),
             'merchant_performance' => $this->analyticsService->getMerchantPerformanceMetrics($period),
         ];
-        
+
         return $this->generateExport('merchants', $data, $format);
     }
 
@@ -314,7 +311,7 @@ class AnalyticsController extends Controller
     {
         $timestamp = Carbon::now()->format('Y-m-d_H-i-s');
         $filename = "analytics_{$type}_{$timestamp}";
-        
+
         switch ($format) {
             case 'pdf':
                 return $this->generatePDF($type, $data, $filename);

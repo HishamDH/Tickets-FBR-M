@@ -5,14 +5,13 @@ namespace App\Services;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\User;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use App\Notifications\BookingCreated;
-use App\Notifications\BookingConfirmed;
 use App\Notifications\BookingCancelled;
+use App\Notifications\BookingConfirmed;
+use App\Notifications\BookingCreated;
 use App\Notifications\PaymentCompleted;
 use App\Notifications\RefundProcessed;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class NotificationService
 {
@@ -42,13 +41,13 @@ class NotificationService
 
             Log::info('Booking notifications sent successfully', [
                 'booking_id' => $booking->id,
-                'booking_number' => $booking->booking_number
+                'booking_number' => $booking->booking_number,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send booking notifications', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -68,13 +67,13 @@ class NotificationService
 
             Log::info('Booking confirmation sent', [
                 'booking_id' => $booking->id,
-                'booking_number' => $booking->booking_number
+                'booking_number' => $booking->booking_number,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send booking confirmation', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -99,13 +98,13 @@ class NotificationService
 
             Log::info('Booking cancellation notifications sent', [
                 'booking_id' => $booking->id,
-                'booking_number' => $booking->booking_number
+                'booking_number' => $booking->booking_number,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send cancellation notifications', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -133,13 +132,13 @@ class NotificationService
             Log::info('Payment confirmation sent', [
                 'payment_id' => $payment->id,
                 'booking_id' => $booking->id,
-                'amount' => $payment->amount
+                'amount' => $payment->amount,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send payment confirmation', [
                 'payment_id' => $payment->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -162,13 +161,13 @@ class NotificationService
             Log::info('Refund confirmation sent', [
                 'payment_id' => $refundPayment->id,
                 'booking_id' => $booking->id,
-                'refund_amount' => abs($refundPayment->amount)
+                'refund_amount' => abs($refundPayment->amount),
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send refund confirmation', [
                 'payment_id' => $refundPayment->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -196,14 +195,14 @@ class NotificationService
 
             Log::info('Booking reminder sent', [
                 'booking_id' => $booking->id,
-                'reminder_type' => $reminderType
+                'reminder_type' => $reminderType,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send booking reminder', [
                 'booking_id' => $booking->id,
                 'reminder_type' => $reminderType,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -222,13 +221,13 @@ class NotificationService
 
             Log::info('Admin notification sent', [
                 'title' => $title,
-                'recipients_count' => $admins->count()
+                'recipients_count' => $admins->count(),
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send admin notification', [
                 'title' => $title,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -249,7 +248,7 @@ class NotificationService
                 } catch (\Exception $e) {
                     Log::warning('Failed to send notification to user', [
                         'user_id' => $user->id,
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
@@ -257,7 +256,7 @@ class NotificationService
             Log::info('Bulk notification completed', [
                 'title' => $title,
                 'total_users' => $users->count(),
-                'successful_sends' => $sentCount
+                'successful_sends' => $sentCount,
             ]);
 
             return $sentCount;
@@ -266,7 +265,7 @@ class NotificationService
             Log::error('Failed to send bulk notification', [
                 'title' => $title,
                 'user_count' => count($userIds),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return 0;
@@ -281,10 +280,10 @@ class NotificationService
         try {
             // هنا يمكن إضافة التكامل مع موفر SMS مثل Twilio أو موفر محلي
             // حالياً سنسجل الرسالة في اللوغ
-            
+
             Log::info('SMS notification sent', [
                 'phone' => $phoneNumber,
-                'message' => $message
+                'message' => $message,
             ]);
 
             // محاكاة نجاح الإرسال
@@ -293,7 +292,7 @@ class NotificationService
         } catch (\Exception $e) {
             Log::error('Failed to send SMS', [
                 'phone' => $phoneNumber,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return false;
@@ -303,26 +302,26 @@ class NotificationService
     /**
      * إرسال إيميل للزوار غير المسجلين
      */
-    protected function sendEmailToGuest(string $email, string $subject, Booking $booking, Payment $payment = null): void
+    protected function sendEmailToGuest(string $email, string $subject, Booking $booking, ?Payment $payment = null): void
     {
         try {
             // هنا يمكن إنشاء قالب إيميل مخصص أو استخدام قالب بسيط
             $data = [
                 'booking' => $booking,
                 'payment' => $payment,
-                'subject' => $subject
+                'subject' => $subject,
             ];
 
             // استخدام Mail facade لإرسال الإيميل
             Mail::send('emails.guest-notification', $data, function ($message) use ($email, $subject) {
                 $message->to($email)
-                        ->subject($subject);
+                    ->subject($subject);
             });
 
             Log::info('Guest email sent', [
                 'email' => $email,
                 'subject' => $subject,
-                'booking_id' => $booking->id
+                'booking_id' => $booking->id,
             ]);
 
         } catch (\Exception $e) {
@@ -330,7 +329,7 @@ class NotificationService
                 'email' => $email,
                 'subject' => $subject,
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -345,14 +344,14 @@ class NotificationService
 
             Log::info('Merchant report sent', [
                 'merchant_id' => $merchant->id,
-                'period' => $period
+                'period' => $period,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to send merchant report', [
                 'merchant_id' => $merchant->id,
                 'period' => $period,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -366,7 +365,7 @@ class NotificationService
             $bookingDate = $booking->booking_date;
             $bookingTime = $booking->booking_time;
 
-            if (!$bookingDate) {
+            if (! $bookingDate) {
                 return;
             }
 
@@ -387,13 +386,13 @@ class NotificationService
 
             Log::info('Automatic notifications scheduled', [
                 'booking_id' => $booking->id,
-                'booking_date' => $bookingDate->toDateString()
+                'booking_date' => $bookingDate->toDateString(),
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to schedule automatic notifications', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -406,15 +405,15 @@ class NotificationService
         try {
             // هنا يمكن إلغاء المهام المجدولة من Queue
             // يتطلب تتبع job IDs أو استخدام tags
-            
+
             Log::info('Scheduled notifications cancelled', [
-                'booking_id' => $booking->id
+                'booking_id' => $booking->id,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to cancel scheduled notifications', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -443,7 +442,7 @@ class NotificationService
         } catch (\Exception $e) {
             Log::error('Failed to get notification statistics', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [

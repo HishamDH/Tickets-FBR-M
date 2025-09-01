@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Customer\Pages\Auth\Register;
+use App\Filament\Customer\Resources\BookingResource;
+use App\Http\Middleware\EnsureCustomerRole;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -17,7 +20,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Http\Middleware\EnsureCustomerRole;
 
 class CustomerPanelProvider extends PanelProvider
 {
@@ -28,12 +30,14 @@ class CustomerPanelProvider extends PanelProvider
             ->path('customer')
             ->login()
             ->loginRouteSlug('login')
-            ->registration()
+            ->registration(Register::class)
             ->registrationRouteSlug('register')
             ->colors([
                 'primary' => Color::Green,
             ])
-            ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
+            ->resources([
+                BookingResource::class,
+            ])
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->pages([
                 Pages\Dashboard::class,

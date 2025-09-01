@@ -5,9 +5,9 @@ namespace App\Listeners;
 use App\Events\BookingCreated;
 use App\Events\BookingStatusChanged;
 use App\Events\PaymentReceived;
+use App\Models\Notification;
 use App\Notifications\BookingConfirmedNotification;
 use App\Notifications\PaymentReceivedNotification;
-use App\Models\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -163,7 +163,7 @@ class SendBookingNotifications implements ShouldQueue
                 $booking->customer,
                 'payment_received',
                 'تأكيد الدفع',
-                "تم تأكيد دفعتك بمبلغ " . number_format($amount, 2) . " ريال",
+                'تم تأكيد دفعتك بمبلغ '.number_format($amount, 2).' ريال',
                 [
                     'booking_id' => $booking->id,
                     'amount' => $amount,
@@ -179,7 +179,7 @@ class SendBookingNotifications implements ShouldQueue
                 $booking->service->merchant,
                 'payment_received',
                 'دفعة جديدة',
-                "تم استلام دفعة بمبلغ " . number_format($amount, 2) . " ريال للحجز #{$booking->booking_reference}",
+                'تم استلام دفعة بمبلغ '.number_format($amount, 2)." ريال للحجز #{$booking->booking_reference}",
                 [
                     'booking_id' => $booking->id,
                     'amount' => $amount,

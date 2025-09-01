@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->json('settings')->nullable();
             $table->timestamps();
-            
+
             $table->index(['status', 'partner_code']);
         });
     }

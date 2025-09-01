@@ -9,7 +9,9 @@ use Livewire\Component;
 class CartComponent extends Component
 {
     public $cartItems;
+
     public float $total = 0;
+
     protected CartService $cartService;
 
     public function boot(CartService $cartService)

@@ -5,9 +5,8 @@ namespace App\Notifications;
 use App\Models\Booking;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\DatabaseMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class BookingConfirmedNotification extends Notification implements ShouldQueue
@@ -30,7 +29,7 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
     public function via(object $notifiable): array
     {
         $channels = ['database', 'broadcast'];
-        
+
         // Add email if user has email notifications enabled
         if ($notifiable->notification_preferences['email'] ?? true) {
             $channels[] = 'mail';
@@ -49,26 +48,26 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $subject = $this->isForMerchant($notifiable) 
-            ? 'حجز جديد - ' . $this->booking->service->name
-            : 'تأكيد الحجز - ' . $this->booking->service->name;
+        $subject = $this->isForMerchant($notifiable)
+            ? 'حجز جديد - '.$this->booking->service->name
+            : 'تأكيد الحجز - '.$this->booking->service->name;
 
         $greeting = $this->isForMerchant($notifiable)
-            ? 'مرحباً ' . $notifiable->name
-            : 'مرحباً ' . $this->booking->customer_name;
+            ? 'مرحباً '.$notifiable->name
+            : 'مرحباً '.$this->booking->customer_name;
 
         $line = $this->isForMerchant($notifiable)
-            ? 'لديك حجز جديد للخدمة: ' . $this->booking->service->name
-            : 'تم تأكيد حجزك للخدمة: ' . $this->booking->service->name;
+            ? 'لديك حجز جديد للخدمة: '.$this->booking->service->name
+            : 'تم تأكيد حجزك للخدمة: '.$this->booking->service->name;
 
         return (new MailMessage)
             ->subject($subject)
             ->greeting($greeting)
             ->line($line)
-            ->line('رقم الحجز: ' . $this->booking->booking_reference)
-            ->line('تاريخ الحجز: ' . $this->booking->booking_date->format('Y-m-d H:i'))
-            ->line('المبلغ الإجمالي: ' . number_format($this->booking->total_amount, 2) . ' ريال')
-            ->action('عرض تفاصيل الحجز', url('/bookings/' . $this->booking->id))
+            ->line('رقم الحجز: '.$this->booking->booking_reference)
+            ->line('تاريخ الحجز: '.$this->booking->booking_date->format('Y-m-d H:i'))
+            ->line('المبلغ الإجمالي: '.number_format($this->booking->total_amount, 2).' ريال')
+            ->action('عرض تفاصيل الحجز', url('/bookings/'.$this->booking->id))
             ->line('شكراً لاستخدامك منصتنا!');
     }
 
@@ -85,9 +84,9 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
             'customer_name' => $this->booking->customer_name,
             'booking_date' => $this->booking->booking_date->toISOString(),
             'total_amount' => $this->booking->total_amount,
-            'message' => $this->isForMerchant($notifiable) 
-                ? 'حجز جديد للخدمة: ' . $this->booking->service->name
-                : 'تم تأكيد حجزك للخدمة: ' . $this->booking->service->name,
+            'message' => $this->isForMerchant($notifiable)
+                ? 'حجز جديد للخدمة: '.$this->booking->service->name
+                : 'تم تأكيد حجزك للخدمة: '.$this->booking->service->name,
         ];
     }
 
@@ -100,9 +99,9 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
             'id' => $this->id,
             'type' => 'booking_confirmed',
             'title' => $this->isForMerchant($notifiable) ? 'حجز جديد' : 'تأكيد الحجز',
-            'message' => $this->isForMerchant($notifiable) 
-                ? 'حجز جديد للخدمة: ' . $this->booking->service->name
-                : 'تم تأكيد حجزك للخدمة: ' . $this->booking->service->name,
+            'message' => $this->isForMerchant($notifiable)
+                ? 'حجز جديد للخدمة: '.$this->booking->service->name
+                : 'تم تأكيد حجزك للخدمة: '.$this->booking->service->name,
             'data' => $this->toDatabase($notifiable),
             'created_at' => now()->toISOString(),
         ]);
@@ -114,10 +113,10 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
     public function toSms(object $notifiable): string
     {
         $message = $this->isForMerchant($notifiable)
-            ? 'حجز جديد للخدمة: ' . $this->booking->service->name
-            : 'تم تأكيد حجزك للخدمة: ' . $this->booking->service->name;
+            ? 'حجز جديد للخدمة: '.$this->booking->service->name
+            : 'تم تأكيد حجزك للخدمة: '.$this->booking->service->name;
 
-        return $message . ' - رقم الحجز: ' . $this->booking->booking_reference;
+        return $message.' - رقم الحجز: '.$this->booking->booking_reference;
     }
 
     /**

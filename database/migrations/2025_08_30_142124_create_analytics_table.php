@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('metric_date');
             $table->timestamp('recorded_at');
             $table->timestamps();
-            
+
             $table->index(['metric_name', 'metric_date']);
             $table->index(['metric_type', 'period']);
         });
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->longText('cache_data');
             $table->timestamp('expires_at');
             $table->timestamps();
-            
+
             $table->index('expires_at');
         });
 
@@ -49,7 +49,7 @@ return new class extends Migration
             $table->timestamp('triggered_at');
             $table->timestamp('dismissed_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['alert_type', 'severity']);
             $table->index('is_active');
         });
@@ -66,7 +66,7 @@ return new class extends Migration
             $table->timestamp('requested_at');
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['user_id', 'status']);
             $table->index('requested_at');
         });

@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Offering;
 use App\Models\Booking;
-use App\Models\PaidReservation;
+use App\Models\Offering;
 use Carbon\Carbon;
-use Exception;
 
 class CapacityService
 {
@@ -21,18 +19,18 @@ class CapacityService
             'total_capacity' => 0,
             'current_bookings' => 0,
             'message' => '',
-            'suggestions' => []
+            'suggestions' => [],
         ];
 
         // Get effective capacity based on capacity type
         $totalCapacity = $this->getEffectiveCapacity($offering);
-        
+
         // Get current bookings for the specific date/time
         $currentBookings = $this->getCurrentBookings($offering, $bookingDate);
-        
+
         // Calculate available capacity
         $availableCapacity = $totalCapacity - $currentBookings;
-        
+
         $result['total_capacity'] = $totalCapacity;
         $result['current_bookings'] = $currentBookings;
         $result['available_capacity'] = $availableCapacity;
@@ -46,12 +44,12 @@ class CapacityService
             if ($offering->allow_overbooking) {
                 $overbookingLimit = $this->calculateOverbookingLimit($offering);
                 $totalWithOverbooking = $totalCapacity + $overbookingLimit;
-                
+
                 if ($currentBookings + $requestedQuantity <= $totalWithOverbooking) {
                     $result['can_book'] = true;
-                    $result['message'] = "Booking accepted with overbooking policy";
+                    $result['message'] = 'Booking accepted with overbooking policy';
                 } else {
-                    $result['message'] = "Fully booked (including overbooking capacity)";
+                    $result['message'] = 'Fully booked (including overbooking capacity)';
                     $result['suggestions'] = $this->getSuggestions($offering, $requestedQuantity, $bookingDate);
                 }
             } else {
@@ -68,7 +66,7 @@ class CapacityService
      */
     public function getEffectiveCapacity(Offering $offering): int
     {
-        return match($offering->capacity_type) {
+        return match ($offering->capacity_type) {
             'unlimited' => PHP_INT_MAX,
             'flexible' => $offering->max_capacity + $offering->buffer_capacity,
             'fixed' => $offering->max_capacity,
@@ -87,17 +85,17 @@ class CapacityService
         // If specific date is provided, filter by that date
         if ($bookingDate) {
             $query->whereDate('booking_date', $bookingDate->format('Y-m-d'));
-            
+
             // If offering has specific time slots, filter by time as well
             if ($offering->start_time && $offering->end_time) {
                 $query->whereTime('booking_time', '>=', $offering->start_time->format('H:i:s'))
-                      ->whereTime('booking_time', '<=', $offering->end_time->format('H:i:s'));
+                    ->whereTime('booking_time', '<=', $offering->end_time->format('H:i:s'));
             }
         } else {
             // For ongoing offerings, count current active bookings
-            $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('booking_date', '>=', now()->format('Y-m-d'))
-                  ->orWhereNull('booking_date');
+                    ->orWhereNull('booking_date');
             });
         }
 
@@ -109,13 +107,13 @@ class CapacityService
      */
     public function calculateOverbookingLimit(Offering $offering): int
     {
-        if (!$offering->allow_overbooking) {
+        if (! $offering->allow_overbooking) {
             return 0;
         }
 
         $baseCapacity = $offering->max_capacity;
         $percentage = $offering->overbooking_percentage / 100;
-        
+
         return (int) ceil($baseCapacity * $percentage);
     }
 
@@ -132,13 +130,13 @@ class CapacityService
                 $alternativeDate = $bookingDate->copy()->addDays($i);
                 $alternativeBookings = $this->getCurrentBookings($offering, $alternativeDate);
                 $availableCapacity = $this->getEffectiveCapacity($offering) - $alternativeBookings;
-                
+
                 if ($availableCapacity >= $requestedQuantity) {
                     $suggestions[] = [
                         'type' => 'alternative_date',
                         'date' => $alternativeDate->format('Y-m-d'),
                         'available_capacity' => $availableCapacity,
-                        'message' => "Available on {$alternativeDate->format('M d, Y')} - {$availableCapacity} spots"
+                        'message' => "Available on {$alternativeDate->format('M d, Y')} - {$availableCapacity} spots",
                     ];
                 }
             }
@@ -148,12 +146,12 @@ class CapacityService
         $totalCapacity = $this->getEffectiveCapacity($offering);
         $currentBookings = $this->getCurrentBookings($offering, $bookingDate);
         $maxPossible = $totalCapacity - $currentBookings;
-        
+
         if ($maxPossible > 0 && $maxPossible < $requestedQuantity) {
             $suggestions[] = [
                 'type' => 'reduce_quantity',
                 'quantity' => $maxPossible,
-                'message' => "Consider booking {$maxPossible} spots instead"
+                'message' => "Consider booking {$maxPossible} spots instead",
             ];
         }
 
@@ -165,7 +163,7 @@ class CapacityService
                 'offering_id' => $similar->id,
                 'offering_name' => $similar->name,
                 'available_capacity' => $similar->available_capacity,
-                'message' => "Try '{$similar->name}' - {$similar->available_capacity} spots available"
+                'message' => "Try '{$similar->name}' - {$similar->available_capacity} spots available",
             ];
         }
 
@@ -184,7 +182,7 @@ class CapacityService
             ->get();
 
         $available = [];
-        
+
         foreach ($similar as $alt) {
             $capacity = $this->canAcceptBooking($alt, $requestedQuantity, $bookingDate);
             if ($capacity['can_book']) {
@@ -212,7 +210,7 @@ class CapacityService
         $totalCapacity = $this->getEffectiveCapacity($offering);
         $totalBookings = $bookings->sum('quantity');
         $averageBookings = $bookings->count() > 0 ? $totalBookings / $bookings->count() : 0;
-        
+
         $utilizationRate = $totalCapacity > 0 ? ($totalBookings / $totalCapacity) * 100 : 0;
 
         return [
@@ -231,7 +229,7 @@ class CapacityService
      */
     protected function getBusiestDays($bookings): array
     {
-        $dayStats = $bookings->groupBy(function($booking) {
+        $dayStats = $bookings->groupBy(function ($booking) {
             return $booking->booking_date ? Carbon::parse($booking->booking_date)->format('l') : 'Unknown';
         })->map->count()->sortDesc();
 
@@ -243,7 +241,7 @@ class CapacityService
      */
     protected function getPeakHours($bookings): array
     {
-        $hourStats = $bookings->groupBy(function($booking) {
+        $hourStats = $bookings->groupBy(function ($booking) {
             return $booking->booking_time ? Carbon::parse($booking->booking_time)->format('H:00') : 'Unknown';
         })->map->count()->sortDesc();
 

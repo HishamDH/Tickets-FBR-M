@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Refund;
-use App\Models\Payment;
 use App\Models\Booking;
 use App\Models\MerchantWallet;
+use App\Models\Payment;
+use App\Models\Refund;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class RefundService
 {
@@ -25,16 +25,16 @@ class RefundService
     public function requestRefund(Booking $booking, string $reason, string $type = 'full', ?float $amount = null): Refund
     {
         // Validate booking can be refunded
-        if (!$this->canRefund($booking)) {
+        if (! $this->canRefund($booking)) {
             throw new Exception('This booking cannot be refunded');
         }
 
         $payment = $booking->payment;
         $refundAmount = $amount ?? $payment->amount;
-        
+
         // Calculate refund fee based on gateway and timing
         $fee = $this->calculateRefundFee($payment, $refundAmount);
-        
+
         DB::beginTransaction();
         try {
             // Create refund record
@@ -54,19 +54,19 @@ class RefundService
             $booking->update(['status' => 'refund_requested']);
 
             DB::commit();
-            
-            Log::info("Refund requested", [
+
+            Log::info('Refund requested', [
                 'refund_id' => $refund->id,
                 'booking_id' => $booking->id,
-                'amount' => $refundAmount
+                'amount' => $refundAmount,
             ]);
 
             return $refund;
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Refund request failed", [
+            Log::error('Refund request failed', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -91,7 +91,7 @@ class RefundService
 
             // Process with payment gateway
             $gatewayResponse = $this->processGatewayRefund($refund);
-            
+
             if ($gatewayResponse['success']) {
                 $refund->update([
                     'status' => 'completed',
@@ -102,13 +102,14 @@ class RefundService
                 // Update booking status
                 $refund->booking->update([
                     'status' => 'refunded',
-                    'payment_status' => 'refunded'
+                    'payment_status' => 'refunded',
                 ]);
 
                 // Adjust merchant wallet if needed
                 $this->adjustMerchantWallet($refund);
-                
+
                 DB::commit();
+
                 return true;
             } else {
                 $refund->update([
@@ -116,13 +117,14 @@ class RefundService
                     'gateway_response' => $gatewayResponse,
                 ]);
                 DB::commit();
+
                 return false;
             }
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Refund processing failed", [
+            Log::error('Refund processing failed', [
                 'refund_id' => $refund->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -134,7 +136,7 @@ class RefundService
     public function canRefund(Booking $booking): bool
     {
         // Check if booking has a valid payment
-        if (!$booking->payment || $booking->payment->status !== 'completed') {
+        if (! $booking->payment || $booking->payment->status !== 'completed') {
             return false;
         }
 
@@ -163,17 +165,17 @@ class RefundService
     protected function calculateRefundFee(Payment $payment, float $amount): float
     {
         $gateway = $payment->paymentGateway;
-        
-        if (!$gateway || !$gateway->supports_refund) {
+
+        if (! $gateway || ! $gateway->supports_refund) {
             return $amount; // Full fee if gateway doesn't support refunds
         }
 
         // Base gateway refund fee
         $gatewayFee = $payment->amount * 0.03; // 3% gateway fee
-        
+
         // Platform fee (can be customized)
         $platformFee = $amount * 0.05; // 5% platform cancellation fee
-        
+
         return min($gatewayFee + $platformFee, $amount * 0.1); // Max 10% fee
     }
 
@@ -188,30 +190,30 @@ class RefundService
 
             // This would integrate with actual payment gateway APIs
             // For now, we'll simulate a successful refund
-            
+
             if ($gateway->supports_refund) {
                 // Simulate API call to payment gateway
                 sleep(1); // Simulate processing time
-                
+
                 return [
                     'success' => true,
-                    'transaction_id' => 'REF_' . uniqid(),
-                    'gateway_reference' => $gateway->code . '_' . uniqid(),
+                    'transaction_id' => 'REF_'.uniqid(),
+                    'gateway_reference' => $gateway->code.'_'.uniqid(),
                     'processed_amount' => $refund->net_amount,
-                    'message' => 'Refund processed successfully'
+                    'message' => 'Refund processed successfully',
                 ];
             } else {
                 return [
                     'success' => false,
                     'error' => 'Gateway does not support refunds',
-                    'message' => 'Manual refund required'
+                    'message' => 'Manual refund required',
                 ];
             }
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
-                'message' => 'Refund processing failed'
+                'message' => 'Refund processing failed',
             ];
         }
     }
@@ -223,17 +225,17 @@ class RefundService
     {
         $booking = $refund->booking;
         $merchant = $booking->merchant;
-        
+
         if ($merchant && $refund->status === 'completed') {
             $wallet = MerchantWallet::firstOrCreate(['user_id' => $merchant->id]);
-            
+
             // Deduct refunded amount from merchant wallet
             $wallet->decrement('balance', $refund->net_amount);
-            
-            Log::info("Merchant wallet adjusted for refund", [
+
+            Log::info('Merchant wallet adjusted for refund', [
                 'merchant_id' => $merchant->id,
                 'refund_id' => $refund->id,
-                'amount_deducted' => $refund->net_amount
+                'amount_deducted' => $refund->net_amount,
             ]);
         }
     }
@@ -241,12 +243,12 @@ class RefundService
     /**
      * Get refund statistics
      */
-    public function getRefundStats(int $merchantId = null): array
+    public function getRefundStats(?int $merchantId = null): array
     {
         $query = Refund::query();
-        
+
         if ($merchantId) {
-            $query->whereHas('booking', function($q) use ($merchantId) {
+            $query->whereHas('booking', function ($q) use ($merchantId) {
                 $q->where('merchant_id', $merchantId);
             });
         }

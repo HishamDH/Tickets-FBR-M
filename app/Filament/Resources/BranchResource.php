@@ -4,14 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BranchResource\Pages;
 use App\Models\Branch;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
 
 class BranchResource extends Resource
 {
@@ -81,10 +80,11 @@ class BranchResource extends Resource
     {
         return parent::getEloquentQuery()->where('user_id', auth()->id());
     }
-    
+
     public static function performCreate(array $data): Branch
     {
         $data['user_id'] = auth()->id();
+
         return static::getModel()::create($data);
     }
 }

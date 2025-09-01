@@ -13,7 +13,7 @@ class ListBookings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            // Remove create action for customers - they book through the frontend
         ];
     }
 }

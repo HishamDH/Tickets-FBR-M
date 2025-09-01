@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Merchant;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DemoDataSeeder extends Seeder
@@ -15,7 +15,7 @@ class DemoDataSeeder extends Seeder
 
         // Create merchants with users
         $merchants = collect();
-        
+
         echo "📝 إنشاء التجار...\n";
         for ($i = 0; $i < 15; $i++) {
             $merchantUser = User::factory()->merchant()->create();
@@ -48,10 +48,10 @@ class DemoDataSeeder extends Seeder
 
         echo "🎉 تم إكمال إنشاء البيانات التجريبية بنجاح!\n";
         echo "📊 الإحصائيات:\n";
-        echo "   - المديرين: " . User::where('role', 'admin')->count() . "\n";
-        echo "   - التجار: " . User::where('role', 'merchant')->count() . "\n";
-        echo "   - العملاء: " . User::where('role', 'customer')->count() . "\n";
-        echo "   - الشركاء: " . User::where('role', 'partner')->count() . "\n";
-        echo "   - الخدمات: " . Service::count() . "\n";
+        echo '   - المديرين: '.User::where('role', 'admin')->count()."\n";
+        echo '   - التجار: '.User::where('role', 'merchant')->count()."\n";
+        echo '   - العملاء: '.User::where('role', 'customer')->count()."\n";
+        echo '   - الشركاء: '.User::where('role', 'partner')->count()."\n";
+        echo '   - الخدمات: '.Service::count()."\n";
     }
 }

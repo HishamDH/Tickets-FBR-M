@@ -2,10 +2,24 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Name -->
+        <!-- First Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-label for="f_name" :value="__('First Name')" />
+            <x-text-input id="f_name" class="block mt-1 w-full" type="text" name="f_name" :value="old('f_name')" required autofocus autocomplete="given-name" />
+            <x-input-error :messages="$errors->get('f_name')" class="mt-2" />
+        </div>
+
+        <!-- Last Name -->
+        <div class="mt-4">
+            <x-input-label for="l_name" :value="__('Last Name')" />
+            <x-text-input id="l_name" class="block mt-1 w-full" type="text" name="l_name" :value="old('l_name')" required autocomplete="family-name" />
+            <x-input-error :messages="$errors->get('l_name')" class="mt-2" />
+        </div>
+
+        <!-- Full Name (computed from first and last name) -->
+        <div class="mt-4">
+            <x-input-label for="name" :value="__('Display Name (optional)')" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" autocomplete="name" placeholder="Leave blank to use 'First Last'" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 

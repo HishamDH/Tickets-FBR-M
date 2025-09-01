@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Merchant;
-use App\Models\Service;
-use App\Models\Booking;
-use App\Models\PaymentGateway;
 use App\Models\MerchantPaymentSetting;
+use App\Models\PaymentGateway;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class MerchantDashboardController extends Controller
 {
@@ -23,7 +20,7 @@ class MerchantDashboardController extends Controller
         $user = Auth::user();
         $merchant = $user->merchant;
 
-        if (!$merchant) {
+        if (! $merchant) {
             abort(403, 'غير مصرح لك بالوصول لهذه الصفحة');
         }
 
@@ -36,7 +33,7 @@ class MerchantDashboardController extends Controller
             'confirmed_bookings' => $merchant->bookings()->where('booking_status', 'confirmed')->count(),
             'total_revenue' => $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount'),
             'commission_paid' => $merchant->bookings()->where('payment_status', 'paid')->sum('commission_amount'),
-            'net_revenue' => $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount') - 
+            'net_revenue' => $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount') -
                            $merchant->bookings()->where('payment_status', 'paid')->sum('commission_amount'),
         ];
 
@@ -58,7 +55,7 @@ class MerchantDashboardController extends Controller
         // أفضل خدمات التاجر
         $topServices = $merchant->services()
             ->withCount('bookings')
-            ->withSum(['bookings as total_revenue' => function($query) {
+            ->withSum(['bookings as total_revenue' => function ($query) {
                 $query->where('payment_status', 'paid');
             }], 'total_amount')
             ->orderBy('bookings_count', 'desc')
@@ -106,7 +103,7 @@ class MerchantDashboardController extends Controller
 
         $services = $merchant->services()
             ->withCount('bookings')
-            ->withSum(['bookings as total_revenue' => function($query) {
+            ->withSum(['bookings as total_revenue' => function ($query) {
                 $query->where('payment_status', 'paid');
             }], 'total_amount')
             ->orderBy('created_at', 'desc')
@@ -176,7 +173,7 @@ class MerchantDashboardController extends Controller
 
         $request->validate([
             'booking_status' => 'required|in:pending,confirmed,completed,cancelled',
-            'notes' => 'nullable|string|max:500'
+            'notes' => 'nullable|string|max:500',
         ]);
 
         $booking = $merchant->bookings()->findOrFail($bookingId);
@@ -217,12 +214,12 @@ class MerchantDashboardController extends Controller
 
         // إيرادات حسب الخدمة
         $revenueByService = $merchant->services()
-            ->with(['bookings' => function($query) use ($startDate, $endDate) {
+            ->with(['bookings' => function ($query) use ($startDate, $endDate) {
                 $query->where('payment_status', 'paid')
-                      ->whereBetween('created_at', [$startDate, $endDate]);
+                    ->whereBetween('created_at', [$startDate, $endDate]);
             }])
             ->get()
-            ->map(function($service) {
+            ->map(function ($service) {
                 $totalRevenue = $service->bookings->sum('total_amount');
                 $totalCommission = $service->bookings->sum('commission_amount');
                 $bookingsCount = $service->bookings->count();
@@ -298,7 +295,7 @@ class MerchantDashboardController extends Controller
             ->whereYear('created_at', Carbon::now()->subMonth()->year)
             ->count();
 
-        $growthRate = $lastMonthBookings > 0 ? 
+        $growthRate = $lastMonthBookings > 0 ?
             (($currentMonthBookings - $lastMonthBookings) / $lastMonthBookings) * 100 : 0;
 
         return view('dashboard.merchant.analytics', compact(
@@ -321,13 +318,13 @@ class MerchantDashboardController extends Controller
         $user = Auth::user();
         $merchant = $user->merchant;
 
-        if (!$merchant) {
+        if (! $merchant) {
             return redirect()->route('dashboard')->with('error', 'الملف التجاري غير موجود');
         }
 
         // جلب جميع بوابات الدفع المتاحة
         $availableGateways = PaymentGateway::active()->ordered()->get();
-        
+
         // جلب إعدادات التاجر الحالية
         $merchantSettings = MerchantPaymentSetting::with('paymentGateway')
             ->where('merchant_id', $merchant->id)
@@ -349,12 +346,12 @@ class MerchantDashboardController extends Controller
         $user = Auth::user();
         $merchant = $user->merchant;
 
-        if (!$merchant) {
+        if (! $merchant) {
             return redirect()->route('dashboard')->with('error', 'الملف التجاري غير موجود');
         }
 
         $gateway = PaymentGateway::findOrFail($gatewayId);
-        
+
         $request->validate([
             'is_enabled' => 'boolean',
             'custom_fee' => 'nullable|numeric|min:0',
@@ -389,7 +386,7 @@ class MerchantDashboardController extends Controller
         $user = Auth::user();
         $merchant = $user->merchant;
 
-        if (!$merchant) {
+        if (! $merchant) {
             return response()->json(['error' => 'الملف التجاري غير موجود'], 400);
         }
 
@@ -397,13 +394,13 @@ class MerchantDashboardController extends Controller
             ->where('payment_gateway_id', $gatewayId)
             ->first();
 
-        if (!$setting) {
+        if (! $setting) {
             return response()->json(['error' => 'إعدادات البوابة غير موجودة'], 404);
         }
 
         // محاكاة اختبار البوابة
         $testResult = $this->performGatewayTest($setting);
-        
+
         $setting->update([
             'last_tested_at' => now(),
             'test_passed' => $testResult['success'],
@@ -418,7 +415,7 @@ class MerchantDashboardController extends Controller
     protected function performGatewayTest(MerchantPaymentSetting $setting): array
     {
         $gateway = $setting->paymentGateway;
-        
+
         // محاكاة اختبار البوابة حسب النوع
         switch ($gateway->provider) {
             case 'stripe':
@@ -431,7 +428,7 @@ class MerchantDashboardController extends Controller
                         'tested_at' => now()->toISOString(),
                     ],
                 ];
-                
+
             case 'bank_integration':
             case 'stc_integration':
                 // اختبار التكامل البنكي
@@ -442,14 +439,14 @@ class MerchantDashboardController extends Controller
                         'requires_setup' => true,
                     ],
                 ];
-                
+
             case 'manual':
                 // الدفع اليدوي لا يحتاج اختبار
                 return [
                     'success' => true,
                     'message' => 'الدفع اليدوي جاهز للاستخدام',
                 ];
-                
+
             default:
                 return [
                     'success' => false,

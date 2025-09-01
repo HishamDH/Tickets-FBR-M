@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Service;
 use App\Models\Merchant;
+use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,14 +30,14 @@ class ServiceFactory extends Factory
                     'مركز الملك عبدالله الثقافي',
                     'جناح الأمير فيصل',
                     'قاعة النخيل الذهبية',
-                    'منتجع شاطئ الغروب'
+                    'منتجع شاطئ الغروب',
                 ],
                 'descriptions' => [
                     'قاعة فاخرة للأفراح والمناسبات الخاصة مع أحدث التجهيزات',
                     'منتجع متكامل وسط الطبيعة الخلابة للمناسبات الاستثنائية',
                     'فندق 5 نجوم يوفر أرقى الخدمات والمرافق للمناسبات الراقية',
-                    'قصر للاستقبالات الرسمية والمناسبات الكبرى بديكور أصيل'
-                ]
+                    'قصر للاستقبالات الرسمية والمناسبات الكبرى بديكور أصيل',
+                ],
             ],
             'Catering' => [
                 'names' => [
@@ -48,14 +48,14 @@ class ServiceFactory extends Factory
                     'مطبخ الجدة للمأكولات التراثية',
                     'مؤسسة النعيم للضيافة',
                     'مطبخ الشيف المتميز',
-                    'تموين الأطايب الشرقية'
+                    'تموين الأطايب الشرقية',
                 ],
                 'descriptions' => [
                     'تموين متكامل للولائم والمناسبات بأطباق تراثية وعالمية',
                     'خدمات ضيافة راقية مع طاقم متخصص وأطباق مميزة',
                     'مأكولات شامية أصيلة للمناسبات والحفلات',
-                    'تموين فاخر للمناسبات الكبرى والاستقبالات الرسمية'
-                ]
+                    'تموين فاخر للمناسبات الكبرى والاستقبالات الرسمية',
+                ],
             ],
             'Photography' => [
                 'names' => [
@@ -66,14 +66,14 @@ class ServiceFactory extends Factory
                     'مصورو الأحلام المحترفون',
                     'شركة البورتريه الذهبي',
                     'استوديو الإبداع البصري',
-                    'فريق عدسة المشاعر'
+                    'فريق عدسة المشاعر',
                 ],
                 'descriptions' => [
                     'تصوير احترافي للمناسبات والأفراح بأحدث المعدات والتقنيات',
                     'خدمات تصوير متكاملة مع مونتاج وإخراج سينمائي',
                     'تصوير فوتوغرافي وفيديو بجودة عالية للذكريات الجميلة',
-                    'فريق محترف متخصص في توثيق اللحظات المميزة'
-                ]
+                    'فريق محترف متخصص في توثيق اللحظات المميزة',
+                ],
             ],
             'Entertainment' => [
                 'names' => [
@@ -84,14 +84,14 @@ class ServiceFactory extends Factory
                     'مجموعة الألحان العربية',
                     'فرقة النجوم للغناء',
                     'أوركسترا الموسيقى الكلاسيكية',
-                    'فريق المايك الذهبي'
+                    'فريق المايك الذهبي',
                 ],
                 'descriptions' => [
                     'فرقة موسيقية محترفة تقدم أجمل الألحان للمناسبات',
                     'عروض فنية تراثية وشعبية مع راقصين محترفين',
                     'أوركسترا كاملة للحفلات الراقية والمناسبات الكبرى',
-                    'طرب أصيل وغناء شجي يضفي روحاً خاصة على مناسباتكم'
-                ]
+                    'طرب أصيل وغناء شجي يضفي روحاً خاصة على مناسباتكم',
+                ],
             ],
             'Planning' => [
                 'names' => [
@@ -102,26 +102,26 @@ class ServiceFactory extends Factory
                     'شركة اللمسة الذهبية',
                     'مؤسسة التنظيم المحترف',
                     'مكتب الأناقة والجمال',
-                    'شركة الإبداع اللامحدود'
+                    'شركة الإبداع اللامحدود',
                 ],
                 'descriptions' => [
                     'تنظيم شامل للمناسبات من التخطيط حتى التنفيذ المثالي',
                     'خدمات تنظيم وتنسيق متكاملة للأفراح والمؤتمرات',
                     'فريق إبداعي متخصص في إدارة الفعاليات الكبرى',
-                    'تخطيط وتنفيذ احترافي للمناسبات بأدق التفاصيل'
-                ]
-            ]
+                    'تخطيط وتنفيذ احترافي للمناسبات بأدق التفاصيل',
+                ],
+            ],
         ];
 
         $selectedCategory = $this->faker->randomElement(array_keys($categories));
         $categoryData = $categories[$selectedCategory];
-        
+
         $name = $this->faker->randomElement($categoryData['names']);
         $description = $this->faker->randomElement($categoryData['descriptions']);
-        
+
         $pricingModels = ['fixed', 'per_person', 'per_hour'];
         $pricingModel = $this->faker->randomElement($pricingModels);
-        
+
         // Set base price based on category and pricing model
         $basePrices = [
             'Venues' => ['min' => 5000, 'max' => 50000],
@@ -130,10 +130,10 @@ class ServiceFactory extends Factory
             'Entertainment' => ['min' => 3000, 'max' => 20000],
             'Planning' => ['min' => 5000, 'max' => 30000],
         ];
-        
+
         $priceRange = $basePrices[$selectedCategory];
         $basePrice = $this->faker->numberBetween($priceRange['min'], $priceRange['max']);
-        
+
         // Adjust price for pricing model
         if ($pricingModel === 'per_person') {
             $basePrice = $this->faker->numberBetween(50, 300);
@@ -150,7 +150,7 @@ class ServiceFactory extends Factory
                 'كاميرات مراقبة',
                 'خدمة أمن',
                 'مساحات خضراء',
-                'تراس خارجي'
+                'تراس خارجي',
             ],
             'Catering' => [
                 'بوفيه مفتوح',
@@ -160,7 +160,7 @@ class ServiceFactory extends Factory
                 'مشروبات ساخنة وباردة',
                 'طاولات ومقاعد',
                 'أدوات تقديم فاخرة',
-                'طاقم خدمة مدرب'
+                'طاقم خدمة مدرب',
             ],
             'Photography' => [
                 'تصوير 4K عالي الدقة',
@@ -170,7 +170,7 @@ class ServiceFactory extends Factory
                 'ألبوم فوتوغرافي',
                 'نسخ رقمية',
                 'تصحيح ألوان',
-                'تسليم سريع'
+                'تسليم سريع',
             ],
             'Entertainment' => [
                 'نظام صوتي متطور',
@@ -180,7 +180,7 @@ class ServiceFactory extends Factory
                 'مطربين محترفين',
                 'راقصين تراثيين',
                 'آلات موسيقية متنوعة',
-                'عروض تفاعلية'
+                'عروض تفاعلية',
             ],
             'Planning' => [
                 'تخطيط شامل',
@@ -190,8 +190,8 @@ class ServiceFactory extends Factory
                 'طاقم تنظيم',
                 'خدمة استقبال',
                 'تنسيق ديكور',
-                'متابعة مستمرة'
-            ]
+                'متابعة مستمرة',
+            ],
         ];
 
         $cities = ['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة', 'الطائف', 'أبها', 'تبوك', 'الخبر', 'القطيف'];

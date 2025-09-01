@@ -11,10 +11,13 @@ class BookingForm extends Component
     public $step = 1;
 
     public $date;
+
     public $quantity = 1;
 
     public $name;
+
     public $email;
+
     public $phone;
 
     public function mount($service_id)

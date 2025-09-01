@@ -4,22 +4,22 @@
 
 @section('content')
 <!-- Hero Section -->
-<div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
+<div class="brand-gradient text-white py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h1 class="text-4xl md:text-6xl font-bold mb-6">
-                Book Services & Events
+                🎟️ Book Services & Events
                 <span class="block text-yellow-300">Made Simple</span>
             </h1>
-            <p class="text-xl md:text-2xl mb-8 text-blue-100">
-                Discover and book amazing services from trusted merchants in your area
+            <p class="text-xl md:text-2xl mb-8 text-purple-100">
+                Discover and book amazing services from trusted merchants in Saudi Arabia
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('search') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
-                    Find Services
+                <a href="{{ route('search') }}" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-purple-50 transition btn-brand">
+                    🔍 Find Services
                 </a>
-                <a href="{{ route('merchants.index') }}" class="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition">
-                    Browse Merchants
+                <a href="{{ route('merchants.index') }}" class="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition">
+                    🏪 Browse Merchants
                 </a>
             </div>
         </div>
@@ -42,8 +42,8 @@
                     @endforeach
                 </select>
             </div>
-            <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
-                Search
+            <button type="submit" class="btn-brand text-white px-8 py-3 rounded-lg font-semibold">
+                🔍 Search
             </button>
         </form>
     </div>
@@ -96,14 +96,14 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <span class="text-sm text-gray-500">by</span>
-                                <span class="text-sm font-semibold text-blue-600">{{ $offering->merchant->user->name }}</span>
+                                <span class="text-sm font-semibold text-blue-600">{{ $offering->user->name }}</span>
                             </div>
                             @if($offering->price)
                                 <span class="text-lg font-bold text-green-600">${{ number_format($offering->price, 2) }}</span>
                             @endif
                         </div>
                         <div class="mt-4">
-                            <a href="{{ route('merchant.show', $offering->merchant->slug ?? $offering->merchant->id) }}" 
+                            <a href="#" 
                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition text-center block">
                                 View Details
                             </a>

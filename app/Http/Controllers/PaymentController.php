@@ -17,7 +17,6 @@ class PaymentController extends Controller
     /**
      * Handle the payment gateway callback.
      *
-     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function handleCallback(Request $request)
@@ -32,7 +31,7 @@ class PaymentController extends Controller
 
             // Redirect to the confirmation page
             return redirect()->route('checkout.confirmation', ['reservation' => $reservation->id])
-                ->with('status', 'Payment ' . $paymentStatus);
+                ->with('status', 'Payment '.$paymentStatus);
 
         } catch (\Exception $e) {
             // Handle cases where the reservation is not found or another error occurs

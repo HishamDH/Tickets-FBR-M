@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 class Payment extends Model
 {
@@ -110,7 +110,7 @@ class Payment extends Model
     public static function generatePaymentNumber(): string
     {
         do {
-            $number = 'PAY-' . strtoupper(uniqid());
+            $number = 'PAY-'.strtoupper(uniqid());
         } while (self::where('payment_number', $number)->exists());
 
         return $number;
@@ -151,9 +151,9 @@ class Payment extends Model
      */
     public function canBeRefunded(): bool
     {
-        return $this->status === 'completed' && 
+        return $this->status === 'completed' &&
                $this->paymentGateway->supports_refund &&
-               $this->completed_at && 
+               $this->completed_at &&
                $this->completed_at->diffInDays(now()) <= 30; // 30 يوم للاسترداد
     }
 

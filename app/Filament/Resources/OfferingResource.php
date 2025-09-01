@@ -5,17 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OfferingResource\Pages;
 use App\Filament\Resources\OfferingResource\RelationManagers;
 use App\Models\Offering;
-use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
-use Filament\Tables\Filters\SelectFilter;
 
 class OfferingResource extends Resource
 {
@@ -47,12 +45,12 @@ class OfferingResource extends Resource
                                     ->label('الموقع')
                                     ->maxLength(255),
                             ]),
-                        
+
                         Forms\Components\Textarea::make('description')
                             ->label('الوصف')
                             ->rows(3)
                             ->columnSpanFull(),
-                        
+
                         Grid::make(2)
                             ->schema([
                                 Forms\Components\Select::make('type')
@@ -65,7 +63,7 @@ class OfferingResource extends Resource
                                     ])
                                     ->default('events')
                                     ->required(),
-                                
+
                                 Forms\Components\TextInput::make('category')
                                     ->label('الفئة')
                                     ->maxLength(255),
@@ -80,10 +78,10 @@ class OfferingResource extends Resource
                                     ->label('السعر')
                                     ->numeric()
                                     ->prefix('ر.س'),
-                                
+
                                 Forms\Components\DateTimePicker::make('start_time')
                                     ->label('وقت البداية'),
-                                
+
                                 Forms\Components\DateTimePicker::make('end_time')
                                     ->label('وقت النهاية'),
                             ]),
@@ -96,7 +94,7 @@ class OfferingResource extends Resource
                                 Forms\Components\Toggle::make('has_chairs')
                                     ->label('يحتوي على مقاعد')
                                     ->live(),
-                                
+
                                 Forms\Components\TextInput::make('chairs_count')
                                     ->label('عدد المقاعد')
                                     ->numeric()
@@ -115,14 +113,14 @@ class OfferingResource extends Resource
                                         'inactive' => 'غير نشط',
                                     ])
                                     ->default('inactive'),
-                                
+
                                 Forms\Components\Select::make('user_id')
                                     ->label('المالك')
                                     ->relationship('user', 'name')
                                     ->searchable()
                                     ->required(),
                             ]),
-                        
+
                         Forms\Components\FileUpload::make('image')
                             ->label('الصورة')
                             ->image()
@@ -140,12 +138,12 @@ class OfferingResource extends Resource
                     ->label('الصورة')
                     ->circular()
                     ->size(50),
-                
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم العرض')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('type')
                     ->label('النوع')
                     ->badge()
@@ -168,12 +166,12 @@ class OfferingResource extends Resource
                     ->label('الموقع')
                     ->searchable()
                     ->limit(30),
-                
+
                 Tables\Columns\TextColumn::make('price')
                     ->label('السعر')
                     ->money('SAR')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
@@ -187,30 +185,30 @@ class OfferingResource extends Resource
                         'inactive' => 'غير نشط',
                         default => $state,
                     }),
-                
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('المالك')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\IconColumn::make('has_chairs')
                     ->label('مقاعد')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle'),
-                
+
                 Tables\Columns\TextColumn::make('chairs_count')
                     ->label('عدد المقاعد')
                     ->numeric()
                     ->sortable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('start_time')
                     ->label('تاريخ البداية')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime('d/m/Y')
@@ -226,25 +224,25 @@ class OfferingResource extends Resource
                         'restaurant' => 'مطاعم',
                         'experiences' => 'تجارب',
                     ]),
-                
+
                 SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([
                         'active' => 'نشط',
                         'inactive' => 'غير نشط',
                     ]),
-                
+
                 SelectFilter::make('user_id')
                     ->label('المالك')
                     ->relationship('user', 'name')
                     ->searchable(),
-                
+
                 Tables\Filters\TernaryFilter::make('has_chairs')
                     ->label('يحتوي على مقاعد')
                     ->placeholder('جميع العروض')
                     ->trueLabel('بمقاعد فقط')
                     ->falseLabel('بدون مقاعد فقط'),
-                
+
                 Tables\Filters\Filter::make('price_range')
                     ->label('نطاق السعر')
                     ->form([
@@ -262,7 +260,7 @@ class OfferingResource extends Resource
                             ->when($data['price_from'], fn (Builder $query, $price): Builder => $query->where('price', '>=', $price))
                             ->when($data['price_to'], fn (Builder $query, $price): Builder => $query->where('price', '<=', $price));
                     }),
-                
+
                 Tables\Filters\Filter::make('date_range')
                     ->label('نطاق التاريخ')
                     ->form([
@@ -286,7 +284,7 @@ class OfferingResource extends Resource
                         $record->update(['status' => 'active']);
                     })
                     ->visible(fn ($record) => $record->status === 'inactive'),
-                
+
                 Tables\Actions\Action::make('unpublish')
                     ->label('إلغاء النشر')
                     ->icon('heroicon-o-eye-slash')
@@ -295,18 +293,18 @@ class OfferingResource extends Resource
                         $record->update(['status' => 'inactive']);
                     })
                     ->visible(fn ($record) => $record->status === 'active'),
-                
+
                 Tables\Actions\Action::make('duplicate')
                     ->label('تكرار')
                     ->icon('heroicon-o-document-duplicate')
                     ->color('info')
                     ->action(function ($record) {
                         $newOffering = $record->replicate();
-                        $newOffering->name = $record->name . ' (نسخة)';
+                        $newOffering->name = $record->name.' (نسخة)';
                         $newOffering->status = 'inactive';
                         $newOffering->save();
                     }),
-                
+
                 Tables\Actions\ViewAction::make()
                     ->label('عرض'),
                 Tables\Actions\EditAction::make()
@@ -323,7 +321,7 @@ class OfferingResource extends Resource
                         ->action(function ($records) {
                             $records->each->update(['status' => 'active']);
                         }),
-                    
+
                     Tables\Actions\BulkAction::make('unpublish_selected')
                         ->label('إلغاء نشر المحدد')
                         ->icon('heroicon-o-eye-slash')
@@ -331,7 +329,7 @@ class OfferingResource extends Resource
                         ->action(function ($records) {
                             $records->each->update(['status' => 'inactive']);
                         }),
-                    
+
                     Tables\Actions\BulkAction::make('update_type')
                         ->label('تغيير النوع')
                         ->icon('heroicon-o-tag')
@@ -350,7 +348,7 @@ class OfferingResource extends Resource
                         ->action(function ($records, $data) {
                             $records->each->update(['type' => $data['type']]);
                         }),
-                    
+
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('حذف المحدد'),
                 ]),

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Service;
 use App\Services\BookingService;
-use App\Http\Requests\StoreBookingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +26,7 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = $user->bookings()->with(['service', 'merchant', 'payments']);
 
         // Filter by status
@@ -38,7 +38,7 @@ class BookingController extends Controller
         if ($request->filled('date_from')) {
             $query->whereDate('booking_date', '>=', $request->date_from);
         }
-        
+
         if ($request->filled('date_to')) {
             $query->whereDate('booking_date', '<=', $request->date_to);
         }
@@ -60,7 +60,7 @@ class BookingController extends Controller
             'confirmed' => 'مؤكد',
             'completed' => 'مكتمل',
             'cancelled' => 'ملغي',
-            'no_show' => 'لم يحضر'
+            'no_show' => 'لم يحضر',
         ];
 
         return view('customer.bookings.index', compact('bookings', 'statuses'));
@@ -72,9 +72,9 @@ class BookingController extends Controller
     public function show(Booking $booking)
     {
         $this->authorize('view', $booking);
-        
+
         $booking->load(['service', 'merchant', 'payments']);
-        
+
         return view('customer.bookings.show', compact('booking'));
     }
 
@@ -84,9 +84,9 @@ class BookingController extends Controller
     public function create(Service $service)
     {
         $service->load(['merchant', 'availability']);
-        
+
         // Check if service is available for booking
-        if (!$service->is_active || $service->merchant->status !== 'active') {
+        if (! $service->is_active || $service->merchant->status !== 'active') {
             return redirect()->back()
                 ->with('error', 'عذراً، هذه الخدمة غير متاحة حالياً للحجز');
         }
@@ -116,10 +116,10 @@ class BookingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء إنشاء الحجز: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء إنشاء الحجز: '.$e->getMessage());
         }
     }
 
@@ -146,7 +146,7 @@ class BookingController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء إلغاء الحجز: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء إلغاء الحجز: '.$e->getMessage());
         }
     }
 
@@ -165,7 +165,7 @@ class BookingController extends Controller
         // Generate and return invoice PDF
         // This would integrate with a PDF generation service
         return response()->download(
-            storage_path('app/invoices/booking-' . $booking->id . '.pdf')
+            storage_path('app/invoices/booking-'.$booking->id.'.pdf')
         );
     }
 
@@ -185,7 +185,7 @@ class BookingController extends Controller
 
         return response()->json([
             'success' => true,
-            'slots' => $availableSlots
+            'slots' => $availableSlots,
         ]);
     }
 
@@ -209,13 +209,13 @@ class BookingController extends Controller
 
             return response()->json([
                 'success' => true,
-                'pricing' => $pricing
+                'pricing' => $pricing,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }

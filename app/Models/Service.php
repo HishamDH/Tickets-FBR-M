@@ -75,14 +75,14 @@ class Service extends Model
     public function getPriceFormattedAttribute()
     {
         $price = $this->base_price ?? $this->price;
-        $formattedPrice = number_format($price, 0) . ' ' . ($this->currency ?? 'ريال');
-        
+        $formattedPrice = number_format($price, 0).' '.($this->currency ?? 'ريال');
+
         if ($this->pricing_model === 'per_person' || $this->price_type === 'per_person') {
-            return $formattedPrice . ' / شخص';
+            return $formattedPrice.' / شخص';
         } elseif ($this->pricing_model === 'per_hour' || $this->price_type === 'per_hour') {
-            return $formattedPrice . ' / ساعة';
+            return $formattedPrice.' / ساعة';
         }
-        
+
         return $formattedPrice;
     }
 
@@ -91,8 +91,8 @@ class Service extends Model
      */
     public function isBookable(): bool
     {
-        return $this->is_active && 
-               $this->is_available && 
+        return $this->is_active &&
+               $this->is_available &&
                $this->online_booking_enabled &&
                $this->merchant->isVerified();
     }
@@ -121,9 +121,9 @@ class Service extends Model
      */
     public function getServiceTypeNameAttribute(): string
     {
-        return match($this->service_type) {
+        return match ($this->service_type) {
             'event' => 'فعالية',
-            'exhibition' => 'معرض', 
+            'exhibition' => 'معرض',
             'restaurant' => 'مطعم',
             'experience' => 'تجربة',
             default => $this->service_type
@@ -135,10 +135,10 @@ class Service extends Model
      */
     public function getPricingModelNameAttribute(): string
     {
-        return match($this->pricing_model) {
+        return match ($this->pricing_model) {
             'fixed' => 'سعر ثابت',
             'per_person' => 'لكل شخص',
-            'per_table' => 'لكل طاولة', 
+            'per_table' => 'لكل طاولة',
             'hourly' => 'بالساعة',
             'package' => 'باقة',
             default => $this->pricing_model

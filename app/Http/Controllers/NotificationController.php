@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Notification;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
@@ -25,8 +24,8 @@ class NotificationController extends Controller
 
         // Build query
         $query = Notification::where('notifiable_type', get_class($user))
-                           ->where('notifiable_id', $user->id)
-                           ->orderBy('created_at', 'desc');
+            ->where('notifiable_id', $user->id)
+            ->orderBy('created_at', 'desc');
 
         // Apply filters
         if ($type === 'unread') {
@@ -40,11 +39,11 @@ class NotificationController extends Controller
         }
 
         if ($category) {
-            $query->where('type', 'like', $category . '%');
+            $query->where('type', 'like', $category.'%');
         }
 
         if ($dateRange !== 'all') {
-            $query->where('created_at', '>=', Carbon::now()->subDays((int)$dateRange));
+            $query->where('created_at', '>=', Carbon::now()->subDays((int) $dateRange));
         }
 
         $notifications = $query->paginate(20);
@@ -69,13 +68,13 @@ class NotificationController extends Controller
     public function show(Notification $notification)
     {
         // Check if user owns this notification
-        if ($notification->notifiable_id !== Auth::id() || 
+        if ($notification->notifiable_id !== Auth::id() ||
             $notification->notifiable_type !== get_class(Auth::user())) {
             abort(403);
         }
 
         // Mark as read if not already read
-        if (!$notification->isRead()) {
+        if (! $notification->isRead()) {
             $notification->markAsRead();
         }
 
@@ -85,7 +84,7 @@ class NotificationController extends Controller
     public function markAsRead(Notification $notification)
     {
         // Check ownership
-        if ($notification->notifiable_id !== Auth::id() || 
+        if ($notification->notifiable_id !== Auth::id() ||
             $notification->notifiable_type !== get_class(Auth::user())) {
             abort(403);
         }
@@ -102,11 +101,11 @@ class NotificationController extends Controller
     public function markAllAsRead()
     {
         $user = Auth::user();
-        
+
         Notification::where('notifiable_type', get_class($user))
-                   ->where('notifiable_id', $user->id)
-                   ->unread()
-                   ->update(['read_at' => now()]);
+            ->where('notifiable_id', $user->id)
+            ->unread()
+            ->update(['read_at' => now()]);
 
         if (request()->ajax()) {
             return response()->json(['success' => true]);
@@ -118,7 +117,7 @@ class NotificationController extends Controller
     public function destroy(Notification $notification)
     {
         // Check ownership
-        if ($notification->notifiable_id !== Auth::id() || 
+        if ($notification->notifiable_id !== Auth::id() ||
             $notification->notifiable_type !== get_class(Auth::user())) {
             abort(403);
         }
@@ -135,11 +134,11 @@ class NotificationController extends Controller
     public function getUnreadCount()
     {
         $user = Auth::user();
-        
+
         $count = Notification::where('notifiable_type', get_class($user))
-                            ->where('notifiable_id', $user->id)
-                            ->unread()
-                            ->count();
+            ->where('notifiable_id', $user->id)
+            ->unread()
+            ->count();
 
         return response()->json(['count' => $count]);
     }
@@ -147,12 +146,12 @@ class NotificationController extends Controller
     public function getRecent()
     {
         $user = Auth::user();
-        
+
         $notifications = Notification::where('notifiable_type', get_class($user))
-                                   ->where('notifiable_id', $user->id)
-                                   ->orderBy('created_at', 'desc')
-                                   ->limit(5)
-                                   ->get();
+            ->where('notifiable_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
 
         return response()->json(['notifications' => $notifications]);
     }
@@ -161,13 +160,13 @@ class NotificationController extends Controller
     public function adminIndex(Request $request)
     {
         $this->middleware('role:admin');
-        
+
         $type = $request->get('type');
         $priority = $request->get('priority');
         $notifiable_type = $request->get('notifiable_type');
-        
+
         $query = Notification::with('notifiable')
-                            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc');
 
         if ($type) {
             $query->byType($type);
@@ -182,7 +181,7 @@ class NotificationController extends Controller
         }
 
         $notifications = $query->paginate(50);
-        
+
         $stats = [
             'total' => Notification::count(),
             'unread' => Notification::unread()->count(),
@@ -196,7 +195,7 @@ class NotificationController extends Controller
     public function sendBulkNotification(Request $request)
     {
         $this->middleware('role:admin');
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'message' => 'required|string',
@@ -240,7 +239,7 @@ class NotificationController extends Controller
         $request->validate([
             'action' => 'required|in:mark_read,delete',
             'notification_ids' => 'required|array',
-            'notification_ids.*' => 'exists:notifications,id'
+            'notification_ids.*' => 'exists:notifications,id',
         ]);
 
         $user = Auth::user();
@@ -249,8 +248,8 @@ class NotificationController extends Controller
 
         // Ensure user owns all notifications
         $notifications = Notification::whereIn('id', $notificationIds)
-                                   ->where('notifiable_type', get_class($user))
-                                   ->where('notifiable_id', $user->id);
+            ->where('notifiable_type', get_class($user))
+            ->where('notifiable_id', $user->id);
 
         $count = 0;
         if ($action === 'mark_read') {
@@ -267,7 +266,7 @@ class NotificationController extends Controller
                 'success' => true,
                 'count' => $count,
                 'message' => $message,
-                'unread_count' => $this->getUnreadCountForUser()
+                'unread_count' => $this->getUnreadCountForUser(),
             ]);
         }
 
@@ -277,18 +276,18 @@ class NotificationController extends Controller
     public function getRealtimeNotifications()
     {
         $user = Auth::user();
-        
+
         $notifications = Notification::where('notifiable_type', get_class($user))
-                                   ->where('notifiable_id', $user->id)
-                                   ->unread()
-                                   ->orderBy('created_at', 'desc')
-                                   ->limit(10)
-                                   ->get();
+            ->where('notifiable_id', $user->id)
+            ->unread()
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
 
         return response()->json([
             'notifications' => $notifications,
             'count' => $notifications->count(),
-            'total_unread' => $this->getUnreadCountForUser()
+            'total_unread' => $this->getUnreadCountForUser(),
         ]);
     }
 
@@ -307,12 +306,12 @@ class NotificationController extends Controller
         $user = Auth::user();
         $preferences = $request->only([
             'email_notifications',
-            'sms_notifications', 
+            'sms_notifications',
             'push_notifications',
             'marketing_notifications',
             'booking_notifications',
             'payment_notifications',
-            'system_notifications'
+            'system_notifications',
         ]);
 
         $user->update(['notification_preferences' => $preferences]);
@@ -320,7 +319,7 @@ class NotificationController extends Controller
         if (request()->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'preferences' => $preferences
+                'preferences' => $preferences,
             ]);
         }
 
@@ -330,17 +329,17 @@ class NotificationController extends Controller
     protected function getUnreadCountForUser()
     {
         $user = Auth::user();
-        
+
         return Notification::where('notifiable_type', get_class($user))
-                         ->where('notifiable_id', $user->id)
-                         ->unread()
-                         ->count();
+            ->where('notifiable_id', $user->id)
+            ->unread()
+            ->count();
     }
 
     protected function getNotificationCounts($user)
     {
         $base = Notification::where('notifiable_type', get_class($user))
-                          ->where('notifiable_id', $user->id);
+            ->where('notifiable_id', $user->id);
 
         return [
             'all' => (clone $base)->count(),
@@ -356,7 +355,7 @@ class NotificationController extends Controller
     protected function getNotificationAnalytics($user)
     {
         $base = Notification::where('notifiable_type', get_class($user))
-                          ->where('notifiable_id', $user->id);
+            ->where('notifiable_id', $user->id);
 
         // Last 30 days activity
         $dailyStats = (clone $base)
@@ -384,7 +383,7 @@ class NotificationController extends Controller
             'type_stats' => $typeStats,
             'read_stats' => $readStats,
             'total_notifications' => $readStats['read'] + $readStats['unread'],
-            'read_percentage' => $readStats['read'] + $readStats['unread'] > 0 
+            'read_percentage' => $readStats['read'] + $readStats['unread'] > 0
                 ? round(($readStats['read'] / ($readStats['read'] + $readStats['unread'])) * 100, 1)
                 : 0,
         ];
@@ -428,7 +427,7 @@ class NotificationController extends Controller
                 "تم استلام دفعة بقيمة {$booking->total_amount} ريال للحجز #{$booking->id}",
                 [
                     'booking_id' => $booking->id,
-                    'amount' => $booking->total_amount
+                    'amount' => $booking->total_amount,
                 ],
                 'normal'
             );

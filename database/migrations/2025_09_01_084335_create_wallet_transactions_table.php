@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'failed', 'cancelled'])->default('completed');
             $table->timestamp('processed_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['merchant_wallet_id', 'created_at']);
             $table->index(['type', 'category']);
             $table->index(['status', 'created_at']);

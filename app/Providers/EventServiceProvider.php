@@ -2,14 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use App\Events\BookingCreated;
 use App\Events\BookingStatusChanged;
 use App\Events\PaymentReceived;
-use App\Listeners\SendBookingNotifications;
-use App\Models\User;
-use App\Observers\UserObserver;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 

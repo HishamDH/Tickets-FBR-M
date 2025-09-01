@@ -20,7 +20,7 @@ return new class extends Migration
             $table->json('attachments')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['support_ticket_id', 'created_at']);
             $table->index(['user_id', 'created_at']);
         });

@@ -87,11 +87,11 @@ class Offering extends Model
     }
 
     /**
-     * Get merchant/owner of this offering
+     * Get merchant/owner of this offering through the user relationship
      */
     public function merchant()
     {
-        return $this->user()->merchant ?? $this->user();
+        return $this->belongsTo(Merchant::class, 'user_id', 'user_id');
     }
 
     /**

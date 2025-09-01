@@ -22,7 +22,7 @@ return new class extends Migration
             $table->boolean('is_available')->default(true);
             $table->text('notes')->nullable();
             $table->timestamps();
-            
+
             // Add indexes for performance with shorter names
             $table->index(['service_id', 'availability_date'], 'svc_avail_date_idx');
             $table->index(['availability_date', 'is_available'], 'date_available_idx');

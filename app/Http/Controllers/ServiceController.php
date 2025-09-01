@@ -22,9 +22,9 @@ class ServiceController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'LIKE', '%' . $request->search . '%')
-                  ->orWhere('description', 'LIKE', '%' . $request->search . '%')
-                  ->orWhere('location', 'LIKE', '%' . $request->search . '%');
+                $q->where('name', 'LIKE', '%'.$request->search.'%')
+                    ->orWhere('description', 'LIKE', '%'.$request->search.'%')
+                    ->orWhere('location', 'LIKE', '%'.$request->search.'%');
             });
         }
 
@@ -37,14 +37,14 @@ class ServiceController extends Controller
         }
 
         $services = $query->orderBy('is_featured', 'desc')
-                         ->orderBy('created_at', 'desc')
-                         ->paginate(12);
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
 
         $categories = Service::select('category')
-                           ->distinct()
-                           ->where('is_active', true)
-                           ->orderBy('category')
-                           ->pluck('category');
+            ->distinct()
+            ->where('is_active', true)
+            ->orderBy('category')
+            ->pluck('category');
 
         return view('services.index', compact('services', 'categories'));
     }
@@ -55,13 +55,13 @@ class ServiceController extends Controller
     public function show($id)
     {
         $service = Service::where('is_active', true)->findOrFail($id);
-        
+
         // Get related services (same category, excluding current service)
         $relatedServices = Service::where('category', $service->category)
-                                 ->where('id', '!=', $service->id)
-                                 ->where('is_active', true)
-                                 ->limit(3)
-                                 ->get();
+            ->where('id', '!=', $service->id)
+            ->where('is_active', true)
+            ->limit(3)
+            ->get();
 
         return view('services.show', compact('service', 'relatedServices'));
     }

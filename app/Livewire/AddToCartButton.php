@@ -19,14 +19,14 @@ class AddToCartButton extends Component
     public function addToCart(CartService $cartService)
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             return $this->redirect(route('login'));
         }
 
         $cartService->addItem($user, $this->offering);
 
         $this->dispatch('cart-updated');
-        
+
         // Optionally, add a success message
         session()->flash('message', 'Item added to cart successfully!');
     }

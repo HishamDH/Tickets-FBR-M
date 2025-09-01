@@ -5,11 +5,9 @@ namespace App\Services;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketResponse;
 use App\Models\User;
-use App\Models\Booking;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Exception;
 
 class SupportService
 {
@@ -39,11 +37,11 @@ class SupportService
 
             DB::commit();
 
-            Log::info("Support ticket created", [
+            Log::info('Support ticket created', [
                 'ticket_id' => $ticket->id,
                 'ticket_number' => $ticket->ticket_number,
                 'user_id' => $ticket->user_id,
-                'category' => $ticket->category
+                'category' => $ticket->category,
             ]);
 
             // Send notifications
@@ -52,9 +50,9 @@ class SupportService
             return $ticket;
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Failed to create support ticket", [
+            Log::error('Failed to create support ticket', [
                 'user_id' => $data['user_id'],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -77,25 +75,25 @@ class SupportService
 
             DB::commit();
 
-            Log::info("Support ticket response added", [
+            Log::info('Support ticket response added', [
                 'ticket_id' => $ticket->id,
                 'response_id' => $response->id,
                 'user_id' => $userId,
-                'is_internal' => $isInternal
+                'is_internal' => $isInternal,
             ]);
 
             // Send notifications if not internal
-            if (!$isInternal) {
+            if (! $isInternal) {
                 $this->sendResponseNotifications($ticket, $response);
             }
 
             return $response;
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Failed to add ticket response", [
+            Log::error('Failed to add ticket response', [
                 'ticket_id' => $ticket->id,
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -107,18 +105,18 @@ class SupportService
     public function assignTicket(SupportTicket $ticket, int $agentId): bool
     {
         $agent = User::find($agentId);
-        
-        if (!$agent || !$this->canAssignTickets($agent)) {
-            throw new Exception("Invalid agent or insufficient permissions");
+
+        if (! $agent || ! $this->canAssignTickets($agent)) {
+            throw new Exception('Invalid agent or insufficient permissions');
         }
 
         $oldAssignee = $ticket->assignedTo;
         $ticket->update(['assigned_to' => $agentId]);
 
-        Log::info("Support ticket assigned", [
+        Log::info('Support ticket assigned', [
             'ticket_id' => $ticket->id,
             'assigned_to' => $agentId,
-            'previous_assignee' => $oldAssignee?->id
+            'previous_assignee' => $oldAssignee?->id,
         ]);
 
         // Notify new assignee
@@ -133,9 +131,9 @@ class SupportService
     public function updateTicketStatus(SupportTicket $ticket, string $status, ?string $resolutionNotes = null): bool
     {
         $oldStatus = $ticket->status;
-        
+
         $updateData = ['status' => $status];
-        
+
         if ($status === 'resolved') {
             $updateData['resolved_at'] = now();
             if ($resolutionNotes) {
@@ -147,10 +145,10 @@ class SupportService
 
         $ticket->update($updateData);
 
-        Log::info("Support ticket status updated", [
+        Log::info('Support ticket status updated', [
             'ticket_id' => $ticket->id,
             'old_status' => $oldStatus,
-            'new_status' => $status
+            'new_status' => $status,
         ]);
 
         // Send status change notifications
@@ -167,10 +165,10 @@ class SupportService
         $oldPriority = $ticket->priority;
         $ticket->update(['priority' => $priority]);
 
-        Log::info("Support ticket priority updated", [
+        Log::info('Support ticket priority updated', [
             'ticket_id' => $ticket->id,
             'old_priority' => $oldPriority,
-            'new_priority' => $priority
+            'new_priority' => $priority,
         ]);
 
         return true;
@@ -246,7 +244,7 @@ class SupportService
      */
     public function getSupportStats(?int $agentId = null, ?string $period = 'month'): array
     {
-        $dateFrom = match($period) {
+        $dateFrom = match ($period) {
             'week' => now()->subWeek(),
             'month' => now()->subMonth(),
             'quarter' => now()->subQuarter(),
@@ -255,7 +253,7 @@ class SupportService
         };
 
         $query = SupportTicket::where('created_at', '>=', $dateFrom);
-        
+
         if ($agentId) {
             $query->where('assigned_to', $agentId);
         }
@@ -283,7 +281,7 @@ class SupportService
     {
         // Get available support agents based on category
         $agents = $this->getAvailableAgents($ticket->category);
-        
+
         if ($agents->isEmpty()) {
             return null;
         }
@@ -299,7 +297,7 @@ class SupportService
     /**
      * Get available support agents
      */
-    protected function getAvailableAgents(string $category = null)
+    protected function getAvailableAgents(?string $category = null)
     {
         return User::whereHas('roles', function ($query) {
             $query->where('name', 'Admin'); // Or Support Agent role
@@ -359,7 +357,7 @@ class SupportService
     {
         // Send email to customer confirming ticket creation
         // Send notification to assigned agent if any
-        Log::info("Ticket created notifications sent", ['ticket_id' => $ticket->id]);
+        Log::info('Ticket created notifications sent', ['ticket_id' => $ticket->id]);
     }
 
     /**
@@ -369,9 +367,9 @@ class SupportService
     {
         // Send email to customer if response is from staff
         // Send email to staff if response is from customer
-        Log::info("Response notifications sent", [
+        Log::info('Response notifications sent', [
             'ticket_id' => $ticket->id,
-            'response_id' => $response->id
+            'response_id' => $response->id,
         ]);
     }
 
@@ -381,9 +379,9 @@ class SupportService
     protected function sendTicketAssignmentNotification(SupportTicket $ticket, User $agent): void
     {
         // Send email to newly assigned agent
-        Log::info("Assignment notification sent", [
+        Log::info('Assignment notification sent', [
             'ticket_id' => $ticket->id,
-            'agent_id' => $agent->id
+            'agent_id' => $agent->id,
         ]);
     }
 
@@ -393,10 +391,10 @@ class SupportService
     protected function sendStatusChangeNotifications(SupportTicket $ticket, string $oldStatus): void
     {
         // Send status update to customer
-        Log::info("Status change notifications sent", [
+        Log::info('Status change notifications sent', [
             'ticket_id' => $ticket->id,
             'old_status' => $oldStatus,
-            'new_status' => $ticket->status
+            'new_status' => $ticket->status,
         ]);
     }
 
@@ -409,12 +407,12 @@ class SupportService
             ->with(['user', 'assignedTo', 'booking'])
             ->where(function ($q) use ($query) {
                 $q->where('ticket_number', 'like', "%{$query}%")
-                  ->orWhere('subject', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%")
-                  ->orWhereHas('user', function ($userQuery) use ($query) {
-                      $userQuery->where('name', 'like', "%{$query}%")
-                               ->orWhere('email', 'like', "%{$query}%");
-                  });
+                    ->orWhere('subject', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhereHas('user', function ($userQuery) use ($query) {
+                        $userQuery->where('name', 'like', "%{$query}%")
+                            ->orWhere('email', 'like', "%{$query}%");
+                    });
             });
 
         // Apply filters
@@ -431,6 +429,6 @@ class SupportService
         }
 
         return $searchQuery->orderBy('created_at', 'desc')
-                          ->paginate($filters['per_page'] ?? 15);
+            ->paginate($filters['per_page'] ?? 15);
     }
 }

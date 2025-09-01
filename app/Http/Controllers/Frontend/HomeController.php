@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Merchant;
 use App\Models\Category;
+use App\Models\Merchant;
 use App\Models\Offering;
 use Illuminate\Http\Request;
 
@@ -17,11 +17,9 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
-        $categories = Category::with('offerings')
-            ->take(6)
-            ->get();
+        $categories = Category::take(6)->get();
 
-        $featuredOfferings = Offering::with(['merchant.user'])
+        $featuredOfferings = Offering::with(['user'])
             ->where('status', 'active')
             ->take(6)
             ->get();
@@ -31,17 +29,17 @@ class HomeController extends Controller
 
     public function merchants(Request $request)
     {
-        $merchants = Merchant::with(['user', 'offerings'])
+        $merchants = Merchant::with(['user'])
             ->where('verification_status', 'approved')
-            ->when($request->get('search'), function($query, $search) {
-                $query->whereHas('user', function($q) use ($search) {
+            ->when($request->get('search'), function ($query, $search) {
+                $query->whereHas('user', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
-                ->orWhere('business_name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('business_name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             })
-            ->when($request->get('category'), function($query, $category) {
-                $query->whereHas('offerings', function($q) use ($category) {
+            ->when($request->get('category'), function ($query, $category) {
+                $query->whereHas('offerings', function ($q) use ($category) {
                     $q->where('category', $category);
                 });
             })
@@ -53,9 +51,14 @@ class HomeController extends Controller
 
     public function merchantShow($id)
     {
-        $merchant = Merchant::with(['user', 'offerings' => function($query) {
-            $query->where('status', 'active');
-        }])->findOrFail($id);
+        $merchant = Merchant::with(['user'])->findOrFail($id);
+        
+        // Get offerings for this merchant
+        $offerings = Offering::where('user_id', $merchant->user_id)
+            ->where('status', 'active')
+            ->get();
+        
+        $merchant->offerings = $offerings;
 
         return view('frontend.merchant-show', compact('merchant'));
     }
@@ -65,13 +68,13 @@ class HomeController extends Controller
         $query = $request->get('q');
         $category = $request->get('category');
 
-        $offerings = Offering::with(['merchant.user'])
+        $offerings = Offering::with(['user'])
             ->where('status', 'active')
-            ->when($query, function($q) use ($query) {
+            ->when($query, function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%");
+                    ->orWhere('description', 'like', "%{$query}%");
             })
-            ->when($category, function($q) use ($category) {
+            ->when($category, function ($q) use ($category) {
                 $q->where('category', $category);
             })
             ->paginate(12);

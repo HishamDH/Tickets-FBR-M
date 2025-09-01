@@ -21,7 +21,7 @@ return new class extends Migration
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('inactive')->nullable();
-            $table->enum('type', ['events', 'conference','restaurant','experiences'])->default('events')->nullable();
+            $table->enum('type', ['events', 'conference', 'restaurant', 'experiences'])->default('events')->nullable();
             $table->string('category')->nullable();
             $table->json('additional_data')->nullable();
             $table->json('translations')->nullable();

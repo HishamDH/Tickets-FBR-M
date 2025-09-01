@@ -29,7 +29,7 @@ return new class extends Migration
                 'notification_preferences',
                 'push_notifications_enabled',
                 'push_token',
-                'last_notification_read_at'
+                'last_notification_read_at',
             ]);
         });
     }

@@ -51,7 +51,7 @@ class Merchant extends Model
      */
     public function offerings(): HasMany
     {
-        return $this->hasMany(Offering::class);
+        return $this->hasMany(Offering::class, 'user_id', 'user_id');
     }
 
     /**

@@ -2,27 +2,36 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Booking;
 use App\Models\PaymentGateway;
 use App\Services\PaymentService;
-use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class PaymentCheckout extends Component
 {
     public Booking $booking;
+
     public $selectedGateway = null;
+
     public $availableGateways = [];
+
     public $paymentData = [];
+
     public $step = 1; // 1: اختيار البوابة, 2: إدخال البيانات, 3: المعالجة
+
     public $isProcessing = false;
+
     public $paymentResult = null;
 
     // بيانات الدفع
     public $cardNumber = '';
+
     public $expiryDate = '';
+
     public $cvv = '';
+
     public $cardHolder = '';
+
     public $saveCard = false;
 
     protected $rules = [
@@ -73,14 +82,14 @@ class PaymentCheckout extends Component
     public function processPayment()
     {
         $this->validate();
-        
+
         $this->isProcessing = true;
         $this->step = 3;
 
         try {
             $paymentService = app(PaymentService::class);
             $gateway = PaymentGateway::findOrFail($this->selectedGateway);
-            
+
             // إنشاء سجل الدفع
             $payment = $paymentService->createPayment($this->booking, $gateway, [
                 'payment_method' => $gateway->code,
@@ -95,6 +104,7 @@ class PaymentCheckout extends Component
 
             if ($result['success']) {
                 session()->flash('success', 'تم الدفع بنجاح');
+
                 return redirect()->route('merchant.booking.confirmation', [
                     'merchant' => $this->booking->merchant_id,
                     'booking' => $this->booking->id,
@@ -104,7 +114,7 @@ class PaymentCheckout extends Component
             }
 
         } catch (\Exception $e) {
-            $this->addError('payment', 'حدث خطأ غير متوقع: ' . $e->getMessage());
+            $this->addError('payment', 'حدث خطأ غير متوقع: '.$e->getMessage());
         } finally {
             $this->isProcessing = false;
         }
@@ -113,7 +123,7 @@ class PaymentCheckout extends Component
     protected function preparePaymentData(): array
     {
         $gateway = PaymentGateway::find($this->selectedGateway);
-        
+
         $data = [
             'payment_method' => $gateway->code,
         ];
@@ -146,7 +156,7 @@ class PaymentCheckout extends Component
 
     protected function calculateTotalAmount(): float
     {
-        if (!$this->selectedGateway) {
+        if (! $this->selectedGateway) {
             return $this->booking->total_amount;
         }
 

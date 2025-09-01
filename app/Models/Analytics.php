@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Analytics extends Model
 {
@@ -63,9 +62,9 @@ class Analytics extends Model
     public static function getLatestMetric($metricName, $period = 'daily')
     {
         return static::where('metric_name', $metricName)
-                    ->where('period', $period)
-                    ->latest('metric_date')
-                    ->first();
+            ->where('period', $period)
+            ->latest('metric_date')
+            ->first();
     }
 
     /**
@@ -77,10 +76,10 @@ class Analytics extends Model
         $endDate = now()->toDateString();
 
         return static::where('metric_name', $metricName)
-                    ->where('period', $period)
-                    ->whereBetween('metric_date', [$startDate, $endDate])
-                    ->orderBy('metric_date')
-                    ->get();
+            ->where('period', $period)
+            ->whereBetween('metric_date', [$startDate, $endDate])
+            ->orderBy('metric_date')
+            ->get();
     }
 
     /**

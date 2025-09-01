@@ -17,14 +17,15 @@ class ContentController extends Controller
     public function index()
     {
         $contents = $this->getContentFromFiles();
+
         return view('content.index', compact('contents'));
     }
 
     public function show($slug)
     {
         $content = $this->getContentBySlug($slug);
-        
-        if (!$content) {
+
+        if (! $content) {
             abort(404, 'المحتوى غير موجود');
         }
 
@@ -36,8 +37,8 @@ class ContentController extends Controller
         $contents = $this->getContentFromFiles();
         $stats = [
             'total_pages' => count($contents),
-            'published' => count(array_filter($contents, fn($c) => $c['status'] === 'published')),
-            'draft' => count(array_filter($contents, fn($c) => $c['status'] === 'draft')),
+            'published' => count(array_filter($contents, fn ($c) => $c['status'] === 'published')),
+            'draft' => count(array_filter($contents, fn ($c) => $c['status'] === 'draft')),
         ];
 
         return view('admin.content.index', compact('contents', 'stats'));
@@ -56,11 +57,11 @@ class ContentController extends Controller
             'slug' => 'nullable|string|max:255|unique:content_files,slug',
             'meta_description' => 'nullable|string|max:160',
             'status' => 'required|in:draft,published',
-            'type' => 'required|in:page,article,faq,policy'
+            'type' => 'required|in:page,article,faq,policy',
         ]);
 
         $slug = $request->slug ?: Str::slug($request->title);
-        
+
         // Check if slug already exists
         if ($this->slugExists($slug)) {
             return back()->withErrors(['slug' => 'هذا الرابط مستخدم بالفعل'])->withInput();
@@ -86,8 +87,8 @@ class ContentController extends Controller
     public function edit($slug)
     {
         $content = $this->getContentBySlug($slug);
-        
-        if (!$content) {
+
+        if (! $content) {
             abort(404, 'المحتوى غير موجود');
         }
 
@@ -101,12 +102,12 @@ class ContentController extends Controller
             'content' => 'required|string',
             'meta_description' => 'nullable|string|max:160',
             'status' => 'required|in:draft,published',
-            'type' => 'required|in:page,article,faq,policy'
+            'type' => 'required|in:page,article,faq,policy',
         ]);
 
         $content = $this->getContentBySlug($slug);
-        
-        if (!$content) {
+
+        if (! $content) {
             abort(404, 'المحتوى غير موجود');
         }
 
@@ -124,7 +125,7 @@ class ContentController extends Controller
 
     public function destroy($slug)
     {
-        if (!$this->contentFileExists($slug)) {
+        if (! $this->contentFileExists($slug)) {
             abort(404, 'المحتوى غير موجود');
         }
 
@@ -136,7 +137,7 @@ class ContentController extends Controller
     // File-based content management methods
     private function getContentFromFiles()
     {
-        if (!Storage::disk('local')->exists('content')) {
+        if (! Storage::disk('local')->exists('content')) {
             Storage::disk('local')->makeDirectory('content');
         }
 
@@ -158,8 +159,8 @@ class ContentController extends Controller
     private function getContentBySlug($slug)
     {
         $filePath = "content/{$slug}.json";
-        
-        if (!Storage::disk('local')->exists($filePath)) {
+
+        if (! Storage::disk('local')->exists($filePath)) {
             return null;
         }
 
@@ -168,7 +169,7 @@ class ContentController extends Controller
 
     private function saveContentToFile($slug, $content)
     {
-        if (!Storage::disk('local')->exists('content')) {
+        if (! Storage::disk('local')->exists('content')) {
             Storage::disk('local')->makeDirectory('content');
         }
 
@@ -189,8 +190,8 @@ class ContentController extends Controller
     public function getContent($slug)
     {
         $content = $this->getContentBySlug($slug);
-        
-        if (!$content || $content['status'] !== 'published') {
+
+        if (! $content || $content['status'] !== 'published') {
             return response()->json(['error' => 'المحتوى غير موجود'], 404);
         }
 
@@ -201,26 +202,26 @@ class ContentController extends Controller
     {
         $query = $request->get('q', '');
         $type = $request->get('type');
-        
+
         $contents = $this->getContentFromFiles();
-        
-        $filtered = collect($contents)->filter(function($content) use ($query, $type) {
+
+        $filtered = collect($contents)->filter(function ($content) use ($query, $type) {
             // Filter by status
             if ($content['status'] !== 'published') {
                 return false;
             }
-            
+
             // Filter by type
             if ($type && $content['type'] !== $type) {
                 return false;
             }
-            
+
             // Search in title and content
             if ($query) {
                 return Str::contains(Str::lower($content['title']), Str::lower($query)) ||
                        Str::contains(Str::lower($content['content']), Str::lower($query));
             }
-            
+
             return true;
         });
 
@@ -258,17 +259,17 @@ class ContentController extends Controller
                 'type' => 'page',
                 'content' => $this->getAboutUsContent(),
                 'status' => 'published',
-            ]
+            ],
         ];
 
         $created = 0;
         foreach ($predefinedContent as $content) {
-            if (!$this->slugExists($content['slug'])) {
+            if (! $this->slugExists($content['slug'])) {
                 $content['created_at'] = now()->toISOString();
                 $content['updated_at'] = now()->toISOString();
                 $content['author'] = auth()->user()->name;
                 $content['meta_description'] = Str::limit(strip_tags($content['content']), 160);
-                
+
                 $this->saveContentToFile($content['slug'], $content);
                 $created++;
             }

@@ -30,7 +30,7 @@ class MerchantFactory extends Factory
             'مؤسسة فنون وترفيه',
             'شركة خدمات لوجستية',
             'مكتب تنظيم مؤتمرات',
-            'شركة ديكور ومناسبات'
+            'شركة ديكور ومناسبات',
         ];
 
         $businessNames = [
@@ -48,14 +48,14 @@ class MerchantFactory extends Factory
             'مكتب الفعاليات المتميزة',
             'مؤسسة الضيافة الراقية',
             'شركة الأحلام المحققة',
-            'مجموعة التميز والإبداع'
+            'مجموعة التميز والإبداع',
         ];
 
         $cities = [
-            'الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة', 
+            'الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة',
             'الطائف', 'أبها', 'تبوك', 'الخبر', 'القطيف', 'حائل', 'الجبيل',
             'بريدة', 'خميس مشيط', 'الهفوف', 'المبرز', 'نجران', 'ينبع',
-            'عنيزة', 'الباحة', 'سكاكا', 'جازان', 'عرعر', 'القريات'
+            'عنيزة', 'الباحة', 'سكاكا', 'جازان', 'عرعر', 'القريات',
         ];
 
         $businessAddresses = [
@@ -68,7 +68,7 @@ class MerchantFactory extends Factory
             'شارع الملك خالد، حي المروج',
             'طريق الرياض - الخرج',
             'شارع العروبة، حي الياسمين',
-            'طريق الملك فهد، حي الورود'
+            'طريق الملك فهد، حي الورود',
         ];
 
         return [
@@ -76,7 +76,7 @@ class MerchantFactory extends Factory
             'business_name' => $this->faker->randomElement($businessNames),
             'business_type' => $this->faker->randomElement($businessTypes),
             'cr_number' => $this->faker->unique()->numerify('##########'),
-            'business_address' => $this->faker->randomElement($businessAddresses) . '، ' . $this->faker->streetAddress(),
+            'business_address' => $this->faker->randomElement($businessAddresses).'، '.$this->faker->streetAddress(),
             'city' => $this->faker->randomElement($cities),
             'verification_status' => $this->faker->randomElement(['pending', 'approved', 'rejected']),
             'commission_rate' => $this->faker->randomFloat(2, 2.0, 10.0),
@@ -101,7 +101,7 @@ class MerchantFactory extends Factory
                 'auto_confirm_bookings' => $this->faker->boolean(60),
                 'advance_booking_days' => $this->faker->numberBetween(1, 90),
                 'cancellation_policy' => $this->faker->randomElement([
-                    'flexible', 'moderate', 'strict'
+                    'flexible', 'moderate', 'strict',
                 ]),
                 'languages' => ['ar', 'en'],
             ]),

@@ -61,8 +61,8 @@ class AnalyticsCache extends Model
     public static function get($key)
     {
         $cache = static::where('cache_key', $key)->first();
-        
-        if (!$cache || $cache->isExpired()) {
+
+        if (! $cache || $cache->isExpired()) {
             return null;
         }
 

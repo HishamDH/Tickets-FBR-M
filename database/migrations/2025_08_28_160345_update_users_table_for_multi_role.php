@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active')->after('user_type');
             $table->string('language', 5)->default('ar')->after('status');
             $table->string('timezone', 50)->default('Asia/Riyadh')->after('language');
-            
+
             $table->index(['user_type', 'status']);
         });
     }
@@ -31,7 +31,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropIndex(['user_type', 'status']);
             $table->dropColumn([
-                'phone', 'avatar', 'user_type', 'status', 'language', 'timezone'
+                'phone', 'avatar', 'user_type', 'status', 'language', 'timezone',
             ]);
         });
     }

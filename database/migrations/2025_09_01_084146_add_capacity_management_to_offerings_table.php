@@ -33,7 +33,7 @@ return new class extends Migration
                 'allow_overbooking',
                 'overbooking_percentage',
                 'capacity_type',
-                'buffer_capacity'
+                'buffer_capacity',
             ]);
         });
     }

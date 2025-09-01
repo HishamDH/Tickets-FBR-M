@@ -7,8 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ReviewsRelationManager extends RelationManager
 {
@@ -31,7 +29,7 @@ class ReviewsRelationManager extends RelationManager
                             ->relationship('customer', 'name')
                             ->searchable()
                             ->required(),
-                        
+
                         Forms\Components\Select::make('rating')
                             ->label('التقييم')
                             ->options([
@@ -43,12 +41,12 @@ class ReviewsRelationManager extends RelationManager
                             ])
                             ->required(),
                     ]),
-                
+
                 Forms\Components\Textarea::make('review')
                     ->label('المراجعة')
                     ->rows(3)
                     ->columnSpanFull(),
-                
+
                 Forms\Components\Toggle::make('is_approved')
                     ->label('موافق عليه')
                     ->default(false),
@@ -64,12 +62,12 @@ class ReviewsRelationManager extends RelationManager
                     ->label('العميل')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('rating')
                     ->label('التقييم')
                     ->formatStateUsing(fn (int $state): string => str_repeat('⭐', $state))
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('review')
                     ->label('المراجعة')
                     ->limit(50)
@@ -78,9 +76,10 @@ class ReviewsRelationManager extends RelationManager
                         if (strlen($state) <= 50) {
                             return null;
                         }
+
                         return $state;
                     }),
-                
+
                 Tables\Columns\IconColumn::make('is_approved')
                     ->label('موافق عليه')
                     ->boolean()
@@ -88,7 +87,7 @@ class ReviewsRelationManager extends RelationManager
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger'),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ التقييم')
                     ->dateTime('d/m/Y H:i')
@@ -104,7 +103,7 @@ class ReviewsRelationManager extends RelationManager
                         4 => '⭐⭐⭐⭐ أربع نجوم',
                         5 => '⭐⭐⭐⭐⭐ خمس نجوم',
                     ]),
-                
+
                 Tables\Filters\TernaryFilter::make('is_approved')
                     ->label('حالة الموافقة')
                     ->trueLabel('موافق عليه')
@@ -120,19 +119,19 @@ class ReviewsRelationManager extends RelationManager
                     ->label('موافقة')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->visible(fn ($record) => !$record->is_approved)
+                    ->visible(fn ($record) => ! $record->is_approved)
                     ->action(fn ($record) => $record->update(['is_approved' => true])),
-                
+
                 Tables\Actions\Action::make('reject')
                     ->label('رفض')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
                     ->visible(fn ($record) => $record->is_approved)
                     ->action(fn ($record) => $record->update(['is_approved' => false])),
-                
+
                 Tables\Actions\EditAction::make()
                     ->label('تعديل'),
-                
+
                 Tables\Actions\DeleteAction::make()
                     ->label('حذف'),
             ])
@@ -143,13 +142,13 @@ class ReviewsRelationManager extends RelationManager
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_approved' => true])),
-                    
+
                     Tables\Actions\BulkAction::make('reject_selected')
                         ->label('رفض المحدد')
                         ->icon('heroicon-o-x-mark')
                         ->color('danger')
                         ->action(fn ($records) => $records->each->update(['is_approved' => false])),
-                    
+
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('حذف المحدد'),
                 ]),

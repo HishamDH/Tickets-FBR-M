@@ -7,8 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ReservationsRelationManager extends RelationManager
 {
@@ -31,30 +29,30 @@ class ReservationsRelationManager extends RelationManager
                             ->relationship('customer', 'name')
                             ->searchable()
                             ->required(),
-                        
+
                         Forms\Components\DatePicker::make('booking_date')
                             ->label('تاريخ الحجز')
                             ->required(),
                     ]),
-                
+
                 Forms\Components\Grid::make(3)
                     ->schema([
                         Forms\Components\TimePicker::make('booking_time')
                             ->label('وقت الحجز'),
-                        
+
                         Forms\Components\TextInput::make('guest_count')
                             ->label('عدد الضيوف')
                             ->numeric()
                             ->default(1)
                             ->required(),
-                        
+
                         Forms\Components\TextInput::make('total_amount')
                             ->label('المبلغ الإجمالي')
                             ->numeric()
                             ->prefix('ر.س')
                             ->required(),
                     ]),
-                
+
                 Forms\Components\Grid::make(2)
                     ->schema([
                         Forms\Components\Select::make('payment_status')
@@ -66,7 +64,7 @@ class ReservationsRelationManager extends RelationManager
                                 'refunded' => 'مسترد',
                             ])
                             ->default('pending'),
-                        
+
                         Forms\Components\Select::make('reservation_status')
                             ->label('حالة الحجز')
                             ->options([
@@ -77,7 +75,7 @@ class ReservationsRelationManager extends RelationManager
                             ])
                             ->default('pending'),
                     ]),
-                
+
                 Forms\Components\Textarea::make('special_requests')
                     ->label('طلبات خاصة')
                     ->rows(2)
@@ -94,25 +92,25 @@ class ReservationsRelationManager extends RelationManager
                     ->label('العميل')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('booking_date')
                     ->label('تاريخ الحجز')
                     ->date('d/m/Y')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('booking_time')
                     ->label('وقت الحجز'),
-                
+
                 Tables\Columns\TextColumn::make('guest_count')
                     ->label('عدد الضيوف')
                     ->numeric()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('المبلغ')
                     ->money('SAR')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('payment_status')
                     ->label('حالة الدفع')
                     ->badge()
@@ -130,7 +128,7 @@ class ReservationsRelationManager extends RelationManager
                         'refunded' => 'مسترد',
                         default => $state,
                     }),
-                
+
                 Tables\Columns\TextColumn::make('reservation_status')
                     ->label('حالة الحجز')
                     ->badge()
@@ -158,7 +156,7 @@ class ReservationsRelationManager extends RelationManager
                         'failed' => 'فشل',
                         'refunded' => 'مسترد',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('reservation_status')
                     ->label('حالة الحجز')
                     ->options([

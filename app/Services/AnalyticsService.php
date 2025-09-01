@@ -3,12 +3,9 @@
 namespace App\Services;
 
 use App\Models\Booking;
-use App\Models\User;
 use App\Models\Service;
-use App\Models\Notification;
+use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 
 class AnalyticsService
 {
@@ -19,10 +16,10 @@ class AnalyticsService
     {
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays($period);
-        
+
         // Current period data
         $currentData = $this->getKPIData($startDate, $endDate);
-        
+
         // Comparison period data
         if ($comparison === 'previous') {
             $comparisonStartDate = $startDate->copy()->subDays($period);
@@ -31,15 +28,15 @@ class AnalyticsService
             $comparisonStartDate = $startDate->copy()->subYear();
             $comparisonEndDate = $endDate->copy()->subYear();
         }
-        
+
         $comparisonData = $this->getKPIData($comparisonStartDate, $comparisonEndDate);
-        
+
         return [
             'total_revenue' => [
                 'current' => $currentData['total_revenue'],
                 'previous' => $comparisonData['total_revenue'],
                 'change' => $this->calculatePercentageChange(
-                    $comparisonData['total_revenue'], 
+                    $comparisonData['total_revenue'],
                     $currentData['total_revenue']
                 ),
                 'trend' => $this->calculateTrend($currentData['daily_revenue']),
@@ -48,7 +45,7 @@ class AnalyticsService
                 'current' => $currentData['total_bookings'],
                 'previous' => $comparisonData['total_bookings'],
                 'change' => $this->calculatePercentageChange(
-                    $comparisonData['total_bookings'], 
+                    $comparisonData['total_bookings'],
                     $currentData['total_bookings']
                 ),
                 'trend' => $this->calculateTrend($currentData['daily_bookings']),
@@ -57,7 +54,7 @@ class AnalyticsService
                 'current' => $currentData['active_merchants'],
                 'previous' => $comparisonData['active_merchants'],
                 'change' => $this->calculatePercentageChange(
-                    $comparisonData['active_merchants'], 
+                    $comparisonData['active_merchants'],
                     $currentData['active_merchants']
                 ),
             ],
@@ -65,7 +62,7 @@ class AnalyticsService
                 'current' => $currentData['avg_booking_value'],
                 'previous' => $comparisonData['avg_booking_value'],
                 'change' => $this->calculatePercentageChange(
-                    $comparisonData['avg_booking_value'], 
+                    $comparisonData['avg_booking_value'],
                     $currentData['avg_booking_value']
                 ),
             ],
@@ -73,7 +70,7 @@ class AnalyticsService
                 'current' => $currentData['customer_satisfaction'],
                 'previous' => $comparisonData['customer_satisfaction'],
                 'change' => $this->calculatePercentageChange(
-                    $comparisonData['customer_satisfaction'], 
+                    $comparisonData['customer_satisfaction'],
                     $currentData['customer_satisfaction']
                 ),
             ],
@@ -81,7 +78,7 @@ class AnalyticsService
                 'current' => $currentData['conversion_rate'],
                 'previous' => $comparisonData['conversion_rate'],
                 'change' => $this->calculatePercentageChange(
-                    $comparisonData['conversion_rate'], 
+                    $comparisonData['conversion_rate'],
                     $currentData['conversion_rate']
                 ),
             ],
@@ -96,21 +93,21 @@ class AnalyticsService
         $totalRevenue = Booking::whereBetween('booking_date', [$startDate, $endDate])
             ->where('status', 'completed')
             ->sum('total_amount');
-            
+
         $totalBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])->count();
-        
-        $activeMerchants = User::whereHas('services.bookings', function($query) use ($startDate, $endDate) {
-                $query->whereBetween('booking_date', [$startDate, $endDate]);
-            })
+
+        $activeMerchants = User::whereHas('services.bookings', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('booking_date', [$startDate, $endDate]);
+        })
             ->where('user_type', 'merchant')
             ->count();
-            
+
         $avgBookingValue = $totalBookings > 0 ? $totalRevenue / $totalBookings : 0;
-        
+
         $customerSatisfaction = Booking::whereBetween('booking_date', [$startDate, $endDate])
             ->whereNotNull('rating')
             ->avg('rating') ?? 0;
-            
+
         // Daily revenue for trend calculation
         $dailyRevenue = Booking::selectRaw('DATE(booking_date) as date, SUM(total_amount) as revenue')
             ->whereBetween('booking_date', [$startDate, $endDate])
@@ -119,7 +116,7 @@ class AnalyticsService
             ->orderBy('date')
             ->pluck('revenue')
             ->toArray();
-            
+
         // Daily bookings for trend calculation
         $dailyBookings = Booking::selectRaw('DATE(booking_date) as date, COUNT(*) as bookings')
             ->whereBetween('booking_date', [$startDate, $endDate])
@@ -127,10 +124,10 @@ class AnalyticsService
             ->orderBy('date')
             ->pluck('bookings')
             ->toArray();
-            
+
         // Conversion rate calculation (simplified)
         $conversionRate = $this->calculateConversionRate($startDate, $endDate);
-        
+
         return [
             'total_revenue' => $totalRevenue,
             'total_bookings' => $totalBookings,
@@ -150,7 +147,7 @@ class AnalyticsService
     {
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays($period);
-        
+
         return [
             'revenue_trend' => $this->getRevenueTrend($startDate, $endDate),
             'booking_trend' => $this->getBookingTrend($startDate, $endDate),
@@ -166,7 +163,7 @@ class AnalyticsService
     public function getInsights($period = 30)
     {
         $insights = [];
-        
+
         // Revenue insights
         $revenueGrowth = $this->analyzeRevenueGrowth($period);
         if ($revenueGrowth['significant']) {
@@ -179,7 +176,7 @@ class AnalyticsService
                 'priority' => $revenueGrowth['positive'] ? 'success' : 'warning',
             ];
         }
-        
+
         // Customer satisfaction insights
         $satisfactionAnalysis = $this->analyzeCustomerSatisfaction($period);
         if ($satisfactionAnalysis['noteworthy']) {
@@ -192,15 +189,15 @@ class AnalyticsService
                 'priority' => $satisfactionAnalysis['priority'],
             ];
         }
-        
+
         // Merchant performance insights
         $merchantInsights = $this->analyzeMerchantPerformance($period);
         $insights = array_merge($insights, $merchantInsights);
-        
+
         // Seasonal insights
         $seasonalInsights = $this->analyzeSeasonalPatterns();
         $insights = array_merge($insights, $seasonalInsights);
-        
+
         return $insights;
     }
 
@@ -210,7 +207,7 @@ class AnalyticsService
     public function getPerformanceAlerts()
     {
         $alerts = [];
-        
+
         // Low performance merchants
         $lowPerformingMerchants = $this->getLowPerformingMerchants();
         if ($lowPerformingMerchants->count() > 0) {
@@ -223,17 +220,17 @@ class AnalyticsService
                 'action_text' => 'عرض التفاصيل',
             ];
         }
-        
+
         // Revenue drop alerts
         $revenueDropAlert = $this->checkRevenueDropAlert();
         if ($revenueDropAlert) {
             $alerts[] = $revenueDropAlert;
         }
-        
+
         // System performance alerts
         $systemAlerts = $this->getSystemPerformanceAlerts();
         $alerts = array_merge($alerts, $systemAlerts);
-        
+
         return $alerts;
     }
 
@@ -286,10 +283,10 @@ class AnalyticsService
             ->groupBy('payment_method')
             ->orderBy('revenue', 'desc')
             ->get();
-            
+
         $total = $paymentMethods->sum('revenue');
-        
-        return $paymentMethods->map(function($method) use ($total) {
+
+        return $paymentMethods->map(function ($method) use ($total) {
             return [
                 'method' => $method->payment_method,
                 'count' => $method->count,
@@ -311,19 +308,19 @@ class AnalyticsService
             ->groupBy('date')
             ->orderBy('date')
             ->get();
-            
+
         if ($historicalData->count() < 7) {
             return ['error' => 'Insufficient data for forecasting'];
         }
-        
+
         // Simple trend calculation
         $revenues = $historicalData->pluck('revenue')->toArray();
         $trend = $this->calculateLinearTrend($revenues);
-        
+
         // Generate forecast
         $forecast = [];
         $lastValue = end($revenues);
-        
+
         for ($i = 1; $i <= $forecastDays; $i++) {
             $forecastValue = $lastValue + ($trend * $i);
             $forecast[] = [
@@ -332,7 +329,7 @@ class AnalyticsService
                 'confidence' => max(0, 100 - ($i * 2)), // Decrease confidence over time
             ];
         }
-        
+
         return [
             'historical' => $historicalData,
             'forecast' => $forecast,
@@ -347,37 +344,49 @@ class AnalyticsService
         if ($old == 0) {
             return $new > 0 ? 100 : 0;
         }
+
         return round((($new - $old) / $old) * 100, 1);
     }
 
     protected function calculateTrend($data)
     {
-        if (count($data) < 2) return 'stable';
-        
+        if (count($data) < 2) {
+            return 'stable';
+        }
+
         $trend = $this->calculateLinearTrend($data);
-        
-        if ($trend > 0.1) return 'increasing';
-        if ($trend < -0.1) return 'decreasing';
+
+        if ($trend > 0.1) {
+            return 'increasing';
+        }
+        if ($trend < -0.1) {
+            return 'decreasing';
+        }
+
         return 'stable';
     }
 
     protected function calculateLinearTrend($data)
     {
         $n = count($data);
-        if ($n < 2) return 0;
-        
+        if ($n < 2) {
+            return 0;
+        }
+
         $sumX = $sumY = $sumXY = $sumX2 = 0;
-        
+
         for ($i = 0; $i < $n; $i++) {
             $sumX += $i;
             $sumY += $data[$i];
             $sumXY += $i * $data[$i];
             $sumX2 += $i * $i;
         }
-        
+
         $denominator = ($n * $sumX2) - ($sumX * $sumX);
-        if ($denominator == 0) return 0;
-        
+        if ($denominator == 0) {
+            return 0;
+        }
+
         return (($n * $sumXY) - ($sumX * $sumY)) / $denominator;
     }
 
@@ -389,21 +398,56 @@ class AnalyticsService
         $completedBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])
             ->where('status', 'completed')
             ->count();
-            
+
         return $totalBookings > 0 ? round(($completedBookings / $totalBookings) * 100, 1) : 0;
     }
 
     // Placeholder methods for complex analytics (to be implemented)
-    protected function getRevenueTrend($startDate, $endDate) { /* Implementation */ }
-    protected function getBookingTrend($startDate, $endDate) { /* Implementation */ }
-    protected function getPopularServicesTrend($startDate, $endDate) { /* Implementation */ }
-    protected function getPeakHoursTrend($startDate, $endDate) { /* Implementation */ }
-    protected function getGeographicTrend($startDate, $endDate) { /* Implementation */ }
-    protected function analyzeRevenueGrowth($period) { /* Implementation */ }
-    protected function analyzeCustomerSatisfaction($period) { /* Implementation */ }
-    protected function analyzeMerchantPerformance($period) { /* Implementation */ }
-    protected function analyzeSeasonalPatterns() { /* Implementation */ }
-    protected function getLowPerformingMerchants() { /* Implementation */ }
-    protected function checkRevenueDropAlert() { /* Implementation */ }
-    protected function getSystemPerformanceAlerts() { /* Implementation */ }
+    protected function getRevenueTrend($startDate, $endDate)
+    { /* Implementation */
+    }
+
+    protected function getBookingTrend($startDate, $endDate)
+    { /* Implementation */
+    }
+
+    protected function getPopularServicesTrend($startDate, $endDate)
+    { /* Implementation */
+    }
+
+    protected function getPeakHoursTrend($startDate, $endDate)
+    { /* Implementation */
+    }
+
+    protected function getGeographicTrend($startDate, $endDate)
+    { /* Implementation */
+    }
+
+    protected function analyzeRevenueGrowth($period)
+    { /* Implementation */
+    }
+
+    protected function analyzeCustomerSatisfaction($period)
+    { /* Implementation */
+    }
+
+    protected function analyzeMerchantPerformance($period)
+    { /* Implementation */
+    }
+
+    protected function analyzeSeasonalPatterns()
+    { /* Implementation */
+    }
+
+    protected function getLowPerformingMerchants()
+    { /* Implementation */
+    }
+
+    protected function checkRevenueDropAlert()
+    { /* Implementation */
+    }
+
+    protected function getSystemPerformanceAlerts()
+    { /* Implementation */
+    }
 }

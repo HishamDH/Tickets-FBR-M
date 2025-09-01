@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('last_message_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index(['customer_id', 'status']);
             $table->index(['merchant_id', 'status']);
             $table->index(['support_agent_id', 'status']);

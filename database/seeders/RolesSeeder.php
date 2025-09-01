@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolesSeeder extends Seeder
 {
@@ -33,7 +32,7 @@ class RolesSeeder extends Seeder
             'manage analytics',
             'manage notifications',
             'manage system settings',
-            'view admin dashboard'
+            'view admin dashboard',
         ];
 
         $merchantPermissions = [
@@ -43,7 +42,7 @@ class RolesSeeder extends Seeder
             'view merchant dashboard',
             'manage own profile',
             'view merchant analytics',
-            'manage merchant payments'
+            'manage merchant payments',
         ];
 
         $customerPermissions = [
@@ -52,7 +51,7 @@ class RolesSeeder extends Seeder
             'manage own profile',
             'view customer dashboard',
             'rate offerings',
-            'view reservation history'
+            'view reservation history',
         ];
 
         // Create permissions
@@ -75,8 +74,8 @@ class RolesSeeder extends Seeder
 
         $this->command->info('Roles and permissions created successfully!');
         $this->command->info('Created roles: Admin, Merchant, Customer');
-        $this->command->info('Admin permissions: ' . count($adminPermissions));
-        $this->command->info('Merchant permissions: ' . count($merchantPermissions));
-        $this->command->info('Customer permissions: ' . count($customerPermissions));
+        $this->command->info('Admin permissions: '.count($adminPermissions));
+        $this->command->info('Merchant permissions: '.count($merchantPermissions));
+        $this->command->info('Customer permissions: '.count($customerPermissions));
     }
 }

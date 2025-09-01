@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Partner;
-use App\Models\Merchant;
 use App\Models\Booking;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class PartnerDashboardController extends Controller
 {
@@ -21,7 +19,7 @@ class PartnerDashboardController extends Controller
         $user = Auth::user();
         $partner = $user->partner;
 
-        if (!$partner) {
+        if (! $partner) {
             abort(403, 'غير مصرح لك بالوصول لهذه الصفحة');
         }
 
@@ -41,7 +39,7 @@ class PartnerDashboardController extends Controller
         $topMerchants = $partner->merchants()
             ->with('user')
             ->withCount('bookings')
-            ->withSum(['bookings as total_revenue' => function($query) {
+            ->withSum(['bookings as total_revenue' => function ($query) {
                 $query->where('payment_status', 'paid');
             }], 'total_amount')
             ->orderBy('total_revenue', 'desc')
@@ -52,9 +50,9 @@ class PartnerDashboardController extends Controller
         $monthlyRevenue = $this->getMonthlyRevenue($partner);
 
         // أحدث الحجوزات من التجار التابعين
-        $recentBookings = Booking::whereHas('merchant', function($query) use ($partner) {
-                $query->where('partner_id', $partner->id);
-            })
+        $recentBookings = Booking::whereHas('merchant', function ($query) use ($partner) {
+            $query->where('partner_id', $partner->id);
+        })
             ->with(['service', 'customer', 'merchant'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
@@ -94,15 +92,15 @@ class PartnerDashboardController extends Controller
         // البحث
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('business_name', 'like', '%' . $search . '%')
-                  ->orWhere('business_type', 'like', '%' . $search . '%')
-                  ->orWhere('cr_number', 'like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('business_name', 'like', '%'.$search.'%')
+                    ->orWhere('business_type', 'like', '%'.$search.'%')
+                    ->orWhere('cr_number', 'like', '%'.$search.'%');
             });
         }
 
         $merchants = $query->withCount('bookings')
-            ->withSum(['bookings as total_revenue' => function($query) {
+            ->withSum(['bookings as total_revenue' => function ($query) {
                 $query->where('payment_status', 'paid');
             }], 'total_amount')
             ->orderBy('created_at', 'desc')
@@ -166,9 +164,9 @@ class PartnerDashboardController extends Controller
         $endDate = $request->get('end_date', Carbon::now()->endOfMonth());
 
         // عمولات يومية
-        $dailyCommissions = Booking::whereHas('merchant', function($query) use ($partner) {
-                $query->where('partner_id', $partner->id);
-            })
+        $dailyCommissions = Booking::whereHas('merchant', function ($query) use ($partner) {
+            $query->where('partner_id', $partner->id);
+        })
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as bookings_count'),
@@ -183,12 +181,12 @@ class PartnerDashboardController extends Controller
 
         // عمولات حسب التاجر
         $commissionsByMerchant = $partner->merchants()
-            ->with(['bookings' => function($query) use ($startDate, $endDate) {
+            ->with(['bookings' => function ($query) use ($startDate, $endDate) {
                 $query->where('payment_status', 'paid')
-                      ->whereBetween('created_at', [$startDate, $endDate]);
+                    ->whereBetween('created_at', [$startDate, $endDate]);
             }])
             ->get()
-            ->map(function($merchant) {
+            ->map(function ($merchant) {
                 $totalRevenue = $merchant->bookings->sum('total_amount');
                 $totalCommission = $merchant->bookings->sum('commission_amount');
                 $bookingsCount = $merchant->bookings->count();
@@ -237,8 +235,8 @@ class PartnerDashboardController extends Controller
         $activeMerchantsWithBookings = $partner->merchants()
             ->whereHas('bookings')
             ->count();
-        
-        $merchantSuccessRate = $totalMerchants > 0 ? 
+
+        $merchantSuccessRate = $totalMerchants > 0 ?
             ($activeMerchantsWithBookings / $totalMerchants) * 100 : 0;
 
         // أفضل أنواع الخدمات أداءً
@@ -281,7 +279,7 @@ class PartnerDashboardController extends Controller
      */
     private function getTotalBookings($partner)
     {
-        return Booking::whereHas('merchant', function($query) use ($partner) {
+        return Booking::whereHas('merchant', function ($query) use ($partner) {
             $query->where('partner_id', $partner->id);
         })->count();
     }
@@ -291,7 +289,7 @@ class PartnerDashboardController extends Controller
      */
     private function getTotalRevenue($partner)
     {
-        return Booking::whereHas('merchant', function($query) use ($partner) {
+        return Booking::whereHas('merchant', function ($query) use ($partner) {
             $query->where('partner_id', $partner->id);
         })->where('payment_status', 'paid')->sum('total_amount');
     }
@@ -301,7 +299,7 @@ class PartnerDashboardController extends Controller
      */
     private function getPartnerCommission($partner)
     {
-        return Booking::whereHas('merchant', function($query) use ($partner) {
+        return Booking::whereHas('merchant', function ($query) use ($partner) {
             $query->where('partner_id', $partner->id);
         })->where('payment_status', 'paid')->sum('commission_amount');
     }
@@ -311,19 +309,19 @@ class PartnerDashboardController extends Controller
      */
     private function getMonthlyGrowth($partner)
     {
-        $currentMonth = Booking::whereHas('merchant', function($query) use ($partner) {
+        $currentMonth = Booking::whereHas('merchant', function ($query) use ($partner) {
             $query->where('partner_id', $partner->id);
         })
-        ->whereMonth('created_at', Carbon::now()->month)
-        ->whereYear('created_at', Carbon::now()->year)
-        ->count();
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
 
-        $lastMonth = Booking::whereHas('merchant', function($query) use ($partner) {
+        $lastMonth = Booking::whereHas('merchant', function ($query) use ($partner) {
             $query->where('partner_id', $partner->id);
         })
-        ->whereMonth('created_at', Carbon::now()->subMonth()->month)
-        ->whereYear('created_at', Carbon::now()->subMonth()->year)
-        ->count();
+            ->whereMonth('created_at', Carbon::now()->subMonth()->month)
+            ->whereYear('created_at', Carbon::now()->subMonth()->year)
+            ->count();
 
         return $lastMonth > 0 ? (($currentMonth - $lastMonth) / $lastMonth) * 100 : 0;
     }
@@ -333,9 +331,9 @@ class PartnerDashboardController extends Controller
      */
     private function getMonthlyRevenue($partner)
     {
-        return Booking::whereHas('merchant', function($query) use ($partner) {
-                $query->where('partner_id', $partner->id);
-            })
+        return Booking::whereHas('merchant', function ($query) use ($partner) {
+            $query->where('partner_id', $partner->id);
+        })
             ->select(
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('COUNT(*) as bookings_count'),
@@ -370,9 +368,9 @@ class PartnerDashboardController extends Controller
      */
     private function getAverageMonthlyCommission($partner)
     {
-        $monthlyCommissions = Booking::whereHas('merchant', function($query) use ($partner) {
-                $query->where('partner_id', $partner->id);
-            })
+        $monthlyCommissions = Booking::whereHas('merchant', function ($query) use ($partner) {
+            $query->where('partner_id', $partner->id);
+        })
             ->select(
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('SUM(commission_amount) as total_commission')

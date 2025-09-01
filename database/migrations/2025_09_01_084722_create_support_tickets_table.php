@@ -29,7 +29,7 @@ return new class extends Migration
             $table->text('resolution_notes')->nullable();
             $table->json('tags')->nullable();
             $table->timestamps();
-            
+
             $table->index(['user_id', 'status']);
             $table->index(['status', 'priority']);
             $table->index(['created_at', 'status']);

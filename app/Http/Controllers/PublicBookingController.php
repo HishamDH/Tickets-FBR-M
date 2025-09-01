@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Booking;
 use App\Models\Merchant;
 use App\Models\Service;
-use App\Models\Booking;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Carbon\Carbon;
 
 class PublicBookingController extends Controller
 {
@@ -18,15 +17,15 @@ class PublicBookingController extends Controller
     public function show($merchantId): View
     {
         $merchant = Merchant::where('verification_status', 'approved')
-                           ->findOrFail($merchantId);
+            ->findOrFail($merchantId);
 
         $services = Service::where('merchant_id', $merchantId)
-                          ->where('is_active', true)
-                          ->where('is_available', true)
-                          ->where('online_booking_enabled', true)
-                          ->orderBy('is_featured', 'desc')
-                          ->orderBy('name')
-                          ->get();
+            ->where('is_active', true)
+            ->where('is_available', true)
+            ->where('online_booking_enabled', true)
+            ->orderBy('is_featured', 'desc')
+            ->orderBy('name')
+            ->get();
 
         return view('public.booking', compact('merchant', 'services'));
     }
@@ -37,13 +36,13 @@ class PublicBookingController extends Controller
     public function service($merchantId, $serviceId): View
     {
         $merchant = Merchant::where('verification_status', 'approved')
-                           ->findOrFail($merchantId);
+            ->findOrFail($merchantId);
 
         $service = Service::where('merchant_id', $merchantId)
-                         ->where('is_active', true)
-                         ->where('is_available', true)
-                         ->where('online_booking_enabled', true)
-                         ->findOrFail($serviceId);
+            ->where('is_active', true)
+            ->where('is_available', true)
+            ->where('online_booking_enabled', true)
+            ->findOrFail($serviceId);
 
         return view('public.service-booking', compact('merchant', 'service'));
     }
@@ -54,13 +53,13 @@ class PublicBookingController extends Controller
     public function book(Request $request, $merchantId, $serviceId)
     {
         $merchant = Merchant::where('verification_status', 'approved')
-                           ->findOrFail($merchantId);
+            ->findOrFail($merchantId);
 
         $service = Service::where('merchant_id', $merchantId)
-                         ->where('is_active', true)
-                         ->where('is_available', true)
-                         ->where('online_booking_enabled', true)
-                         ->findOrFail($serviceId);
+            ->where('is_active', true)
+            ->where('is_available', true)
+            ->where('online_booking_enabled', true)
+            ->findOrFail($serviceId);
 
         $request->validate([
             'customer_name' => 'required|string|max:255',
@@ -68,7 +67,7 @@ class PublicBookingController extends Controller
             'customer_email' => 'nullable|email|max:255',
             'booking_date' => 'required|date|after_or_equal:today',
             'booking_time' => 'required',
-            'number_of_people' => 'nullable|integer|min:1' . ($service->capacity ? '|max:' . $service->capacity : ''),
+            'number_of_people' => 'nullable|integer|min:1'.($service->capacity ? '|max:'.$service->capacity : ''),
             'number_of_tables' => 'nullable|integer|min:1',
             'duration_hours' => 'nullable|integer|min:1',
             'notes' => 'nullable|string|max:1000',
@@ -76,7 +75,7 @@ class PublicBookingController extends Controller
 
         // Calculate total amount based on pricing model
         $totalAmount = $this->calculateTotalAmount($service, $request);
-        
+
         // Calculate commission using merchant's commission rate
         $commissionRate = $merchant->commission_rate ?? 5.0;
         $commissionAmount = $totalAmount * ($commissionRate / 100);
@@ -85,10 +84,10 @@ class PublicBookingController extends Controller
         $customer = null;
         if ($request->customer_email) {
             $customer = User::where('email', $request->customer_email)
-                           ->where('user_type', 'customer')
-                           ->first();
+                ->where('user_type', 'customer')
+                ->first();
 
-            if (!$customer) {
+            if (! $customer) {
                 $customer = User::create([
                     'name' => $request->customer_name,
                     'email' => $request->customer_email,
@@ -123,7 +122,7 @@ class PublicBookingController extends Controller
 
         return redirect()->route('merchant.booking.confirmation', [
             'merchant' => $merchant->id,
-            'booking' => $booking->id
+            'booking' => $booking->id,
         ]);
     }
 
@@ -135,8 +134,8 @@ class PublicBookingController extends Controller
         $merchant = Merchant::findOrFail($merchantId);
 
         $booking = Booking::with(['customer', 'service'])
-                         ->where('merchant_id', $merchantId)
-                         ->findOrFail($bookingId);
+            ->where('merchant_id', $merchantId)
+            ->findOrFail($bookingId);
 
         // Generate QR code for the booking
         $booking->qr_code = $booking->generateQrCode();
@@ -155,14 +154,14 @@ class PublicBookingController extends Controller
         switch ($pricingModel) {
             case 'per_person':
                 return $basePrice * ($request->number_of_people ?? 1);
-            
+
             case 'per_table':
                 return $basePrice * ($request->number_of_tables ?? 1);
-            
+
             case 'hourly':
             case 'per_hour':
                 return $basePrice * ($request->duration_hours ?? 1);
-            
+
             case 'package':
             case 'fixed':
             default:

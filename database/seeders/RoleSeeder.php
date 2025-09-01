@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
@@ -17,13 +16,13 @@ class RoleSeeder extends Seeder
         // Create roles
         $roles = [
             'admin' => 'System Administrator',
-            'customer' => 'Customer User', 
+            'customer' => 'Customer User',
             'merchant' => 'Merchant User',
             'partner' => 'Partner User',
         ];
 
         foreach ($roles as $name => $description) {
-            if (!Role::where('name', $name)->exists()) {
+            if (! Role::where('name', $name)->exists()) {
                 Role::create([
                     'name' => $name,
                     'guard_name' => 'web',
@@ -34,7 +33,7 @@ class RoleSeeder extends Seeder
         // Create basic permissions (can be expanded later)
         $permissions = [
             'manage_users',
-            'manage_merchants', 
+            'manage_merchants',
             'manage_services',
             'manage_bookings',
             'manage_partners',
@@ -43,7 +42,7 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            if (!Permission::where('name', $permission)->exists()) {
+            if (! Permission::where('name', $permission)->exists()) {
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'web',

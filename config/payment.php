@@ -66,7 +66,7 @@ return [
 
     // بيئة الاختبار
     'test_mode' => env('PAYMENT_TEST_MODE', true),
-    
+
     // بيانات اختبار للمحاكاة
     'test_cards' => [
         'visa_success' => '4242424242424242',

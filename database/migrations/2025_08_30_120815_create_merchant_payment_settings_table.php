@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamp('last_tested_at')->nullable(); // آخر اختبار للبوابة
             $table->boolean('test_passed')->default(false); // نتيجة آخر اختبار
             $table->timestamps();
-            
+
             $table->unique(['merchant_id', 'payment_gateway_id']);
             $table->index(['merchant_id', 'is_enabled']);
         });

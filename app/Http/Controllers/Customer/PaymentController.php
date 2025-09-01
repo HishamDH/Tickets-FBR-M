@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Payment;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\Refund;
 use App\Services\PaymentService;
-use App\Services\RefundService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +58,7 @@ class PaymentController extends Controller
         if ($booking->payment_status === 'paid') {
             return response()->json([
                 'success' => false,
-                'message' => 'تم دفع هذا الحجز بالفعل'
+                'message' => 'تم دفع هذا الحجز بالفعل',
             ]);
         }
 
@@ -83,7 +82,7 @@ class PaymentController extends Controller
                     'customer_id' => Auth::id(),
                     'service_id' => $booking->service_id,
                     'merchant_id' => $booking->merchant_id,
-                ]
+                ],
             ];
 
             $result = $this->paymentService->processPayment(
@@ -98,7 +97,7 @@ class PaymentController extends Controller
                 'success' => true,
                 'payment_url' => $result['payment_url'] ?? null,
                 'payment_id' => $result['payment_id'] ?? null,
-                'message' => 'تم إنشاء رابط الدفع بنجاح'
+                'message' => 'تم إنشاء رابط الدفع بنجاح',
             ]);
 
         } catch (\Exception $e) {
@@ -106,7 +105,7 @@ class PaymentController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'حدث خطأ أثناء معالجة الدفع: ' . $e->getMessage()
+                'message' => 'حدث خطأ أثناء معالجة الدفع: '.$e->getMessage(),
             ], 400);
         }
     }
@@ -123,7 +122,7 @@ class PaymentController extends Controller
             ->latest()
             ->first();
 
-        if (!$payment) {
+        if (! $payment) {
             return redirect()->route('customer.bookings.show', $booking)
                 ->with('warning', 'لم يتم العثور على تفاصيل الدفع');
         }
@@ -166,7 +165,7 @@ class PaymentController extends Controller
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
-        
+
         if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
@@ -178,7 +177,7 @@ class PaymentController extends Controller
             'completed' => 'مكتمل',
             'failed' => 'فاشل',
             'cancelled' => 'ملغي',
-            'refunded' => 'مسترد'
+            'refunded' => 'مسترد',
         ];
 
         return view('customer.payments.history', compact('payments', 'statuses'));
@@ -200,7 +199,7 @@ class PaymentController extends Controller
         // Generate and return receipt PDF
         // This would integrate with a PDF generation service
         return response()->download(
-            storage_path('app/receipts/payment-' . $payment->id . '.pdf')
+            storage_path('app/receipts/payment-'.$payment->id.'.pdf')
         );
     }
 
@@ -214,7 +213,7 @@ class PaymentController extends Controller
 
         $request->validate([
             'reason' => 'required|string|max:500',
-            'refund_amount' => 'nullable|numeric|min:1|max:' . $payment->amount,
+            'refund_amount' => 'nullable|numeric|min:1|max:'.$payment->amount,
         ]);
 
         if ($payment->status !== 'completed') {
@@ -236,7 +235,7 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء معالجة طلب الاسترداد: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء معالجة طلب الاسترداد: '.$e->getMessage());
         }
     }
 }

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignId('account_manager_id')->nullable()->constrained('users')->onDelete('set null');
             $table->json('settings')->nullable();
             $table->timestamps();
-            
+
             $table->index(['verification_status', 'city']);
         });
     }

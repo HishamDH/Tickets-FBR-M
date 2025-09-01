@@ -7,6 +7,7 @@ use Livewire\Component;
 class OfferingWizard extends Component
 {
     public $hasChairs = false;
+
     public $chairsCount = null;
 
     public function render()

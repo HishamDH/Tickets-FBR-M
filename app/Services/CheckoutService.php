@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\PaidReservation;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class CheckoutService
@@ -20,9 +19,6 @@ class CheckoutService
      * Create a reservation record from the cart.
      * This is the first step before payment.
      *
-     * @param User $user
-     * @param array $customerDetails
-     * @return PaidReservation
      * @throws \Exception
      */
     public function placeOrder(User $user, array $customerDetails): PaidReservation
@@ -30,7 +26,7 @@ class CheckoutService
         $cartItems = $this->cartService->getCart($user);
 
         if ($cartItems->isEmpty()) {
-            throw new \Exception("Cannot place an order with an empty cart.");
+            throw new \Exception('Cannot place an order with an empty cart.');
         }
 
         $total = $this->cartService->getTotal($user);
@@ -65,18 +61,15 @@ class CheckoutService
 
     /**
      * Generate the payment gateway URL.
-     *
-     * @param PaidReservation $reservation
-     * @return string
      */
     public function initiatePayment(PaidReservation $reservation): string
     {
         // --- Placeholder for Ottu Payment Gateway Integration ---
         // This is where you would build the request to the payment gateway API.
         // The following is a dummy implementation.
-        
+
         $gatewayUrl = 'https://ticket-window.ottu.com/payment';
-        
+
         $paymentData = [
             'merchant_id' => env('OTTU_MERCHANT_ID', 'dummy_merchant_id'),
             'order_id' => $reservation->code,
@@ -90,15 +83,14 @@ class CheckoutService
         // In a real scenario, you would generate a secure hash/signature
         // $paymentData['signature'] = hash_hmac('sha256', implode('|', $paymentData), env('OTTU_SECRET_KEY'));
 
-        return $gatewayUrl . '?' . http_build_query($paymentData);
+        return $gatewayUrl.'?'.http_build_query($paymentData);
     }
 
     /**
      * Complete the order after a successful payment.
      *
-     * @param string $orderCode The unique code of the reservation.
-     * @param string $paymentStatus The status from the payment gateway.
-     * @return PaidReservation
+     * @param  string  $orderCode  The unique code of the reservation.
+     * @param  string  $paymentStatus  The status from the payment gateway.
      */
     public function completeOrder(string $orderCode, string $paymentStatus): PaidReservation
     {

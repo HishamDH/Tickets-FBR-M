@@ -5,8 +5,8 @@ namespace App\Notifications;
 use App\Models\Booking;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PaymentReceivedNotification extends Notification implements ShouldQueue
@@ -14,7 +14,9 @@ class PaymentReceivedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $booking;
+
     protected $amount;
+
     protected $paymentMethod;
 
     /**
@@ -33,7 +35,7 @@ class PaymentReceivedNotification extends Notification implements ShouldQueue
     public function via(object $notifiable): array
     {
         $channels = ['database', 'broadcast'];
-        
+
         // Add email if user has email notifications enabled
         if ($notifiable->notification_preferences['email'] ?? true) {
             $channels[] = 'mail';
@@ -47,27 +49,27 @@ class PaymentReceivedNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $subject = $this->isForMerchant($notifiable) 
-            ? 'تم استلام دفعة - ' . $this->booking->service->name
-            : 'تأكيد الدفع - ' . $this->booking->service->name;
+        $subject = $this->isForMerchant($notifiable)
+            ? 'تم استلام دفعة - '.$this->booking->service->name
+            : 'تأكيد الدفع - '.$this->booking->service->name;
 
         $greeting = $this->isForMerchant($notifiable)
-            ? 'مرحباً ' . $notifiable->name
-            : 'مرحباً ' . $this->booking->customer_name;
+            ? 'مرحباً '.$notifiable->name
+            : 'مرحباً '.$this->booking->customer_name;
 
         $line = $this->isForMerchant($notifiable)
-            ? 'تم استلام دفعة للحجز: ' . $this->booking->booking_reference
-            : 'تم تأكيد دفعتك للحجز: ' . $this->booking->booking_reference;
+            ? 'تم استلام دفعة للحجز: '.$this->booking->booking_reference
+            : 'تم تأكيد دفعتك للحجز: '.$this->booking->booking_reference;
 
         return (new MailMessage)
             ->subject($subject)
             ->greeting($greeting)
             ->line($line)
-            ->line('المبلغ المدفوع: ' . number_format($this->amount, 2) . ' ريال')
-            ->line('طريقة الدفع: ' . $this->getPaymentMethodText())
-            ->line('الخدمة: ' . $this->booking->service->name)
-            ->line('تاريخ الحجز: ' . $this->booking->booking_date->format('Y-m-d H:i'))
-            ->action('عرض تفاصيل الحجز', url('/bookings/' . $this->booking->id))
+            ->line('المبلغ المدفوع: '.number_format($this->amount, 2).' ريال')
+            ->line('طريقة الدفع: '.$this->getPaymentMethodText())
+            ->line('الخدمة: '.$this->booking->service->name)
+            ->line('تاريخ الحجز: '.$this->booking->booking_date->format('Y-m-d H:i'))
+            ->action('عرض تفاصيل الحجز', url('/bookings/'.$this->booking->id))
             ->line('شكراً لك!');
     }
 
@@ -84,9 +86,9 @@ class PaymentReceivedNotification extends Notification implements ShouldQueue
             'amount' => $this->amount,
             'payment_method' => $this->paymentMethod,
             'customer_name' => $this->booking->customer_name,
-            'message' => $this->isForMerchant($notifiable) 
-                ? 'تم استلام دفعة بمبلغ ' . number_format($this->amount, 2) . ' ريال'
-                : 'تم تأكيد دفعتك بمبلغ ' . number_format($this->amount, 2) . ' ريال',
+            'message' => $this->isForMerchant($notifiable)
+                ? 'تم استلام دفعة بمبلغ '.number_format($this->amount, 2).' ريال'
+                : 'تم تأكيد دفعتك بمبلغ '.number_format($this->amount, 2).' ريال',
         ];
     }
 
@@ -99,9 +101,9 @@ class PaymentReceivedNotification extends Notification implements ShouldQueue
             'id' => $this->id,
             'type' => 'payment_received',
             'title' => $this->isForMerchant($notifiable) ? 'دفعة جديدة' : 'تأكيد الدفع',
-            'message' => $this->isForMerchant($notifiable) 
-                ? 'تم استلام دفعة بمبلغ ' . number_format($this->amount, 2) . ' ريال'
-                : 'تم تأكيد دفعتك بمبلغ ' . number_format($this->amount, 2) . ' ريال',
+            'message' => $this->isForMerchant($notifiable)
+                ? 'تم استلام دفعة بمبلغ '.number_format($this->amount, 2).' ريال'
+                : 'تم تأكيد دفعتك بمبلغ '.number_format($this->amount, 2).' ريال',
             'data' => $this->toDatabase($notifiable),
             'created_at' => now()->toISOString(),
         ]);

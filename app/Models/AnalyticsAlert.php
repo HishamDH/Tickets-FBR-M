@@ -113,7 +113,7 @@ class AnalyticsAlert extends Model
     public static function cleanupOldAlerts($days = 30)
     {
         return static::where('triggered_at', '<', now()->subDays($days))
-                    ->where('is_dismissed', true)
-                    ->delete();
+            ->where('is_dismissed', true)
+            ->delete();
     }
 }

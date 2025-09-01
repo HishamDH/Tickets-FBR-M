@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Models\Booking;
+use App\Models\MerchantPaymentSetting;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
-use App\Models\MerchantPaymentSetting;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class PaymentService
 {
@@ -26,8 +26,8 @@ class PaymentService
                 ->where('is_enabled', true)
                 ->first();
 
-            if (!$merchantSetting) {
-                throw new Exception("بوابة الدفع غير مفعلة لدى التاجر");
+            if (! $merchantSetting) {
+                throw new Exception('بوابة الدفع غير مفعلة لدى التاجر');
             }
 
             // حساب الرسوم
@@ -54,7 +54,7 @@ class PaymentService
             ]);
 
             DB::commit();
-            
+
             Log::info('Payment created successfully', [
                 'payment_id' => $payment->id,
                 'booking_id' => $booking->id,
@@ -82,33 +82,33 @@ class PaymentService
     {
         try {
             $gateway = $payment->paymentGateway;
-            
+
             switch ($gateway->provider) {
                 case 'stripe':
                     return $this->processStripePayment($payment, $paymentData);
-                
+
                 case 'bank_integration':
                 case 'stc_integration':
                     return $this->processBankIntegrationPayment($payment, $paymentData);
-                
+
                 case 'manual':
                     return $this->processManualPayment($payment, $paymentData);
-                
+
                 default:
-                    throw new Exception("مقدم الخدمة غير مدعوم: " . $gateway->provider);
+                    throw new Exception('مقدم الخدمة غير مدعوم: '.$gateway->provider);
             }
 
         } catch (Exception $e) {
             $payment->updateStatus('failed', [
                 'failure_reason' => $e->getMessage(),
             ]);
-            
+
             Log::error('Payment processing failed', [
                 'payment_id' => $payment->id,
                 'gateway' => $payment->paymentGateway->code,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
@@ -120,11 +120,11 @@ class PaymentService
     {
         // في الوقت الحالي نضع placeholder للتكامل المستقبلي مع Stripe
         // يمكن تفعيله عند الحاجة
-        
+
         // محاكاة نجاح الدفع للاختبار
         if (config('app.env') === 'local' && isset($paymentData['simulate_success'])) {
             $payment->updateStatus('completed', [
-                'gateway_transaction_id' => 'stripe_' . uniqid(),
+                'gateway_transaction_id' => 'stripe_'.uniqid(),
                 'gateway_response' => [
                     'status' => 'succeeded',
                     'payment_method' => $paymentData['payment_method'] ?? 'card',
@@ -191,15 +191,15 @@ class PaymentService
     {
         try {
             $gateway = $payment->paymentGateway;
-            
+
             switch ($gateway->provider) {
                 case 'stripe':
                     return $this->verifyStripePayment($payment, $webhookData);
-                
+
                 case 'bank_integration':
                 case 'stc_integration':
                     return $this->verifyBankPayment($payment, $webhookData);
-                
+
                 default:
                     return false;
             }
@@ -209,6 +209,7 @@ class PaymentService
                 'payment_id' => $payment->id,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -237,34 +238,35 @@ class PaymentService
     protected function calculatePlatformFee(float $amount): float
     {
         $platformFeeRate = config('payment.platform_fee_rate', 1.0); // 1% افتراضي
+
         return $amount * ($platformFeeRate / 100);
     }
 
     /**
      * استرداد المبلغ
      */
-    public function refundPayment(Payment $payment, float $amount = null, string $reason = null): bool
+    public function refundPayment(Payment $payment, ?float $amount = null, ?string $reason = null): bool
     {
         try {
-            if (!$payment->canBeRefunded()) {
+            if (! $payment->canBeRefunded()) {
                 throw new Exception('لا يمكن استرداد هذه الدفعة');
             }
 
             $refundAmount = $amount ?? $payment->total_amount;
-            
+
             // معالجة الاسترداد حسب البوابة
             $gateway = $payment->paymentGateway;
-            
+
             switch ($gateway->provider) {
                 case 'stripe':
                     $result = $this->processStripeRefund($payment, $refundAmount, $reason);
                     break;
-                
+
                 case 'bank_integration':
                 case 'stc_integration':
                     $result = $this->processBankRefund($payment, $refundAmount, $reason);
                     break;
-                
+
                 default:
                     throw new Exception('الاسترداد غير مدعوم لهذه البوابة');
             }
@@ -289,6 +291,7 @@ class PaymentService
                 'payment_id' => $payment->id,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -296,7 +299,7 @@ class PaymentService
     /**
      * استرداد عبر Stripe
      */
-    protected function processStripeRefund(Payment $payment, float $amount, string $reason = null): bool
+    protected function processStripeRefund(Payment $payment, float $amount, ?string $reason = null): bool
     {
         // placeholder لاسترداد Stripe
         return false;
@@ -305,7 +308,7 @@ class PaymentService
     /**
      * استرداد عبر البنك
      */
-    protected function processBankRefund(Payment $payment, float $amount, string $reason = null): bool
+    protected function processBankRefund(Payment $payment, float $amount, ?string $reason = null): bool
     {
         // placeholder لاسترداد البنك
         return false;

@@ -15,7 +15,7 @@ return new class extends Migration
             // Add foreign key constraints
             $table->foreign('conversation_id')->references('id')->on('conversations')->onDelete('cascade');
             $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');
-            
+
             // Add indexes for better performance
             $table->index(['conversation_id', 'created_at']);
             $table->index(['sender_id', 'created_at']);

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Crypt;
 
 class MerchantPaymentSetting extends Model
 {
@@ -70,7 +69,7 @@ class MerchantPaymentSetting extends Model
      */
     public function setGatewayCredentialsAttribute($value)
     {
-        if (is_array($value) && !empty($value)) {
+        if (is_array($value) && ! empty($value)) {
             $this->attributes['gateway_credentials'] = json_encode($value);
         } else {
             $this->attributes['gateway_credentials'] = null;
@@ -98,7 +97,7 @@ class MerchantPaymentSetting extends Model
      */
     public function calculateCustomFee(float $amount): float
     {
-        if (!$this->custom_fee) {
+        if (! $this->custom_fee) {
             return $this->paymentGateway->calculateFee($amount);
         }
 
@@ -114,8 +113,8 @@ class MerchantPaymentSetting extends Model
      */
     public function isConfigured(): bool
     {
-        return $this->is_enabled && 
-               !empty($this->gateway_credentials) && 
+        return $this->is_enabled &&
+               ! empty($this->gateway_credentials) &&
                $this->test_passed;
     }
 }

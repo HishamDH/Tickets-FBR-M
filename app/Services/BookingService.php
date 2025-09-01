@@ -4,13 +4,11 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\Service;
-use App\Models\User;
 use App\Models\ServiceAvailability;
-use App\Services\PaymentService;
-use App\Services\NotificationService;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class BookingService
 {
@@ -22,13 +20,13 @@ class BookingService
     /**
      * إنشاء حجز جديد
      */
-    public function createBooking(array $data, User $customer = null): Booking
+    public function createBooking(array $data, ?User $customer = null): Booking
     {
         return DB::transaction(function () use ($data, $customer) {
             // التحقق من توفر الخدمة
             $service = Service::findOrFail($data['service_id']);
-            
-            if (!$service->isBookable()) {
+
+            if (! $service->isBookable()) {
                 throw new \Exception('هذه الخدمة غير متاحة للحجز حالياً');
             }
 
@@ -52,7 +50,7 @@ class BookingService
                 'commission_rate' => $amounts['commission_rate'],
                 'special_requests' => $data['special_requests'] ?? null,
                 'qr_code' => $this->generateQrCode(),
-                
+
                 // للعملاء غير المسجلين
                 'customer_name' => $data['customer_name'] ?? $customer?->name,
                 'customer_phone' => $data['customer_phone'] ?? $customer?->phone,
@@ -73,7 +71,7 @@ class BookingService
                 'booking_id' => $booking->id,
                 'booking_number' => $booking->booking_number,
                 'service_id' => $service->id,
-                'customer_id' => $customer?->id
+                'customer_id' => $customer?->id,
             ]);
 
             return $booking;
@@ -87,18 +85,18 @@ class BookingService
     {
         try {
             $booking->update(['booking_status' => 'confirmed']);
-            
+
             $this->notificationService->sendBookingConfirmation($booking);
-            
+
             Log::info('Booking confirmed', ['booking_id' => $booking->id]);
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to confirm booking', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -132,14 +130,14 @@ class BookingService
             Log::info('Booking cancelled', [
                 'booking_id' => $booking->id,
                 'reason' => $reason,
-                'cancelled_by' => $cancelledBy->id
+                'cancelled_by' => $cancelledBy->id,
             ]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to cancel booking', [
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return false;
@@ -152,7 +150,7 @@ class BookingService
     protected function validateBookingDate(Service $service, string $bookingDate): void
     {
         $date = Carbon::parse($bookingDate);
-        
+
         if ($date->isPast()) {
             throw new \Exception('لا يمكن الحجز في تاريخ مضى');
         }
@@ -162,7 +160,7 @@ class BookingService
             ->where('available_date', $date->toDateString())
             ->first();
 
-        if (!$availability || !$availability->isAvailableForBooking()) {
+        if (! $availability || ! $availability->isAvailableForBooking()) {
             throw new \Exception('التاريخ المحدد غير متاح للحجز');
         }
     }
@@ -174,9 +172,9 @@ class BookingService
     {
         $basePrice = $service->base_price ?? $service->price;
         $guestCount = $data['guest_count'] ?? 1;
-        
+
         // حساب السعر الأساسي
-        $subtotal = match($service->pricing_model) {
+        $subtotal = match ($service->pricing_model) {
             'per_person' => $basePrice * $guestCount,
             'per_hour' => $basePrice * ($data['duration_hours'] ?? $service->duration_hours ?? 1),
             'per_table' => $basePrice * ($data['number_of_tables'] ?? 1),
@@ -229,7 +227,7 @@ class BookingService
     protected function generateBookingNumber(): string
     {
         do {
-            $number = 'TKT-' . date('Y') . '-' . str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+            $number = 'TKT-'.date('Y').'-'.str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
         } while (Booking::where('booking_number', $number)->exists());
 
         return $number;
@@ -261,10 +259,10 @@ class BookingService
     /**
      * الحصول على إحصائيات الحجوزات
      */
-    public function getBookingStatistics(Service $service = null): array
+    public function getBookingStatistics(?Service $service = null): array
     {
         $query = Booking::query();
-        
+
         if ($service) {
             $query->where('service_id', $service->id);
         }

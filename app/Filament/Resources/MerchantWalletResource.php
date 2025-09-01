@@ -5,15 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MerchantWalletResource\Pages;
 use App\Models\MerchantWallet;
 use App\Models\User;
-use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class MerchantWalletResource extends Resource
 {

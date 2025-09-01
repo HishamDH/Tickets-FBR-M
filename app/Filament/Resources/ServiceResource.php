@@ -3,18 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ServiceResource\Pages;
-use App\Filament\Resources\ServiceResource\RelationManagers;
 use App\Models\Service;
-use App\Models\Merchant;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 
 class ServiceResource extends Resource
 {
@@ -43,7 +39,7 @@ class ServiceResource extends Resource
                                 ->searchable()
                                 ->preload()
                                 ->required(),
-                                
+
                             Forms\Components\Select::make('service_type')
                                 ->label('نوع الخدمة')
                                 ->options([
@@ -55,24 +51,24 @@ class ServiceResource extends Resource
                                 ->required()
                                 ->native(false),
                         ]),
-                        
+
                         Forms\Components\TextInput::make('name')
                             ->label('اسم الخدمة')
                             ->required()
                             ->maxLength(255),
-                            
+
                         Forms\Components\Textarea::make('description')
                             ->label('الوصف')
                             ->required()
                             ->rows(3)
                             ->columnSpanFull(),
-                            
+
                         Grid::make(2)->schema([
                             Forms\Components\TextInput::make('location')
                                 ->label('الموقع')
                                 ->required()
                                 ->maxLength(255),
-                                
+
                             Forms\Components\Select::make('category')
                                 ->label('الفئة')
                                 ->options([
@@ -86,7 +82,7 @@ class ServiceResource extends Resource
                                 ->native(false),
                         ]),
                     ]),
-                    
+
                 Section::make('التسعير والسعة')
                     ->schema([
                         Grid::make(3)->schema([
@@ -101,33 +97,33 @@ class ServiceResource extends Resource
                                 ])
                                 ->required()
                                 ->native(false),
-                                
+
                             Forms\Components\TextInput::make('base_price')
                                 ->label('السعر الأساسي')
                                 ->numeric()
                                 ->prefix('ريال')
                                 ->required(),
-                                
+
                             Forms\Components\TextInput::make('currency')
                                 ->label('العملة')
                                 ->maxLength(3)
                                 ->default('SAR')
                                 ->required(),
                         ]),
-                        
+
                         Grid::make(2)->schema([
                             Forms\Components\TextInput::make('capacity')
                                 ->label('السعة القصوى')
                                 ->numeric()
                                 ->suffix('شخص'),
-                                
+
                             Forms\Components\TextInput::make('duration_hours')
                                 ->label('المدة (بالساعات)')
                                 ->numeric()
                                 ->suffix('ساعة'),
                         ]),
                     ]),
-                    
+
                 Section::make('المميزات والإعدادات')
                     ->schema([
                         Forms\Components\Textarea::make('features')
@@ -135,31 +131,31 @@ class ServiceResource extends Resource
                             ->placeholder('مثال: خرائط مقاعد، تحقق QR، بادجات مخصصة')
                             ->rows(2)
                             ->columnSpanFull(),
-                            
+
                         Forms\Components\FileUpload::make('image')
                             ->label('صورة رئيسية')
                             ->image()
                             ->directory('services')
                             ->columnSpanFull(),
-                            
+
                         Grid::make(4)->schema([
                             Forms\Components\Toggle::make('is_featured')
                                 ->label('خدمة مميزة')
                                 ->default(false),
-                                
+
                             Forms\Components\Toggle::make('is_available')
                                 ->label('متاحة للحجز')
                                 ->default(true),
-                                
+
                             Forms\Components\Toggle::make('online_booking_enabled')
                                 ->label('الحجز الإلكتروني')
                                 ->default(true),
-                                
+
                             Forms\Components\Toggle::make('is_active')
                                 ->label('نشطة')
                                 ->default(true),
                         ]),
-                        
+
                         Forms\Components\Select::make('status')
                             ->label('الحالة')
                             ->options([
@@ -183,23 +179,23 @@ class ServiceResource extends Resource
                     ->label('الصورة')
                     ->circular()
                     ->size(50),
-                    
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم الخدمة')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
-                    
+
                 Tables\Columns\TextColumn::make('merchant.business_name')
                     ->label('التاجر')
                     ->sortable()
                     ->searchable(),
-                    
+
                 Tables\Columns\BadgeColumn::make('service_type')
                     ->label('النوع')
                     ->colors([
                         'primary' => 'event',
-                        'success' => 'exhibition', 
+                        'success' => 'exhibition',
                         'warning' => 'restaurant',
                         'danger' => 'experience',
                     ])
@@ -210,18 +206,18 @@ class ServiceResource extends Resource
                         'experience' => 'تجربة',
                         default => $state,
                     }),
-                    
+
                 Tables\Columns\TextColumn::make('base_price')
                     ->label('السعر')
                     ->money('SAR')
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('capacity')
                     ->label('السعة')
                     ->numeric()
                     ->sortable()
                     ->suffix(' شخص'),
-                    
+
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('الحالة')
                     ->colors([
@@ -237,7 +233,7 @@ class ServiceResource extends Resource
                         'archived' => 'مؤرشفة',
                         default => $state,
                     }),
-                    
+
                 Tables\Columns\IconColumn::make('is_featured')
                     ->label('مميزة')
                     ->boolean()
@@ -245,7 +241,7 @@ class ServiceResource extends Resource
                     ->falseIcon('heroicon-o-star')
                     ->trueColor('warning')
                     ->falseColor('gray'),
-                    
+
                 Tables\Columns\IconColumn::make('online_booking_enabled')
                     ->label('حجز إلكتروني')
                     ->boolean()
@@ -253,7 +249,7 @@ class ServiceResource extends Resource
                     ->falseIcon('heroicon-o-globe-alt')
                     ->trueColor('success')
                     ->falseColor('gray'),
-                    
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime('d/m/Y H:i')
@@ -269,7 +265,7 @@ class ServiceResource extends Resource
                         'restaurant' => 'مطعم',
                         'experience' => 'تجربة',
                     ]),
-                    
+
                 Tables\Filters\SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([
@@ -278,10 +274,10 @@ class ServiceResource extends Resource
                         'paused' => 'معلقة',
                         'archived' => 'مؤرشفة',
                     ]),
-                    
+
                 Tables\Filters\TernaryFilter::make('is_featured')
                     ->label('خدمة مميزة'),
-                    
+
                 Tables\Filters\TernaryFilter::make('online_booking_enabled')
                     ->label('الحجز الإلكتروني'),
             ])

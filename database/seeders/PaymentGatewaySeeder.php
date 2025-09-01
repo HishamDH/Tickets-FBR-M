@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\PaymentGateway;
+use Illuminate\Database\Seeder;
 
 class PaymentGatewaySeeder extends Seeder
 {
@@ -32,7 +31,7 @@ class PaymentGatewaySeeder extends Seeder
                     'max_amount' => 100000,
                     'supported_currencies' => ['SAR', 'USD'],
                     'requires_3ds' => true,
-                ]
+                ],
             ],
             [
                 'name' => 'MasterCard',
@@ -52,7 +51,7 @@ class PaymentGatewaySeeder extends Seeder
                     'max_amount' => 100000,
                     'supported_currencies' => ['SAR', 'USD'],
                     'requires_3ds' => true,
-                ]
+                ],
             ],
             [
                 'name' => 'Mada',
@@ -72,7 +71,7 @@ class PaymentGatewaySeeder extends Seeder
                     'max_amount' => 50000,
                     'supported_currencies' => ['SAR'],
                     'requires_3ds' => false,
-                ]
+                ],
             ],
             [
                 'name' => 'Apple Pay',
@@ -92,7 +91,7 @@ class PaymentGatewaySeeder extends Seeder
                     'max_amount' => 100000,
                     'supported_currencies' => ['SAR', 'USD'],
                     'requires_device_support' => true,
-                ]
+                ],
             ],
             [
                 'name' => 'STC Pay',
@@ -112,7 +111,7 @@ class PaymentGatewaySeeder extends Seeder
                     'max_amount' => 30000,
                     'supported_currencies' => ['SAR'],
                     'requires_phone_verification' => true,
-                ]
+                ],
             ],
             [
                 'name' => 'Bank Transfer',
@@ -132,8 +131,8 @@ class PaymentGatewaySeeder extends Seeder
                     'max_amount' => 500000,
                     'supported_currencies' => ['SAR'],
                     'requires_manual_verification' => true,
-                ]
-            ]
+                ],
+            ],
         ];
 
         foreach ($gateways as $gateway) {

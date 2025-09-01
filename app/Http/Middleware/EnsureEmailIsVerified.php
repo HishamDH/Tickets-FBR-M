@@ -16,7 +16,7 @@ class EnsureEmailIsVerified
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
@@ -28,11 +28,11 @@ class EnsureEmailIsVerified
         }
 
         // Check if email is verified
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'يجب تأكيد البريد الإلكتروني للمتابعة',
-                    'email' => $user->email
+                    'email' => $user->email,
                 ], 403);
             }
 

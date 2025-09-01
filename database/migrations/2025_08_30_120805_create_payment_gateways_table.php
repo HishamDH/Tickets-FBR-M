@@ -27,7 +27,7 @@ return new class extends Migration
             $table->boolean('supports_refund')->default(false); // دعم الاسترداد
             $table->integer('sort_order')->default(0); // ترتيب العرض
             $table->timestamps();
-            
+
             $table->index(['is_active', 'sort_order']);
         });
     }

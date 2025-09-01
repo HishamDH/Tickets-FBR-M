@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\MerchantWallet;
-use App\Models\WalletTransaction;
 use App\Models\Booking;
+use App\Models\MerchantWallet;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\WalletTransaction;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class WalletService
 {
@@ -30,7 +30,7 @@ class WalletService
     public function addCommission(Booking $booking, Payment $payment): WalletTransaction
     {
         $wallet = $this->getOrCreateWallet($booking->merchant_id);
-        
+
         // Calculate commission (payment amount minus platform fee)
         $platformFeeRate = $this->getPlatformFeeRate($booking->merchant);
         $platformFee = $payment->amount * ($platformFeeRate / 100);
@@ -64,21 +64,21 @@ class WalletService
             ]);
 
             DB::commit();
-            
-            Log::info("Commission added to merchant wallet", [
+
+            Log::info('Commission added to merchant wallet', [
                 'merchant_id' => $booking->merchant_id,
                 'booking_id' => $booking->id,
                 'amount' => $commissionAmount,
-                'new_balance' => $newBalance
+                'new_balance' => $newBalance,
             ]);
 
             return $transaction;
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Failed to add commission", [
+            Log::error('Failed to add commission', [
                 'merchant_id' => $booking->merchant_id,
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -120,12 +120,12 @@ class WalletService
             ]);
 
             DB::commit();
-            
-            Log::info("Payout processed", [
+
+            Log::info('Payout processed', [
                 'merchant_id' => $merchantId,
                 'amount' => $amount,
                 'method' => $method,
-                'new_balance' => $newBalance
+                'new_balance' => $newBalance,
             ]);
 
             // Here you would integrate with actual payout provider
@@ -134,10 +134,10 @@ class WalletService
             return $transaction;
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Payout processing failed", [
+            Log::error('Payout processing failed', [
                 'merchant_id' => $merchantId,
                 'amount' => $amount,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -176,21 +176,21 @@ class WalletService
             ]);
 
             DB::commit();
-            
-            Log::info("Refund deducted from merchant wallet", [
+
+            Log::info('Refund deducted from merchant wallet', [
                 'merchant_id' => $booking->merchant_id,
                 'booking_id' => $booking->id,
                 'amount' => $refundAmount,
-                'new_balance' => $newBalance
+                'new_balance' => $newBalance,
             ]);
 
             return $transaction;
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Refund deduction failed", [
+            Log::error('Refund deduction failed', [
                 'merchant_id' => $booking->merchant_id,
                 'booking_id' => $booking->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -206,7 +206,7 @@ class WalletService
         DB::beginTransaction();
         try {
             $oldBalance = $wallet->balance;
-            
+
             if ($amount > 0) {
                 $wallet->increment('balance', $amount);
                 $transactionType = 'credit';
@@ -214,7 +214,7 @@ class WalletService
                 $wallet->decrement('balance', abs($amount));
                 $transactionType = 'debit';
             }
-            
+
             $newBalance = $wallet->fresh()->balance;
 
             $transaction = WalletTransaction::create([
@@ -234,21 +234,21 @@ class WalletService
             ]);
 
             DB::commit();
-            
-            Log::info("Wallet adjustment applied", [
+
+            Log::info('Wallet adjustment applied', [
                 'merchant_id' => $merchantId,
                 'amount' => $amount,
                 'type' => $type,
-                'new_balance' => $newBalance
+                'new_balance' => $newBalance,
             ]);
 
             return $transaction;
         } catch (Exception $e) {
             DB::rollback();
-            Log::error("Wallet adjustment failed", [
+            Log::error('Wallet adjustment failed', [
                 'merchant_id' => $merchantId,
                 'amount' => $amount,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -260,6 +260,7 @@ class WalletService
     public function getBalance(int $merchantId): float
     {
         $wallet = $this->getOrCreateWallet($merchantId);
+
         return $wallet->balance;
     }
 
@@ -269,15 +270,15 @@ class WalletService
     public function getTransactionHistory(int $merchantId, int $limit = 50, ?string $category = null)
     {
         $wallet = $this->getOrCreateWallet($merchantId);
-        
+
         $query = WalletTransaction::where('merchant_wallet_id', $wallet->id)
             ->with(['booking', 'payment'])
             ->orderBy('created_at', 'desc');
-            
+
         if ($category) {
             $query->where('category', $category);
         }
-        
+
         return $query->paginate($limit);
     }
 
@@ -287,8 +288,8 @@ class WalletService
     public function getWalletStats(int $merchantId, ?string $period = 'month'): array
     {
         $wallet = $this->getOrCreateWallet($merchantId);
-        
-        $dateFrom = match($period) {
+
+        $dateFrom = match ($period) {
             'week' => now()->subWeek(),
             'month' => now()->subMonth(),
             'quarter' => now()->subQuarter(),
@@ -320,7 +321,7 @@ class WalletService
     {
         $wallet = $this->getOrCreateWallet($merchantId);
         $minPayoutAmount = 50; // Minimum payout amount
-        
+
         $result = [
             'can_payout' => false,
             'available_balance' => $wallet->balance,
@@ -331,10 +332,10 @@ class WalletService
         if ($amount < $minPayoutAmount) {
             $result['message'] = "Minimum payout amount is {$minPayoutAmount}";
         } elseif ($wallet->balance < $amount) {
-            $result['message'] = "Insufficient balance";
+            $result['message'] = 'Insufficient balance';
         } else {
             $result['can_payout'] = true;
-            $result['message'] = "Payout can be processed";
+            $result['message'] = 'Payout can be processed';
         }
 
         return $result;
@@ -354,7 +355,7 @@ class WalletService
      */
     protected function generateTransactionReference(string $prefix = 'TXN'): string
     {
-        return $prefix . '-' . strtoupper(uniqid());
+        return $prefix.'-'.strtoupper(uniqid());
     }
 
     /**
@@ -366,25 +367,25 @@ class WalletService
             // Here you would integrate with actual payout provider
             // For now, we'll simulate a successful payout
             sleep(1); // Simulate API call
-            
+
             $transaction->update([
                 'status' => 'completed',
                 'metadata' => array_merge($transaction->metadata ?? [], [
-                    'external_reference' => 'EXT_' . uniqid(),
+                    'external_reference' => 'EXT_'.uniqid(),
                     'processed_by' => 'system',
                     'completion_time' => now(),
-                ])
+                ]),
             ]);
-            
-            Log::info("External payout processed successfully", [
+
+            Log::info('External payout processed successfully', [
                 'transaction_id' => $transaction->id,
-                'amount' => $transaction->amount
+                'amount' => $transaction->amount,
             ]);
         } catch (Exception $e) {
             $transaction->update(['status' => 'failed']);
-            Log::error("External payout failed", [
+            Log::error('External payout failed', [
                 'transaction_id' => $transaction->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -410,9 +411,10 @@ class WalletService
             throw new Exception('Only pending payout transactions can be approved');
         }
 
-        return DB::transaction(function() use ($transaction) {
+        return DB::transaction(function () use ($transaction) {
             $transaction->update(['status' => 'completed']);
             $this->processExternalPayout($transaction);
+
             return true;
         });
     }

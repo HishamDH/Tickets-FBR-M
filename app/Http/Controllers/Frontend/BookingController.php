@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Offering;
 use App\Models\Booking;
+use App\Models\Offering;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -20,7 +20,7 @@ class BookingController extends Controller
     public function show(Offering $offering)
     {
         $offering->load(['merchant.user']);
-        
+
         return view('frontend.booking-form', compact('offering'));
     }
 
@@ -38,7 +38,7 @@ class BookingController extends Controller
 
         // Create booking
         $booking = Booking::create([
-            'booking_reference' => 'BK-' . Str::upper(Str::random(8)),
+            'booking_reference' => 'BK-'.Str::upper(Str::random(8)),
             'customer_id' => Auth::id(),
             'service_id' => $offering->id,
             'merchant_id' => $offering->merchant_id,
@@ -56,7 +56,7 @@ class BookingController extends Controller
         ]);
 
         return redirect()->route('booking.confirmation', $booking)
-                        ->with('success', 'Your booking has been submitted successfully!');
+            ->with('success', 'Your booking has been submitted successfully!');
     }
 
     public function confirmation(Booking $booking)
@@ -80,6 +80,7 @@ class BookingController extends Controller
 
         if ($booking->status === 'pending') {
             $booking->update(['status' => 'cancelled']);
+
             return back()->with('success', 'Booking cancelled successfully.');
         }
 

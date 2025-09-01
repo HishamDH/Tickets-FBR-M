@@ -16,7 +16,7 @@ class CheckMerchantStatus
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
@@ -29,10 +29,11 @@ class CheckMerchantStatus
 
         $merchant = $user->merchant;
 
-        if (!$merchant) {
+        if (! $merchant) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'ملف التاجر غير موجود'], 404);
             }
+
             return redirect()->route('merchant.setup')
                 ->with('warning', 'يجب إكمال إعداد ملف التاجر أولاً');
         }
@@ -43,7 +44,7 @@ class CheckMerchantStatus
                 'pending' => 'حسابك قيد المراجعة، يرجى انتظار الموافقة من الإدارة',
                 'suspended' => 'تم تعليق حسابك، يرجى التواصل مع الإدارة',
                 'rejected' => 'تم رفض طلب التسجيل، يرجى مراجعة البيانات والتقديم مرة أخرى',
-                'inactive' => 'حسابك غير نشط، يرجى التواصل مع الإدارة'
+                'inactive' => 'حسابك غير نشط، يرجى التواصل مع الإدارة',
             ];
 
             $message = $messages[$merchant->status] ?? 'حالة الحساب غير صحيحة';
@@ -51,7 +52,7 @@ class CheckMerchantStatus
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => $message,
-                    'status' => $merchant->status
+                    'status' => $merchant->status,
                 ], 403);
             }
 
@@ -60,10 +61,11 @@ class CheckMerchantStatus
         }
 
         // Check if merchant has completed required setup
-        if (!$merchant->is_profile_complete) {
+        if (! $merchant->is_profile_complete) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'يجب إكمال الملف الشخصي'], 400);
             }
+
             return redirect()->route('merchant.profile.complete')
                 ->with('info', 'يرجى إكمال المعلومات المطلوبة في ملفك الشخصي');
         }

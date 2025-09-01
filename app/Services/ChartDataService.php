@@ -3,11 +3,9 @@
 namespace App\Services;
 
 use App\Models\Booking;
-use App\Models\User;
 use App\Models\Service;
+use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 
 class ChartDataService
 {
@@ -18,7 +16,7 @@ class ChartDataService
     {
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays($period);
-        
+
         return [
             'revenue_chart' => $this->getRevenueChart($startDate, $endDate, 'day'),
             'bookings_chart' => $this->getBookingsChart($startDate, $endDate, 'day'),
@@ -36,18 +34,18 @@ class ChartDataService
     {
         $groupByClause = $this->getGroupByClause($groupBy);
         $dateFormat = $this->getDateFormat($groupBy);
-        
+
         $data = Booking::selectRaw("{$groupByClause} as period, SUM(total_amount) as revenue, COUNT(*) as bookings")
             ->whereBetween('booking_date', [$startDate, $endDate])
             ->where('status', 'completed')
             ->groupBy('period')
             ->orderBy('period')
             ->get();
-            
+
         return [
             'type' => 'line',
             'data' => [
-                'labels' => $data->pluck('period')->map(function($period) use ($dateFormat) {
+                'labels' => $data->pluck('period')->map(function ($period) use ($dateFormat) {
                     return Carbon::parse($period)->format($dateFormat);
                 })->toArray(),
                 'datasets' => [
@@ -58,8 +56,8 @@ class ChartDataService
                         'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
                         'fill' => true,
                         'tension' => 0.4,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'options' => [
                 'responsive' => true,
@@ -72,17 +70,17 @@ class ChartDataService
                     'tooltip' => [
                         'mode' => 'index',
                         'intersect' => false,
-                    ]
+                    ],
                 ],
                 'scales' => [
                     'y' => [
                         'beginAtZero' => true,
                         'ticks' => [
-                            'callback' => 'function(value) { return value.toLocaleString() + " ريال"; }'
-                        ]
-                    ]
-                ]
-            ]
+                            'callback' => 'function(value) { return value.toLocaleString() + " ريال"; }',
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -93,7 +91,7 @@ class ChartDataService
     {
         $groupByClause = $this->getGroupByClause($groupBy);
         $dateFormat = $this->getDateFormat($groupBy);
-        
+
         $data = Booking::selectRaw("{$groupByClause} as period")
             ->selectRaw('COUNT(*) as total_bookings')
             ->selectRaw('SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_bookings')
@@ -103,11 +101,11 @@ class ChartDataService
             ->groupBy('period')
             ->orderBy('period')
             ->get();
-            
+
         return [
             'type' => 'bar',
             'data' => [
-                'labels' => $data->pluck('period')->map(function($period) use ($dateFormat) {
+                'labels' => $data->pluck('period')->map(function ($period) use ($dateFormat) {
                     return Carbon::parse($period)->format($dateFormat);
                 })->toArray(),
                 'datasets' => [
@@ -131,8 +129,8 @@ class ChartDataService
                         'backgroundColor' => 'rgba(239, 68, 68, 0.8)',
                         'borderColor' => 'rgb(239, 68, 68)',
                         'borderWidth' => 1,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'options' => [
                 'responsive' => true,
@@ -141,7 +139,7 @@ class ChartDataService
                     'legend' => [
                         'display' => true,
                         'position' => 'top',
-                    ]
+                    ],
                 ],
                 'scales' => [
                     'x' => [
@@ -150,9 +148,9 @@ class ChartDataService
                     'y' => [
                         'beginAtZero' => true,
                         'stacked' => false,
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -171,7 +169,7 @@ class ChartDataService
             ->orderBy('revenue', 'desc')
             ->limit($limit)
             ->get();
-            
+
         $colors = [
             'rgba(59, 130, 246, 0.8)',   // Blue
             'rgba(34, 197, 94, 0.8)',    // Green
@@ -182,7 +180,7 @@ class ChartDataService
             'rgba(20, 184, 166, 0.8)',   // Teal
             'rgba(245, 101, 101, 0.8)',  // Orange
         ];
-        
+
         return [
             'type' => 'doughnut',
             'data' => [
@@ -193,8 +191,8 @@ class ChartDataService
                         'backgroundColor' => array_slice($colors, 0, $data->count()),
                         'borderWidth' => 2,
                         'borderColor' => '#ffffff',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'options' => [
                 'responsive' => true,
@@ -208,11 +206,11 @@ class ChartDataService
                         'callbacks' => [
                             'label' => 'function(context) { 
                                 return context.label + ": " + context.parsed.toLocaleString() + " ريال"; 
-                            }'
-                        ]
-                    ]
-                ]
-            ]
+                            }',
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -234,7 +232,7 @@ class ChartDataService
             ->orderBy('revenue', 'desc')
             ->limit($limit)
             ->get();
-            
+
         return [
             'type' => 'bar',
             'data' => [
@@ -255,8 +253,8 @@ class ChartDataService
                         'borderColor' => 'rgb(34, 197, 94)',
                         'borderWidth' => 1,
                         'yAxisID' => 'y1',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'options' => [
                 'responsive' => true,
@@ -265,7 +263,7 @@ class ChartDataService
                     'legend' => [
                         'display' => true,
                         'position' => 'top',
-                    ]
+                    ],
                 ],
                 'scales' => [
                     'y' => [
@@ -282,9 +280,9 @@ class ChartDataService
                         'grid' => [
                             'drawOnChartArea' => false,
                         ],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -296,14 +294,14 @@ class ChartDataService
         $avgRating = Booking::whereBetween('booking_date', [$startDate, $endDate])
             ->whereNotNull('rating')
             ->avg('rating') ?? 0;
-            
+
         $ratingDistribution = Booking::selectRaw('rating, COUNT(*) as count')
             ->whereBetween('booking_date', [$startDate, $endDate])
             ->whereNotNull('rating')
             ->groupBy('rating')
             ->orderBy('rating')
             ->get();
-            
+
         return [
             'type' => 'doughnut',
             'data' => [
@@ -324,8 +322,8 @@ class ChartDataService
                         ],
                         'borderWidth' => 2,
                         'borderColor' => '#ffffff',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'options' => [
                 'responsive' => true,
@@ -334,8 +332,8 @@ class ChartDataService
                     'legend' => [
                         'display' => true,
                         'position' => 'bottom',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'average_rating' => round($avgRating, 1),
             'total_ratings' => $ratingDistribution->sum('count'),
@@ -356,7 +354,7 @@ class ChartDataService
         $ratedBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])
             ->whereNotNull('rating')
             ->count();
-            
+
         return [
             'type' => 'funnel',
             'data' => [
@@ -369,15 +367,15 @@ class ChartDataService
                             'rgba(34, 197, 94, 0.8)',
                             'rgba(251, 191, 36, 0.8)',
                             'rgba(168, 85, 247, 0.8)',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             'conversion_rates' => [
                 'view_to_booking' => $totalViews > 0 ? round(($totalBookings / $totalViews) * 100, 1) : 0,
                 'booking_to_completion' => $totalBookings > 0 ? round(($completedBookings / $totalBookings) * 100, 1) : 0,
                 'completion_to_rating' => $completedBookings > 0 ? round(($ratedBookings / $completedBookings) * 100, 1) : 0,
-            ]
+            ],
         ];
     }
 
@@ -388,7 +386,7 @@ class ChartDataService
     {
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays($period);
-        
+
         switch ($chartType) {
             case 'revenue_by_hour':
                 return $this->getRevenueByHourChart($startDate, $endDate);
@@ -416,7 +414,7 @@ class ChartDataService
             ->groupBy('hour')
             ->orderBy('hour')
             ->get();
-            
+
         // Fill missing hours with zero
         $hourlyData = [];
         for ($i = 0; $i < 24; $i++) {
@@ -427,11 +425,13 @@ class ChartDataService
                 'bookings' => $hourData ? $hourData->bookings : 0,
             ];
         }
-        
+
         return [
             'type' => 'line',
             'data' => [
-                'labels' => array_map(function($h) { return $h['hour'] . ':00'; }, $hourlyData),
+                'labels' => array_map(function ($h) {
+                    return $h['hour'].':00';
+                }, $hourlyData),
                 'datasets' => [
                     [
                         'label' => 'الإيرادات (ريال)',
@@ -439,9 +439,9 @@ class ChartDataService
                         'borderColor' => 'rgb(59, 130, 246)',
                         'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
                         'fill' => true,
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -483,8 +483,19 @@ class ChartDataService
     }
 
     // Placeholder methods for additional charts
-    protected function getBookingsByDayOfWeekChart($startDate, $endDate) { /* Implementation */ }
-    protected function getServicePerformanceChart($startDate, $endDate, $filters) { /* Implementation */ }
-    protected function getGeographicDistributionChart($startDate, $endDate) { /* Implementation */ }
-    protected function getPaymentMethodsChart($startDate, $endDate) { /* Implementation */ }
+    protected function getBookingsByDayOfWeekChart($startDate, $endDate)
+    { /* Implementation */
+    }
+
+    protected function getServicePerformanceChart($startDate, $endDate, $filters)
+    { /* Implementation */
+    }
+
+    protected function getGeographicDistributionChart($startDate, $endDate)
+    { /* Implementation */
+    }
+
+    protected function getPaymentMethodsChart($startDate, $endDate)
+    { /* Implementation */
+    }
 }

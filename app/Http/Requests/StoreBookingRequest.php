@@ -33,17 +33,17 @@ class StoreBookingRequest extends FormRequest
             'customer_email' => 'nullable|email|max:255',
             'number_of_tables' => 'nullable|integer|min:1|max:100',
             'notes' => 'nullable|string|max:500',
-            
+
             // Payment related fields
             'payment_method' => 'nullable|string|in:card,bank_transfer,apple_pay,stc_pay,mada',
             'save_payment_method' => 'nullable|boolean',
-            
+
             // Additional service specific fields
             'venue_setup' => 'nullable|string|in:theater,classroom,banquet,cocktail,u_shape,conference',
             'catering_style' => 'nullable|string|in:buffet,plated,family_style,cocktail_reception',
             'audio_visual_needs' => 'nullable|array',
             'audio_visual_needs.*' => 'string|in:microphone,projector,screen,sound_system,lighting',
-            
+
             // Terms and conditions
             'accept_terms' => 'required|accepted',
             'accept_cancellation_policy' => 'required|accepted',
@@ -59,38 +59,38 @@ class StoreBookingRequest extends FormRequest
             'booking_date.required' => 'تاريخ الحجز مطلوب',
             'booking_date.date' => 'تاريخ الحجز يجب أن يكون تاريخاً صحيحاً',
             'booking_date.after' => 'تاريخ الحجز يجب أن يكون في المستقبل',
-            
+
             'booking_time.required' => 'وقت الحجز مطلوب',
             'booking_time.date_format' => 'صيغة الوقت غير صحيحة (استخدم HH:MM)',
-            
+
             'guest_count.required' => 'عدد الضيوف مطلوب',
             'guest_count.integer' => 'عدد الضيوف يجب أن يكون رقماً صحيحاً',
             'guest_count.min' => 'عدد الضيوف يجب أن يكون على الأقل واحد',
             'guest_count.max' => 'عدد الضيوف لا يمكن أن يتجاوز 1000',
-            
+
             'duration_hours.integer' => 'مدة الحجز يجب أن تكون رقماً صحيحاً',
             'duration_hours.min' => 'مدة الحجز يجب أن تكون ساعة واحدة على الأقل',
             'duration_hours.max' => 'مدة الحجز لا يمكن أن تتجاوز 24 ساعة',
-            
+
             'special_requests.max' => 'الطلبات الخاصة لا يمكن أن تتجاوز 1000 حرف',
-            
+
             'customer_name.max' => 'اسم العميل لا يمكن أن يتجاوز 255 حرف',
             'customer_phone.max' => 'رقم الهاتف لا يمكن أن يتجاوز 20 حرف',
             'customer_email.email' => 'البريد الإلكتروني يجب أن يكون صحيحاً',
             'customer_email.max' => 'البريد الإلكتروني لا يمكن أن يتجاوز 255 حرف',
-            
+
             'number_of_tables.integer' => 'عدد الطاولات يجب أن يكون رقماً صحيحاً',
             'number_of_tables.min' => 'عدد الطاولات يجب أن يكون واحد على الأقل',
             'number_of_tables.max' => 'عدد الطاولات لا يمكن أن يتجاوز 100',
-            
+
             'notes.max' => 'الملاحظات لا يمكن أن تتجاوز 500 حرف',
-            
+
             'payment_method.in' => 'طريقة الدفع المحددة غير صحيحة',
-            
+
             'venue_setup.in' => 'تخطيط القاعة المحدد غير صحيح',
             'catering_style.in' => 'نمط الضيافة المحدد غير صحيح',
             'audio_visual_needs.*.in' => 'احتياجات الصوت والصورة المحددة غير صحيحة',
-            
+
             'accept_terms.required' => 'يجب الموافقة على الشروط والأحكام',
             'accept_terms.accepted' => 'يجب الموافقة على الشروط والأحكام',
             'accept_cancellation_policy.required' => 'يجب الموافقة على سياسة الإلغاء',
@@ -172,17 +172,17 @@ class StoreBookingRequest extends FormRequest
             // Custom validation: Check if the selected date and time is available
             if ($this->has(['booking_date', 'booking_time'])) {
                 $service = $this->route('service');
-                
+
                 if ($service) {
-                    $bookingDateTime = $this->booking_date . ' ' . $this->booking_time;
-                    
+                    $bookingDateTime = $this->booking_date.' '.$this->booking_time;
+
                     // Check if there's a conflicting booking
                     $existingBooking = $service->bookings()
                         ->where('booking_date', $this->booking_date)
                         ->where('booking_time', $this->booking_time)
                         ->where('booking_status', '!=', 'cancelled')
                         ->exists();
-                    
+
                     if ($existingBooking) {
                         $validator->errors()->add('booking_time', 'هذا الوقت محجوز بالفعل، يرجى اختيار وقت آخر');
                     }
@@ -194,7 +194,7 @@ class StoreBookingRequest extends FormRequest
                         ->where('is_available', true)
                         ->first();
 
-                    if (!$availability) {
+                    if (! $availability) {
                         $validator->errors()->add('booking_date', 'الخدمة غير متاحة في هذا اليوم');
                     } elseif ($availability) {
                         // Check if the booking time is within service hours
@@ -209,7 +209,7 @@ class StoreBookingRequest extends FormRequest
             // Validate guest count against service capacity
             if ($this->has('guest_count')) {
                 $service = $this->route('service');
-                
+
                 if ($service && $service->max_capacity && $this->guest_count > $service->max_capacity) {
                     $validator->errors()->add('guest_count', "عدد الضيوف لا يمكن أن يتجاوز {$service->max_capacity} لهذه الخدمة");
                 }

@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Merchant;
-use App\Models\Service;
 use App\Models\Booking;
+use App\Models\Merchant;
+use App\Models\Offering;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
-use App\Models\Offering;
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create admin user
-        if (!DB::table('users')->where('email', 'admin@shubak.sa')->exists()) {
+        if (! DB::table('users')->where('email', 'admin@shubak.sa')->exists()) {
             DB::table('users')->insert([
                 'name' => 'مدير النظام',
                 'f_name' => 'مدير',
@@ -120,10 +120,10 @@ class DatabaseSeeder extends Seeder
                 'settings' => json_encode([
                     'merchant_id' => 'test_merchant',
                     'api_key' => 'test_api_key',
-                    'environment' => 'sandbox'
+                    'environment' => 'sandbox',
                 ]),
                 'sort_order' => 5,
-            ]
+            ],
         ];
 
         foreach ($gateways as $gatewayData) {
@@ -137,7 +137,7 @@ class DatabaseSeeder extends Seeder
 
         // Create merchants with users
         $merchants = collect();
-        
+
         for ($i = 0; $i < 15; $i++) {
             $merchantUser = User::factory()->merchant()->create();
             $merchant = Merchant::factory()->forUser($merchantUser)->create();
@@ -148,7 +148,7 @@ class DatabaseSeeder extends Seeder
 
         // Create services for merchants
         $services = collect();
-        
+
         $merchants->each(function ($merchant) use (&$services) {
             $serviceCount = rand(3, 8);
             for ($i = 0; $i < $serviceCount; $i++) {
@@ -157,7 +157,7 @@ class DatabaseSeeder extends Seeder
             }
         });
 
-        echo "✅ تم إنشاء " . $services->count() . " خدمة\n";
+        echo '✅ تم إنشاء '.$services->count()." خدمة\n";
 
         // Create offerings for merchants
         $merchantUsers = User::where('user_type', 'merchant')->get();
@@ -241,7 +241,7 @@ class DatabaseSeeder extends Seeder
             $bookings->push($booking);
         }
 
-        echo "✅ تم إنشاء " . $bookings->count() . " حجز\n";
+        echo '✅ تم إنشاء '.$bookings->count()." حجز\n";
 
         // Create payments for confirmed and completed bookings
         $paidBookings = $bookings->filter(function ($booking) {

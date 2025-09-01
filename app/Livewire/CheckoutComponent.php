@@ -10,11 +10,14 @@ use Livewire\Component;
 class CheckoutComponent extends Component
 {
     public $cartItems;
+
     public float $total = 0;
 
     // Form properties
     public string $name = '';
+
     public string $email = '';
+
     public string $phone = '';
 
     protected $rules = [
@@ -26,7 +29,7 @@ class CheckoutComponent extends Component
     public function mount(CartService $cartService)
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             // This should ideally be handled by middleware, but as a safeguard:
             return $this->redirect(route('login'));
         }
@@ -37,6 +40,7 @@ class CheckoutComponent extends Component
         if ($this->cartItems->isEmpty()) {
             // Redirect to cart page if it's empty, with a message
             session()->flash('error', 'Your cart is empty. Cannot proceed to checkout.');
+
             return $this->redirect(route('cart.index'));
         }
 
@@ -60,7 +64,7 @@ class CheckoutComponent extends Component
         try {
             // 1. Create the pending reservation
             $reservation = $checkoutService->placeOrder($user, $customerDetails);
-            
+
             // 2. Get the payment gateway URL
             $paymentUrl = $checkoutService->initiatePayment($reservation);
 
@@ -70,6 +74,7 @@ class CheckoutComponent extends Component
         } catch (\Exception $e) {
             // Log the error and show a user-friendly message
             session()->flash('error', 'There was an issue placing your order. Please try again.');
+
             return null; // Prevent further execution
         }
     }
