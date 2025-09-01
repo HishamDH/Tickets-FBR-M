@@ -27,6 +27,7 @@ class MerchantPanelProvider extends PanelProvider
             ->id('merchant')
             ->path('merchant')
             ->login()
+            ->registration(\App\Filament\Merchant\Pages\Auth\Register::class)
             ->loginRouteSlug('login')
             ->colors([
                 'primary' => Color::Blue,

@@ -9,6 +9,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Support\Colors\Color;
+use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
 
 class MerchantResource extends Resource
 {
@@ -37,8 +40,16 @@ class MerchantResource extends Resource
                 Forms\Components\TextInput::make('city')
                     ->required()
                     ->maxLength(100),
-                Forms\Components\TextInput::make('verification_status')
-                    ->required(),
+                Forms\Components\Select::make('verification_status')
+                    ->label('Verification Status')
+                    ->required()
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved', 
+                        'rejected' => 'Rejected',
+                    ])
+                    ->default('pending')
+                    ->native(false),
                 Forms\Components\TextInput::make('commission_rate')
                     ->required()
                     ->numeric()
@@ -66,7 +77,13 @@ class MerchantResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('city')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('verification_status'),
+                Tables\Columns\TextColumn::make('verification_status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                    }),
                 Tables\Columns\TextColumn::make('commission_rate')
                     ->numeric()
                     ->sortable(),
@@ -86,10 +103,44 @@ class MerchantResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('verification_status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->action(function (Merchant $record) {
+                        $record->update(['verification_status' => 'approved']);
+                        
+                        Notification::make()
+                            ->title('Merchant Approved')
+                            ->body("Merchant '{$record->business_name}' has been approved.")
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Merchant $record) => $record->verification_status === 'pending'),
+                    
+                Action::make('reject')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function (Merchant $record) {
+                        $record->update(['verification_status' => 'rejected']);
+                        
+                        Notification::make()
+                            ->title('Merchant Rejected')
+                            ->body("Merchant '{$record->business_name}' has been rejected.")
+                            ->warning()
+                            ->send();
+                    })
+                    ->visible(fn (Merchant $record) => $record->verification_status === 'pending'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
