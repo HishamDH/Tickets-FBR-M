@@ -175,14 +175,14 @@ class Register extends BaseRegister
         return new class implements RegistrationResponse {
             public function toResponse($request)
             {
-                return redirect(filament()->getLoginUrl());
+                return redirect('/merchant/login');
             }
         };
     }
 
     protected function getLoginUrl(): string
     {
-        return filament()->getLoginUrl();
+        return '/merchant/login';
     }
 
     protected function getCreatedNotificationTitle(): ?string

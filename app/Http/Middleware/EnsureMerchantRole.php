@@ -18,7 +18,7 @@ class EnsureMerchantRole
     {
         // Check if user is authenticated
         if (! Auth::check()) {
-            return redirect()->route('filament.merchant.auth.login');
+            return redirect()->route('merchant.login');
         }
 
         $user = Auth::user();
