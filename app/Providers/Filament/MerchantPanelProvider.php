@@ -39,6 +39,8 @@ class MerchantPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\\Filament\\Merchant\\Widgets')
             ->widgets([
+                \App\Filament\Merchant\Widgets\MerchantStatsWidget::class,
+                \App\Filament\Merchant\Widgets\MerchantRevenueChart::class,
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])

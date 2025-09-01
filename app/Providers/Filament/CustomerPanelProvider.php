@@ -37,6 +37,7 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->resources([
                 BookingResource::class,
+                \App\Filament\Customer\Resources\MyBookingResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->pages([
@@ -44,6 +45,7 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
             ->widgets([
+                \App\Filament\Customer\Widgets\CustomerStatsWidget::class,
                 Widgets\AccountWidget::class,
             ])
             ->middleware([
