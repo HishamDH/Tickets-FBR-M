@@ -35,6 +35,14 @@ class User extends Authenticatable implements FilamentUser
         'status',
         'language',
         'timezone',
+        'date_of_birth',
+        'gender',
+        'address',
+        'city',
+        'state',
+        'postal_code',
+        'country',
+        'last_login_at',
     ];
 
     /**
@@ -59,6 +67,8 @@ class User extends Authenticatable implements FilamentUser
         'notification_preferences' => 'array',
         'push_notifications_enabled' => 'boolean',
         'last_notification_read_at' => 'datetime',
+        'date_of_birth' => 'date',
+        'last_login_at' => 'datetime',
     ];
 
     /**
@@ -220,5 +230,96 @@ class User extends Authenticatable implements FilamentUser
     public function carts(): HasMany
     {
         return $this->hasMany(Cart::class);
+    }
+
+    /**
+     * Orders relationship
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Conversations where user is the customer
+     */
+    public function customerConversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'customer_id');
+    }
+
+    /**
+     * Conversations where user is the merchant
+     */
+    public function merchantConversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'merchant_id');
+    }
+
+    /**
+     * Conversations where user is the support agent
+     */
+    public function supportConversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'support_agent_id');
+    }
+
+    /**
+     * All conversations for this user
+     */
+    public function allConversations()
+    {
+        return Conversation::where('customer_id', $this->id)
+                          ->orWhere('merchant_id', $this->id)
+                          ->orWhere('support_agent_id', $this->id);
+    }
+
+    /**
+     * Messages sent by this user
+     */
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    // Accessor and Mutator methods for compatibility with checkout forms
+    public function getFirstNameAttribute(): ?string
+    {
+        return $this->f_name;
+    }
+
+    public function setFirstNameAttribute($value): void
+    {
+        $this->attributes['f_name'] = $value;
+        $this->updateFullName();
+    }
+
+    public function getLastNameAttribute(): ?string
+    {
+        return $this->l_name;
+    }
+
+    public function setLastNameAttribute($value): void
+    {
+        $this->attributes['l_name'] = $value;
+        $this->updateFullName();
+    }
+
+    private function updateFullName(): void
+    {
+        $this->attributes['name'] = trim(($this->f_name ?? '') . ' ' . ($this->l_name ?? ''));
+    }
+
+    public function getFullAddressAttribute(): string
+    {
+        $parts = array_filter([
+            $this->address,
+            $this->city,
+            $this->state,
+            $this->postal_code,
+            $this->country
+        ]);
+
+        return implode(', ', $parts);
     }
 }

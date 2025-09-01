@@ -6,6 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\Dashboard\UserDashboardController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
@@ -62,7 +63,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::delete('/', [CartController::class, 'clear'])->name('clear');
     Route::get('/count', [CartController::class, 'count'])->name('count');
     Route::post('/merge', [CartController::class, 'merge'])->name('merge');
-    Route::get('/validate', [CartController::class, 'validate'])->name('validate');
+    Route::get('/validate', [CartController::class, 'validateCart'])->name('validate');
 });
 
 // Public Services Routes
@@ -136,6 +137,16 @@ Route::middleware(['auth'])->prefix('checkout')->name('checkout.')->group(functi
     Route::post('/payment/paypal/{order}', [CheckoutController::class, 'processPaypalPayment'])->name('payment.paypal.process');
 });
 
+// User Dashboard Routes
+Route::middleware(['auth'])->prefix('dashboard/user')->name('dashboard.user.')->group(function () {
+    Route::get('/', [UserDashboardController::class, 'index'])->name('index');
+    Route::get('/orders', [UserDashboardController::class, 'orders'])->name('orders');
+    Route::get('/orders/{order}', [UserDashboardController::class, 'orderShow'])->name('orders.show');
+    Route::post('/orders/{order}/cancel', [UserDashboardController::class, 'cancelOrder'])->name('orders.cancel');
+    Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
+    Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
+});
+
 // Legacy booking routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/booking/{service_id}', [BookingController::class, 'create'])->name('booking.create');
@@ -156,7 +167,7 @@ Route::get('/dashboard', function () {
             return redirect()->route('merchant.dashboard');
         case 'customer':
         case 'user':
-            return redirect()->route('customer.dashboard');
+            return redirect()->route('dashboard.user.index');
         case 'partner':
             return redirect()->route('partner.dashboard');
         default:

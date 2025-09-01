@@ -320,7 +320,7 @@ class CartController extends Controller
     /**
      * Validate cart before checkout
      */
-    public function validate(Request $request): JsonResponse
+    public function validateCart(Request $request): JsonResponse
     {
         try {
             $userId = Auth::id();
