@@ -56,7 +56,8 @@ class RecentBookingsWidget extends BaseWidget
                     ->money('USD')
                     ->sortable(),
                     
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\BadgeColumn::make('booking_status')
+                    ->label('Status')
                     ->colors([
                         'danger' => 'cancelled',
                         'warning' => 'pending',
@@ -72,7 +73,7 @@ class RecentBookingsWidget extends BaseWidget
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->url(fn (Booking $record): string => route('customer.bookings.show', $record))
+                    ->url(fn (Booking $record): string => '/customer/bookings/' . $record->id)
                     ->openUrlInNewTab(false),
                     
                 Tables\Actions\Action::make('cancel')
@@ -80,18 +81,18 @@ class RecentBookingsWidget extends BaseWidget
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (Booking $record): bool => 
-                        $record->status === 'pending' || $record->status === 'confirmed'
+                        $record->booking_status === 'pending' || $record->booking_status === 'confirmed'
                     )
                     ->action(function (Booking $record) {
-                        $record->update(['status' => 'cancelled']);
+                        $record->update(['booking_status' => 'cancelled']);
                         $this->notify('success', 'Booking cancelled successfully');
                     }),
                     
                 Tables\Actions\Action::make('rebook')
                     ->icon('heroicon-o-arrow-path')
                     ->color('primary')
-                    ->visible(fn (Booking $record): bool => $record->status === 'completed')
-                    ->url(fn (Booking $record): string => route('services.show', $record->service_id)),
+                    ->visible(fn (Booking $record): bool => $record->booking_status === 'completed')
+                    ->url(fn (Booking $record): string => '/services/' . $record->service_id),
             ])
             ->emptyStateIcon('heroicon-o-ticket')
             ->emptyStateHeading('No bookings yet')
@@ -99,7 +100,7 @@ class RecentBookingsWidget extends BaseWidget
             ->emptyStateActions([
                 Tables\Actions\Action::make('browse')
                     ->label('Browse Services')
-                    ->url(route('services.index'))
+                    ->url('/services')
                     ->icon('heroicon-o-magnifying-glass'),
             ]);
     }

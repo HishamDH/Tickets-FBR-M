@@ -27,7 +27,7 @@ class MerchantStatsWidget extends BaseWidget
         
         $pendingBookings = Booking::whereHas('offering', function($query) use ($userId) {
             $query->where('user_id', $userId);
-        })->where('status', 'pending')->count();
+        })->where('booking_status', 'pending')->count();
         
         $todayBookings = Booking::whereHas('offering', function($query) use ($userId) {
             $query->where('user_id', $userId);
@@ -37,21 +37,21 @@ class MerchantStatsWidget extends BaseWidget
         $monthlyRevenue = Booking::whereHas('offering', function($query) use ($userId) {
             $query->where('user_id', $userId);
         })
-        ->where('status', 'completed')
+        ->where('booking_status', 'completed')
         ->whereMonth('created_at', now()->month)
         ->sum('total_amount');
         
         $totalRevenue = Booking::whereHas('offering', function($query) use ($userId) {
             $query->where('user_id', $userId);
         })
-        ->where('status', 'completed')
+        ->where('booking_status', 'completed')
         ->sum('total_amount');
 
         // Growth calculations
         $lastMonthRevenue = Booking::whereHas('offering', function($query) use ($userId) {
             $query->where('user_id', $userId);
         })
-        ->where('status', 'completed')
+        ->where('booking_status', 'completed')
         ->whereMonth('created_at', now()->subMonth()->month)
         ->sum('total_amount');
         

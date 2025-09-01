@@ -81,7 +81,7 @@ class Dashboard extends BaseDashboard
                 ->label('Quick Book Service')
                 ->icon('heroicon-o-plus-circle')
                 ->color('primary')
-                ->url(route('services.index'))
+                ->url('/services')
                 ->openUrlInNewTab(false),
                 
             \Filament\Actions\Action::make('viewCart')
@@ -89,10 +89,20 @@ class Dashboard extends BaseDashboard
                 ->icon('heroicon-o-shopping-cart')
                 ->color('success')
                 ->badge(function () {
-                    return \App\Models\Cart::where('user_id', Auth::id())->count();
+                    try {
+                        return \App\Models\Cart::where('user_id', Auth::id())->count() ?: 0;
+                    } catch (\Exception $e) {
+                        return 0;
+                    }
                 })
-                ->url(route('cart.index'))
-                ->visible(fn () => \App\Models\Cart::where('user_id', Auth::id())->exists()),
+                ->url('/cart')
+                ->visible(function () {
+                    try {
+                        return \App\Models\Cart::where('user_id', Auth::id())->exists();
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+                }),
         ];
     }
 }

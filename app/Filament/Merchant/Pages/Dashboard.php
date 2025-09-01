@@ -43,7 +43,7 @@ class Dashboard extends BaseDashboard
         $pendingBookings = Booking::whereHas('offering', function ($query) {
                 $query->where('user_id', Auth::id());
             })
-            ->where('status', 'pending')
+            ->where('booking_status', 'pending')
             ->count();
 
         $messages = [];
@@ -87,7 +87,7 @@ class Dashboard extends BaseDashboard
                 ->label('New Service')
                 ->icon('heroicon-o-plus-circle')
                 ->color('primary')
-                ->url(route('filament.merchant.resources.offerings.create'))
+                ->url('/merchant/offerings/create')
                 ->openUrlInNewTab(false),
                 
             \Filament\Actions\Action::make('viewBookings')
@@ -95,20 +95,30 @@ class Dashboard extends BaseDashboard
                 ->icon('heroicon-o-calendar-days')
                 ->color('success')
                 ->badge(function () {
-                    return Booking::whereHas('offering', function ($query) {
-                        $query->where('user_id', Auth::id());
-                    })->where('status', 'pending')->count();
+                    try {
+                        return Booking::whereHas('offering', function ($query) {
+                            $query->where('user_id', Auth::id());
+                        })->where('booking_status', 'pending')->count();
+                    } catch (\Exception $e) {
+                        return 0;
+                    }
                 })
-                ->url(route('filament.merchant.resources.bookings.index'))
-                ->visible(fn () => Booking::whereHas('offering', function ($query) {
-                    $query->where('user_id', Auth::id());
-                })->exists()),
+                ->url('/merchant/bookings')
+                ->visible(function () {
+                    try {
+                        return Booking::whereHas('offering', function ($query) {
+                            $query->where('user_id', Auth::id());
+                        })->exists();
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+                }),
                 
             \Filament\Actions\Action::make('analytics')
                 ->label('Analytics')
                 ->icon('heroicon-o-chart-bar')
                 ->color('info')
-                ->url(route('analytics.index'))
+                ->url('/analytics')
                 ->openUrlInNewTab(false),
         ];
     }

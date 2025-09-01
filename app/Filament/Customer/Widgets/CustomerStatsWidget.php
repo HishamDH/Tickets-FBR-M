@@ -15,16 +15,16 @@ class CustomerStatsWidget extends BaseWidget
         
         $totalBookings = Booking::where('customer_id', $user->id)->count();
         $upcomingBookings = Booking::where('customer_id', $user->id)
-            ->where('status', 'confirmed')
+            ->where('booking_status', 'confirmed')
             ->where('booking_date', '>=', now())
             ->count();
         
         $completedBookings = Booking::where('customer_id', $user->id)
-            ->where('status', 'completed')
+            ->where('booking_status', 'completed')
             ->count();
             
         $totalSpent = Booking::where('customer_id', $user->id)
-            ->where('status', 'completed')
+            ->where('booking_status', 'completed')
             ->sum('total_amount');
 
         return [
