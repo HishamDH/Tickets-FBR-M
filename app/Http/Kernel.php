@@ -68,5 +68,8 @@ class Kernel extends HttpKernel
         'merchant.status' => \App\Http\Middleware\CheckMerchantStatus::class,
         'merchant.role' => \App\Http\Middleware\EnsureMerchantRole::class,
         'customer.role' => \App\Http\Middleware\EnsureCustomerRole::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'merchant' => \App\Http\Middleware\MerchantMiddleware::class,
+        'customer' => \App\Http\Middleware\CustomerMiddleware::class,
     ];
 }

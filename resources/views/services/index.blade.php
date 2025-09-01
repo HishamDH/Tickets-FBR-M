@@ -268,10 +268,25 @@
                                             </div>
                                             <div class="text-sm text-gray-500">ريال سعودي</div>
                                         </div>
-                                        <a href="{{ route('services.show', $service->id) }}" 
-                                           class="btn-primary px-6 py-3 font-bold shadow-lg hover:shadow-xl">
-                                            عرض التفاصيل
-                                        </a>
+                                        <div class="flex space-x-2 space-x-reverse">
+                                            @auth
+                                                <button 
+                                                    onclick="addToCart({{ $service->id }}, 'App\\Models\\Service', 1, {{ $service->price }})"
+                                                    class="bg-orange-100 hover:bg-orange-200 text-orange-600 px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 space-x-reverse"
+                                                >
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                              d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m9.5-6v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01">
+                                                        </path>
+                                                    </svg>
+                                                    <span>أضف للسلة</span>
+                                                </button>
+                                            @endauth
+                                            <a href="{{ route('services.show', $service->id) }}" 
+                                               class="btn-primary px-6 py-3 font-bold shadow-lg hover:shadow-xl">
+                                                عرض التفاصيل
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -308,3 +323,48 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+async function addToCart(itemId, itemType, quantity = 1, price = 0) {
+    try {
+        const response = await fetch('/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                item_id: itemId,
+                item_type: itemType,
+                quantity: quantity,
+                price: price
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Dispatch event for cart component to update
+            window.dispatchEvent(new CustomEvent('cart-refresh'));
+            
+            // Show success message
+            window.dispatchEvent(new CustomEvent('cart-success', {
+                detail: { message: data.message || 'تم إضافة العنصر إلى السلة' }
+            }));
+        } else {
+            // Show error message
+            window.dispatchEvent(new CustomEvent('cart-error', {
+                detail: { message: data.message || 'فشل في إضافة العنصر إلى السلة' }
+            }));
+        }
+    } catch (error) {
+        console.error('Cart error:', error);
+        window.dispatchEvent(new CustomEvent('cart-error', {
+            detail: { message: 'حدث خطأ أثناء إضافة العنصر إلى السلة' }
+        }));
+    }
+}
+</script>
+@endpush

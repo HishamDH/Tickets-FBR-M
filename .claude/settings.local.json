@@ -13,7 +13,8 @@
       "Bash(npm run:*)",
       "Bash(php:*)",
       "Bash(./vendor/bin/pint:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

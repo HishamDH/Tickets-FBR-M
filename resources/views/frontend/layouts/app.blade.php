@@ -72,13 +72,19 @@
                     
                     <!-- Navigation Links -->
                     <div class="hidden sm:ml-8 sm:flex sm:space-x-8">
-                        <a href="{{ route('home') }}" class="border-transparent text-gray-600 hover:text-brand inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
+                        <a href="{{ route('home') }}" class="border-transparent text-gray-600 hover:text-orange-500 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
                             🏠 Home
                         </a>
-                        <a href="{{ route('merchants.index') }}" class="border-transparent text-gray-600 hover:text-brand inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
+                        <a href="{{ route('features') }}" class="border-transparent text-gray-600 hover:text-orange-500 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
+                            ✨ Features
+                        </a>
+                        <a href="{{ route('pricing') }}" class="border-transparent text-gray-600 hover:text-orange-500 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
+                            💰 Pricing
+                        </a>
+                        <a href="{{ route('merchants.index') }}" class="border-transparent text-gray-600 hover:text-orange-500 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
                             🏪 Browse Merchants
                         </a>
-                        <a href="{{ route('search') }}" class="border-transparent text-gray-600 hover:text-brand inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
+                        <a href="{{ route('search') }}" class="border-transparent text-gray-600 hover:text-orange-500 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
                             🔍 Search
                         </a>
                     </div>
@@ -148,19 +154,19 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="text-sm font-semibold mb-4">For Merchants</h4>
+                    <h4 class="text-sm font-semibold mb-4">Platform</h4>
                     <ul class="space-y-2 text-sm text-gray-300">
-                        <li><a href="/merchant/login" class="hover:text-white">Merchant Portal</a></li>
-                        <li><a href="#" class="hover:text-white">List Your Business</a></li>
-                        <li><a href="#" class="hover:text-white">Pricing</a></li>
+                        <li><a href="{{ route('features') }}" class="hover:text-orange-300">✨ Features</a></li>
+                        <li><a href="{{ route('pricing') }}" class="hover:text-orange-300">💰 Pricing</a></li>
+                        <li><a href="/merchant/login" class="hover:text-orange-300">🏪 For Merchants</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-sm font-semibold mb-4">Support</h4>
                     <ul class="space-y-2 text-sm text-gray-300">
-                        <li><a href="#" class="hover:text-white">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
-                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="/test-guards" class="hover:text-orange-300">🛡️ Multi-Guard Auth</a></li>
+                        <li><a href="#" class="hover:text-orange-300">💬 Contact Us</a></li>
+                        <li><a href="#" class="hover:text-orange-300">📚 Documentation</a></li>
                     </ul>
                 </div>
             </div>

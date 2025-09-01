@@ -32,7 +32,7 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
                     <div class="me-4">
-                        <livewire:mini-cart-component />
+                        <livewire:cart.cart-component />
                     </div>
                 @endauth
                 <x-dropdown align="right" width="48">

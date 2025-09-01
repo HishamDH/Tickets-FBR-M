@@ -3,6 +3,8 @@
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
@@ -36,6 +38,32 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/merchants', [HomeController::class, 'merchants'])->name('merchants.index');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/merchant/{id}', [HomeController::class, 'merchantShow'])->name('merchant.show');
+
+// Test Multi-Guard Authentication
+Route::get('/test-guards', function () {
+    return view('test-guards');
+})->name('test.guards');
+
+// Marketing Pages
+Route::get('/pricing', function () {
+    return view('frontend.pricing');
+})->name('pricing');
+
+Route::get('/features', function () {
+    return view('frontend.features');
+})->name('features');
+
+// Shopping Cart API Routes
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/', [CartController::class, 'store'])->name('store');
+    Route::put('/{cartItem}', [CartController::class, 'update'])->name('update');
+    Route::delete('/{cartItem}', [CartController::class, 'destroy'])->name('destroy');
+    Route::delete('/', [CartController::class, 'clear'])->name('clear');
+    Route::get('/count', [CartController::class, 'count'])->name('count');
+    Route::post('/merge', [CartController::class, 'merge'])->name('merge');
+    Route::get('/validate', [CartController::class, 'validate'])->name('validate');
+});
 
 // Public Services Routes
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
@@ -97,6 +125,17 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::patch('/booking/{booking}/cancel', [FrontendBookingController::class, 'cancel'])->name('booking.cancel');
 });
 
+// Checkout Routes
+Route::middleware(['auth'])->prefix('checkout')->name('checkout.')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index'])->name('index');
+    Route::post('/', [CheckoutController::class, 'store'])->name('store');
+    Route::get('/confirmation/{order}', [CheckoutController::class, 'confirmation'])->name('confirmation');
+    Route::get('/payment/stripe/{order}', [CheckoutController::class, 'stripePayment'])->name('payment.stripe');
+    Route::post('/payment/stripe/{order}', [CheckoutController::class, 'processStripePayment'])->name('payment.stripe.process');
+    Route::get('/payment/paypal/{order}', [CheckoutController::class, 'paypalPayment'])->name('payment.paypal');
+    Route::post('/payment/paypal/{order}', [CheckoutController::class, 'processPaypalPayment'])->name('payment.paypal.process');
+});
+
 // Legacy booking routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/booking/{service_id}', [BookingController::class, 'create'])->name('booking.create');
@@ -104,17 +143,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cart', function () {
         return view('cart');
     })->name('cart.index');
-
-    Route::get('/checkout', function () {
-        return view('checkout');
-    })->name('checkout.index');
-
-    Route::get('/checkout/confirmation/{reservation}', function (App\Models\PaidReservation $reservation) {
-        if ($reservation->user_id !== auth()->id()) {
-            abort(403);
-        }
-        return view('checkout-confirmation', ['reservation' => $reservation]);
-    })->name('checkout.confirmation');
 });
 
 // Main Dashboard Route (redirects based on role)
