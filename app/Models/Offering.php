@@ -26,6 +26,12 @@ class Offering extends Model
         'chairs_count',
         'user_id',
         'features',
+        'max_capacity',
+        'min_capacity',
+        'allow_overbooking',
+        'overbooking_percentage',
+        'capacity_type',
+        'buffer_capacity',
     ];
 
     protected $casts = [
@@ -35,7 +41,9 @@ class Offering extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
         'has_chairs' => 'boolean',
+        'allow_overbooking' => 'boolean',
         'price' => 'decimal:2',
+        'overbooking_percentage' => 'decimal:2',
     ];
 
     /**

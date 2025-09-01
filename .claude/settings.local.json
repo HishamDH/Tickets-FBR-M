@@ -6,7 +6,9 @@
       "Bash(php artisan migrate:*)",
       "Bash(php artisan make:seeder:*)",
       "Bash(php artisan:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(php -l:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
