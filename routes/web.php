@@ -17,6 +17,7 @@ use App\Http\Controllers\Dashboard\MerchantDashboardController;
 use App\Http\Controllers\Dashboard\PartnerDashboardController;
 use App\Http\Controllers\Frontend\BookingController as FrontendBookingController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\MerchantStorefrontController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -384,5 +385,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Merchant Storefronts - Public Routes (should be last to avoid conflicts)
+Route::get('/merchants/directory', [MerchantStorefrontController::class, 'search'])->name('merchants.directory');
+Route::get('/store/{slug}', [MerchantStorefrontController::class, 'show'])->name('storefront.show');
+Route::get('/store/{slug}/contact', [MerchantStorefrontController::class, 'contact'])->name('storefront.contact');
+Route::post('/store/{slug}/contact', [MerchantStorefrontController::class, 'contact'])->name('storefront.contact.submit');
+Route::get('/store/{slug}/offering/{offering}', [MerchantStorefrontController::class, 'showOffering'])->name('storefront.offering');
+Route::get('/api/merchant/{slug}/info', [MerchantStorefrontController::class, 'apiInfo'])->name('api.merchant.info');
 
 require __DIR__.'/auth.php';

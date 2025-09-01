@@ -13,6 +13,42 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Enhanced Animations CSS -->
+        <style>
+            @keyframes floating {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-20px); }
+            }
+            
+            @keyframes fadeInUp {
+                0% { opacity: 0; transform: translateY(30px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes pulse-orange {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+                70% { box-shadow: 0 0 0 20px rgba(249, 115, 22, 0); }
+            }
+            
+            .floating-animation { animation: floating 3s ease-in-out infinite; }
+            .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+            .pulse-orange { animation: pulse-orange 2s infinite; }
+            
+            .hero-gradient {
+                background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 50%, #fb923c 100%);
+            }
+            
+            .card-hover {
+                transition: all 0.3s ease;
+                transform: translateY(0);
+            }
+            
+            .card-hover:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            }
+        </style>
     </head>
     <body class="font-sans antialiased bg-gray-50">
         <div class="min-h-screen">
@@ -43,21 +79,29 @@
             </header>
 
             <!-- Hero Section -->
-            <section class="bg-gradient-to-br from-orange-50 to-red-50 py-12 lg:py-20">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <section class="hero-gradient py-12 lg:py-20 relative overflow-hidden">
+                <!-- Floating Elements Background -->
+                <div class="absolute inset-0 overflow-hidden">
+                    <div class="floating-animation absolute top-20 left-10 w-20 h-20 bg-orange-200 rounded-full opacity-20"></div>
+                    <div class="floating-animation absolute top-40 right-20 w-16 h-16 bg-red-200 rounded-full opacity-30" style="animation-delay: -1s;"></div>
+                    <div class="floating-animation absolute bottom-20 left-1/4 w-12 h-12 bg-orange-300 rounded-full opacity-25" style="animation-delay: -2s;"></div>
+                    <div class="floating-animation absolute bottom-40 right-1/3 w-24 h-24 bg-red-100 rounded-full opacity-20" style="animation-delay: -0.5s;"></div>
+                </div>
+                
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <h1 class="fade-in-up text-3xl sm:text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                         اكتشف أفضل الخدمات
                         <br class="hidden sm:block">
-                        <span class="text-orange-600">لمناسباتك</span>
+                        <span class="text-orange-600 pulse-orange inline-block px-4 py-2 rounded-lg">لمناسباتك</span>
                     </h1>
-                    <p class="text-lg lg:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
+                    <p class="fade-in-up text-lg lg:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed" style="animation-delay: 0.2s;">
                         منصة شباك التذاكر توفر لك مجموعة متنوعة من الخدمات المميزة لجعل مناسباتك لا تُنسى
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <a href="{{ route('services.index') }}" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl">
+                    <div class="fade-in-up flex flex-col sm:flex-row gap-4 justify-center items-center" style="animation-delay: 0.4s;">
+                        <a href="{{ route('services.index') }}" class="floating-animation w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 pulse-orange">
                             استكشف الخدمات
                         </a>
-                        <a href="#featured" class="w-full sm:w-auto border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300">
+                        <a href="#featured" class="card-hover w-full sm:w-auto border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300">
                             الخدمات المميزة
                         </a>
                     </div>
