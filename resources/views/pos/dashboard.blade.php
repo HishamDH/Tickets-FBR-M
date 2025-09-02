@@ -45,44 +45,61 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-orange-50 to-red-50" x-data="posSystem()">
-    <!-- Header -->
-    <div class="bg-white shadow-lg border-b-4 border-orange-500 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="min-h-screen bg-gradient-warm" x-data="posSystem()">
+    <!-- 🔥 Enhanced Header with Fire Effects -->
+    <div class="bg-white shadow-xl border-b-4 border-primary-500 sticky top-0 z-40 backdrop-blur-lg bg-opacity-95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4 space-x-reverse">
-                    <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-                        <span class="text-white text-2xl">🏪</span>
+                <div class="flex items-center space-x-6 space-x-reverse">
+                    <!-- ✨ Creative Logo with Animation -->
+                    <div class="relative group">
+                        <div class="w-16 h-16 bg-gradient-fire rounded-2xl flex items-center justify-center shadow-lg 
+                                   group-hover:shadow-glow transition-all duration-300 fire-glow floating">
+                            <i class="fas fa-cash-register text-3xl text-white"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-6 h-6 bg-orange-fire rounded-full 
+                                   animate-pulse border-3 border-white sparkle"></div>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-800">نظام نقاط البيع</h1>
-                        <p class="text-sm text-gray-600">إدارة المبيعات المباشرة</p>
+                        <h1 class="text-3xl font-black text-gray-800 mb-1">نظام نقاط البيع</h1>
+                        <p class="text-orange-fire font-semibold flex items-center">
+                            <i class="fas fa-store ml-2"></i>
+                            إدارة المبيعات المباشرة والذكية
+                        </p>
                     </div>
                 </div>
                 
-                <!-- Quick Actions -->
-                <div class="flex items-center space-x-3 space-x-reverse">
+                <!-- 🌟 Enhanced Quick Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Real-time Stats -->
+                    <div class="hidden md:flex items-center space-x-6 space-x-reverse bg-gradient-soft px-6 py-3 rounded-2xl shadow-md">
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-primary-600" x-text="'ر.س ' + formatPrice(cart.reduce((sum, item) => sum + (item.price * item.quantity), 0))">ر.س 0</div>
+                            <div class="text-xs text-gray-600">إجمالي السلة</div>
+                        </div>
+                        <div class="w-px h-8 bg-orange-200"></div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-green-600" x-text="cart.length">0</div>
+                            <div class="text-xs text-gray-600">العناصر</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons with Creative Styles -->
                     <button @click="openCustomerSearch()" 
-                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 space-x-reverse transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        <span>البحث عن عميل</span>
+                            class="btn btn-outline px-6 py-3 interactive-element">
+                        <i class="fas fa-users ml-2"></i>
+                        البحث عن عميل
                     </button>
                     
                     <button @click="openQrScanner()" 
-                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 space-x-reverse transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-                        </svg>
-                        <span>مسح QR</span>
+                            class="btn btn-fire px-6 py-3 fire-trail">
+                        <i class="fas fa-qrcode ml-2"></i>
+                        مسح QR
                     </button>
                     
                     <button @click="newSale()" 
-                            class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-2 rounded-lg font-bold flex items-center space-x-2 space-x-reverse transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
+                            class="btn btn-primary px-8 py-3 sparkle fire-glow pulse-orange">
+                        <i class="fas fa-plus ml-2"></i>
                         <span>عملية بيع جديدة</span>
                     </button>
                 </div>
@@ -90,37 +107,40 @@
         </div>
     </div>
 
-    <!-- Main POS Interface -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pos-container">
+    <!-- 🎨 Main POS Interface with Creative Design -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pos-container">
             
-            <!-- Services/Products Panel -->
-            <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <span class="text-2xl mr-3">🎯</span>
+            <!-- 🛍️ Services/Products Panel with Enhanced Design -->
+            <div class="lg:col-span-2 bg-white rounded-3xl shadow-xl border border-orange-100 p-8 card hover:shadow-2xl transition-all duration-300">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <div class="w-12 h-12 bg-gradient-fire rounded-2xl flex items-center justify-center ml-4 shadow-lg">
+                            <i class="fas fa-store text-2xl text-white"></i>
+                        </div>
                         الخدمات المتاحة
                     </h2>
                     
-                    <!-- Search Bar -->
+                    <!-- 🔍 Enhanced Search Bar -->
                     <div class="relative">
                         <input type="text" 
                                x-model="searchTerm" 
-                               placeholder="البحث في الخدمات..."
-                               class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
+                               placeholder="🔍 البحث في الخدمات..."
+                               class="w-72 pl-12 pr-6 py-4 border-2 border-orange-200 rounded-2xl 
+                                      focus:ring-4 focus:ring-orange-100 focus:border-primary-500 
+                                      transition-all duration-300 text-lg placeholder-gray-400">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center">
+                            <i class="fas fa-search text-orange-400 text-lg"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- Category Filters -->
-                <div class="flex flex-wrap gap-2 mb-6">
+                <!-- 🏷️ Creative Category Filters -->
+                <div class="flex flex-wrap gap-3 mb-8">
                     <button @click="selectedCategory = 'all'" 
-                            :class="selectedCategory === 'all' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            class="px-4 py-2 rounded-lg font-medium transition-all">
+                            :class="selectedCategory === 'all' ? 'bg-gradient-primary text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-orange-50 hover:text-primary-600'"
+                            class="px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 interactive-element">
+                        <i class="fas fa-star ml-2"></i>
                         جميع الخدمات
                     </button>
                     <template x-for="category in categories" :key="category.id">

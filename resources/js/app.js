@@ -1,4 +1,5 @@
 import './bootstrap';
+import './creative-interactions';
 
 import Alpine from 'alpinejs';
 

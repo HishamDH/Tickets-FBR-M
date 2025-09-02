@@ -438,6 +438,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Design Showcase
+Route::get('/design-showcase', function () {
+    return view('design-showcase');
+})->name('design.showcase');
+
 // Merchant Storefronts - Public Routes (should be last to avoid conflicts)
 Route::get('/merchants/directory', [MerchantStorefrontController::class, 'search'])->name('merchants.directory');
 Route::get('/store/{slug}', [MerchantStorefrontController::class, 'show'])->name('storefront.show');

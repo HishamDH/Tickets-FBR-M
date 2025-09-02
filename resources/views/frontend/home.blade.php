@@ -1,12 +1,15 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Tickets FBR-M - Book Services & Events Made Simple')
+@section('title', 'تذاكر FBR-M - منصة حجز الخدمات والفعاليات')
 
 @section('head')
 <style>
-    /* Orange Theme Variables */
+    /* 🎨 Creative Orange Design System */
     :root {
+        --primary-fire: #ff5722;
         --primary-orange: #F97316;
+        --orange-sunset: #ff7043;
+        --orange-warm: #ff8a65;
         --orange-light: #FB923C;
         --orange-dark: #EA580C;
         --orange-50: #FFF7ED;
@@ -14,18 +17,45 @@
         --orange-900: #9A3412;
     }
 
-    /* Floating Animation */
+    /* ✨ Enhanced Animations */
     @keyframes floating {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(2deg); }
     }
-    .floating-animation {
-        animation: floating 3s ease-in-out infinite;
+    
+    @keyframes sparkle {
+        0%, 100% { opacity: 0; transform: scale(0); }
+        50% { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes glow-pulse {
+        0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+        50% { box-shadow: 0 0 40px rgba(249, 115, 22, 0.6), 0 0 60px rgba(249, 115, 22, 0.4); }
     }
 
-    /* Gradient Backgrounds */
+    .floating-animation {
+        animation: floating 4s ease-in-out infinite;
+    }
+    
+    .sparkle-effect {
+        animation: sparkle 2s ease-in-out infinite;
+    }
+    
+    .glow-effect {
+        animation: glow-pulse 3s ease-in-out infinite;
+    }
+
+    /* 🔥 Enhanced Gradient Backgrounds */
     .orange-gradient {
         background: linear-gradient(135deg, var(--primary-orange) 0%, var(--orange-dark) 100%);
+    }
+    
+    .fire-gradient {
+        background: linear-gradient(135deg, var(--primary-fire) 0%, var(--primary-orange) 50%, var(--orange-sunset) 100%);
+    }
+    
+    .sunset-gradient {
+        background: linear-gradient(135deg, var(--orange-sunset) 0%, var(--orange-warm) 100%);
     }
     
     .orange-gradient-soft {

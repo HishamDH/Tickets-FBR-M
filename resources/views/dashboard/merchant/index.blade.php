@@ -3,41 +3,69 @@
 @section('title', 'لوحة تحكم التاجر')
 
 @section('content')
-<div class="min-h-screen bg-gray-50" dir="rtl">
+<div class="min-h-screen bg-gradient-soft" dir="rtl">
     <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold gradient-text mb-2">مرحباً، {{ $merchant->business_name }}</h1>
-            <p class="text-gray-600">إدارة خدماتك وحجوزاتك من مكان واحد</p>
+        <!-- 🔥 Enhanced Header with Creative Design -->
+        <div class="mb-12 text-center">
+            <div class="relative inline-block">
+                <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-fire mb-4 floating">
+                    مرحباً، {{ $merchant->business_name }}
+                </h1>
+                <div class="absolute -top-2 -right-2 w-6 h-6 bg-orange-fire rounded-full animate-pulse sparkle"></div>
+            </div>
+            <p class="text-xl text-gray-700 font-medium">إدارة خدماتك وحجوزاتك من مكان واحد بتصميم متطور</p>
+            <div class="w-24 h-1 bg-gradient-primary rounded-full mx-auto mt-4"></div>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- ⚡ Enhanced Quick Stats with Creative Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <!-- إجمالي الخدمات -->
-            <div class="glass-effect rounded-xl p-6 card-hover">
+            <div class="card fire-glow interactive-card bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 bounce-in">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">إجمالي الخدمات</p>
-                        <p class="text-2xl font-bold gradient-text">{{ number_format($stats['total_services']) }}</p>
-                        <p class="text-xs text-green-600">{{ $stats['active_services'] }} نشطة</p>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">إجمالي الخدمات</p>
+                        <p class="text-4xl font-black text-transparent bg-clip-text bg-gradient-fire mb-2">{{ number_format($stats['total_services']) }}</p>
+                        <div class="flex items-center">
+                            <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full">
+                                {{ $stats['active_services'] }} نشطة
+                            </span>
+                        </div>
                     </div>
-                    <div class="p-3 bg-blue-100 rounded-xl">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
+                    <div class="w-16 h-16 bg-gradient-fire rounded-2xl flex items-center justify-center shadow-lg floating">
+                        <i class="fas fa-store text-3xl text-white"></i>
+                    </div>
+                </div>
+                <div class="mt-4 bg-gradient-soft rounded-xl p-3">
+                    <div class="flex items-center text-sm text-gray-600">
+                        <i class="fas fa-chart-line text-green-500 ml-2"></i>
+                        نمو 12% هذا الشهر
                     </div>
                 </div>
             </div>
 
             <!-- إجمالي الحجوزات -->
-            <div class="glass-effect rounded-xl p-6 card-hover">
+            <div class="card fire-glow interactive-card bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 bounce-in" style="animation-delay: 0.1s;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">إجمالي الحجوزات</p>
-                        <p class="text-2xl font-bold text-purple-600">{{ number_format($stats['total_bookings']) }}</p>
-                        <p class="text-xs text-yellow-600">{{ $stats['pending_bookings'] }} في الانتظار</p>
+                        <p class="text-sm font-semibold text-gray-600 mb-2">إجمالي الحجوزات</p>
+                        <p class="text-4xl font-black text-transparent bg-clip-text bg-gradient-fire mb-2">{{ number_format($stats['total_bookings']) }}</p>
+                        <div class="flex items-center">
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">
+                                {{ $stats['pending_bookings'] }} في الانتظار
+                            </span>
+                        </div>
                     </div>
-                    <div class="p-3 bg-purple-100 rounded-xl">
+                    <div class="w-16 h-16 bg-gradient-sunset rounded-2xl flex items-center justify-center shadow-lg floating" style="animation-delay: 0.5s;">
+                        <i class="fas fa-calendar-check text-3xl text-white"></i>
+                    </div>
+                </div>
+                <div class="mt-4 bg-gradient-soft rounded-xl p-3">
+                    <div class="flex items-center text-sm text-gray-600">
+                        <i class="fas fa-trending-up text-blue-500 ml-2"></i>
+                        {{ $stats['pending_bookings'] > 0 ? 'يتطلب مراجعة' : 'كل شيء محدث' }}
+                    </div>
+                </div>
+            </div>
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
