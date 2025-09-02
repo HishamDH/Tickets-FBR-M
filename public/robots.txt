@@ -1,2 +1,20 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: https://tickets-fbr.com/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /storage/
+
+# Allow public pages
+Allow: /services
+Allow: /merchants
+Allow: /login
+Allow: /register
+
+# Crawl delay
+Crawl-delay: 1

@@ -25,7 +25,7 @@ class Booking extends Model
         'commission_amount',
         'commission_rate',
         'payment_status',
-        'booking_status',
+        'status',
         'booking_source',
         'special_requests',
         'cancellation_reason',
@@ -117,7 +117,7 @@ class Booking extends Model
      */
     public function isConfirmed(): bool
     {
-        return $this->booking_status === 'confirmed';
+        return $this->status === 'confirmed';
     }
 
     /**
@@ -133,7 +133,7 @@ class Booking extends Model
      */
     public function isCancelled(): bool
     {
-        return $this->booking_status === 'cancelled';
+        return $this->status === 'cancelled';
     }
 
     /**
@@ -149,7 +149,7 @@ class Booking extends Model
             'no_show' => 'لم يحضر',
         ];
 
-        return $statuses[$this->booking_status] ?? $this->booking_status;
+        return $statuses[$this->status] ?? $this->status;
     }
 
     /**

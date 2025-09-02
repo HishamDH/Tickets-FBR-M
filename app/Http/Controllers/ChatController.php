@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 class ChatController extends Controller
 {
     /**
-     * Get all conversations for current user
+     * Get all conversations for current user / Display chat interface
      */
     public function index(Request $request)
     {
@@ -25,54 +25,132 @@ class ChatController extends Controller
             $conversations = Conversation::forUser($user->id)
                 ->with(['customer', 'merchant', 'supportAgent', 'latestMessage.sender'])
                 ->active()
-                ->orderBy('last_message_at', 'desc')
-                ->paginate(20);
+                ->orderBy('last_message_at', 'desc');
 
-            $conversationsData = $conversations->map(function ($conversation) use ($user) {
-                $otherParticipants = $conversation->getOtherParticipants($user->id);
-                $latestMessage = $conversation->latestMessage->first();
+            // If this is an API request, return JSON
+            if ($request->expectsJson() || $request->is('api/*')) {
+                $paginatedConversations = $conversations->paginate(20);
 
-                return [
-                    'id' => $conversation->id,
-                    'title' => $conversation->title ?? $this->generateConversationTitle($conversation, $user),
-                    'type' => $conversation->type,
-                    'status' => $conversation->status,
-                    'participants' => $otherParticipants->map(function ($participant) {
-                        return [
-                            'id' => $participant->id,
-                            'name' => $participant->name,
-                            'role' => $participant->role,
-                            'avatar' => $participant->avatar_url ?? null,
-                        ];
-                    }),
-                    'unread_count' => $conversation->getUnreadCountForUser($user->id),
-                    'latest_message' => $latestMessage ? [
-                        'content' => $latestMessage->content,
-                        'type' => $latestMessage->type,
-                        'sender_name' => $latestMessage->sender->name,
-                        'created_at' => $latestMessage->created_at->diffForHumans(),
-                    ] : null,
-                    'last_message_at' => $conversation->last_message_at?->diffForHumans(),
-                ];
-            });
+                $conversationsData = $paginatedConversations->map(function ($conversation) use ($user) {
+                    $otherParticipants = $conversation->getOtherParticipants($user->id);
+                    $latestMessage = $conversation->latestMessage->first();
 
-            return response()->json([
-                'success' => true,
-                'conversations' => $conversationsData,
-                'pagination' => [
-                    'current_page' => $conversations->currentPage(),
-                    'last_page' => $conversations->lastPage(),
-                    'total' => $conversations->total(),
-                ]
+                    return [
+                        'id' => $conversation->id,
+                        'title' => $conversation->title ?? $this->generateConversationTitle($conversation, $user),
+                        'type' => $conversation->type,
+                        'status' => $conversation->status,
+                        'participants' => $otherParticipants->map(function ($participant) {
+                            return [
+                                'id' => $participant->id,
+                                'name' => $participant->name,
+                                'role' => $participant->role,
+                                'avatar' => $participant->avatar_url ?? null,
+                            ];
+                        }),
+                        'unread_count' => $conversation->getUnreadCountForUser($user->id),
+                        'latest_message' => $latestMessage ? [
+                            'content' => $latestMessage->content,
+                            'type' => $latestMessage->type,
+                            'sender_name' => $latestMessage->sender->name,
+                            'created_at' => $latestMessage->created_at->diffForHumans(),
+                        ] : null,
+                        'last_message_at' => $conversation->last_message_at?->diffForHumans(),
+                    ];
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'conversations' => $conversationsData,
+                    'pagination' => [
+                        'current_page' => $paginatedConversations->currentPage(),
+                        'last_page' => $paginatedConversations->lastPage(),
+                        'total' => $paginatedConversations->total(),
+                    ]
+                ]);
+            }
+
+            // For web requests, return the chat interface view
+            $conversationsList = $conversations->limit(10)->get();
+
+            return view('chat.index', [
+                'conversations' => $conversationsList,
+                'user' => $user
             ]);
 
         } catch (\Exception $e) {
             Log::error('Chat conversations error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to load conversations'
-            ], 500);
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to load conversations'
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'حدث خطأ في تحميل المحادثات');
         }
+    }
+
+    /**
+     * Display support chat interface
+     */
+    public function support()
+    {
+        $user = Auth::user();
+        
+        // Get or create support conversation
+        $supportConversation = Conversation::where('customer_id', $user->id)
+            ->where('type', 'customer_support')
+            ->active()
+            ->first();
+
+        return view('chat.support', compact('supportConversation', 'user'));
+    }
+
+    /**
+     * Create support ticket and conversation
+     */
+    public function createSupportTicket(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'subject' => 'required|string|max:255',
+            'priority' => 'required|in:low,medium,high,urgent',
+            'category' => 'required|string|max:100',
+            'description' => 'required|string|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $user = Auth::user();
+
+        // Create support conversation
+        $conversation = Conversation::create([
+            'type' => 'customer_support',
+            'customer_id' => $user->id,
+            'title' => $request->subject,
+            'status' => 'active',
+            'metadata' => [
+                'priority' => $request->priority,
+                'category' => $request->category,
+            ]
+        ]);
+
+        // Create initial message
+        Message::createMessage(
+            $conversation->id,
+            $user->id,
+            $request->description,
+            'text',
+            []
+        );
+
+        return redirect()->route('chat.support')
+            ->with('success', 'تم إنشاء تذكرة الدعم بنجاح. سيتم الرد عليك قريباً.');
     }
 
     /**

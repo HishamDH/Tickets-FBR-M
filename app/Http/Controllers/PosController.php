@@ -29,10 +29,15 @@ class PosController extends Controller
     {
         $user = Auth::user();
         
-        // Get merchant's offerings for POS
-        $offerings = Offering::where('user_id', $user->id)
+        // Get merchant's offerings/services for POS
+        $services = Offering::where('user_id', $user->id)
             ->where('status', 'active')
-            ->get();
+            ->select('id', 'title as name', 'price', 'description', 'category')
+            ->get()
+            ->map(function ($service) {
+                $service->icon = $this->getCategoryIcon($service->category);
+                return $service;
+            });
 
         // Get today's POS sales
         $todaySales = PaidReservation::whereDate('created_at', today())
@@ -52,7 +57,28 @@ class PosController extends Controller
             ->limit(10)
             ->get();
 
-        return view('pos.index', compact('offerings', 'todaySales', 'recentTransactions'));
+        return view('pos.dashboard', compact('services', 'todaySales', 'recentTransactions'));
+    }
+
+    /**
+     * Get category icon for service display
+     */
+    private function getCategoryIcon($category)
+    {
+        $icons = [
+            'venues' => '🏛️',
+            'catering' => '🍽️',
+            'photography' => '📸',
+            'entertainment' => '🎭',
+            'planning' => '📋',
+            'decoration' => '🎨',
+            'audio_visual' => '🔊',
+            'transportation' => '🚗',
+            'security' => '🛡️',
+            'cleaning' => '🧹'
+        ];
+
+        return $icons[$category] ?? '🎯';
     }
 
     /**
@@ -70,7 +96,411 @@ class PosController extends Controller
     }
 
     /**
-     * Process POS sale
+     * Process direct POS sale
+     */
+    public function processDirectSale(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.id' => 'required|exists:offerings,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'customer' => 'nullable|array',
+            'customer.name' => 'nullable|string',
+            'customer.phone' => 'nullable|string',
+            'payment_method' => 'required|in:cash,card,mixed',
+            'discount' => 'nullable|numeric|min:0',
+            'discount_type' => 'nullable|in:amount,percentage',
+            'notes' => 'nullable|string|max:500',
+            'cash_received' => 'nullable|numeric|min:0',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $user = Auth::user();
+            $items = $request->items;
+            $subtotal = 0;
+
+            // Calculate subtotal
+            foreach ($items as $item) {
+                $offering = Offering::where('id', $item['id'])
+                    ->where('user_id', $user->id)
+                    ->firstOrFail();
+                
+                $subtotal += $offering->price * $item['quantity'];
+            }
+
+            // Calculate discount
+            $discount = $request->discount ?? 0;
+            if ($request->discount_type === 'percentage') {
+                $discount = ($subtotal * $discount) / 100;
+            }
+
+            $total = $subtotal - $discount;
+
+            // Find or create customer
+            $customer = null;
+            if (!empty($request->customer['phone'])) {
+                $customer = User::where('phone', $request->customer['phone'])->first();
+                
+                if (!$customer && !empty($request->customer['name'])) {
+                    $customer = User::create([
+                        'name' => $request->customer['name'],
+                        'phone' => $request->customer['phone'],
+                        'email' => $request->customer['phone'] . '@pos.local',
+                        'password' => bcrypt('temporary_password'),
+                        'role' => 'customer',
+                        'email_verified_at' => now(),
+                    ]);
+                }
+            }
+
+            // Create main reservation record
+            $reservation = PaidReservation::create([
+                'user_id' => $customer ? $customer->id : null,
+                'offering_id' => $items[0]['id'], // Main item
+                'quantity' => array_sum(array_column($items, 'quantity')),
+                'unit_price' => $subtotal / array_sum(array_column($items, 'quantity')),
+                'total_amount' => $total,
+                'discount_amount' => $discount,
+                'status' => 'confirmed',
+                'payment_status' => 'paid',
+                'payment_method' => $request->payment_method,
+                'additional_data' => [
+                    'source' => 'pos',
+                    'cashier_id' => $user->id,
+                    'items' => $items,
+                    'subtotal' => $subtotal,
+                    'discount' => [
+                        'amount' => $discount,
+                        'type' => $request->discount_type,
+                        'original_value' => $request->discount
+                    ],
+                    'payment' => [
+                        'method' => $request->payment_method,
+                        'cash_received' => $request->cash_received,
+                        'change' => max(0, ($request->cash_received ?? 0) - $total)
+                    ],
+                    'customer_info' => $request->customer,
+                    'notes' => $request->notes,
+                    'processed_at' => now()->toISOString(),
+                    'receipt_number' => 'POS-' . now()->format('Ymd') . '-' . str_pad($user->id, 3, '0', STR_PAD_LEFT) . '-' . time(),
+                ]
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Sale processed successfully',
+                'data' => [
+                    'reservation_id' => $reservation->id,
+                    'receipt_number' => $reservation->additional_data['receipt_number'],
+                    'total' => $total,
+                    'change' => $reservation->additional_data['payment']['change'] ?? 0,
+                    'customer' => $customer ? $customer->only(['id', 'name', 'phone']) : null,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('POS sale processing error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing sale: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Customer lookup by phone or name
+     */
+    public function customerLookup(Request $request)
+    {
+        $search = $request->get('search');
+        
+        if (strlen($search) < 3) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search term must be at least 3 characters'
+            ]);
+        }
+
+        $customers = User::where('role', 'customer')
+            ->where(function ($query) use ($search) {
+                $query->where('phone', 'like', '%' . $search . '%')
+                      ->orWhere('name', 'like', '%' . $search . '%');
+            })
+            ->select('id', 'name', 'phone', 'email')
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'customers' => $customers
+        ]);
+    }
+
+    /**
+     * Check attendance with QR code
+     */
+    public function attendanceCheck(Request $request)
+    {
+        $request->validate([
+            'qr_code' => 'required|string'
+        ]);
+
+        try {
+            // Try to decode QR data
+            $qrData = json_decode($request->qr_code, true);
+            
+            if (!$qrData || !isset($qrData['reservation_id'])) {
+                // Fallback: treat as reservation ID
+                $reservation = PaidReservation::where('id', $request->qr_code)
+                    ->orWhere('verification_code', $request->qr_code)
+                    ->first();
+            } else {
+                $reservation = PaidReservation::find($qrData['reservation_id']);
+            }
+
+            if (!$reservation) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid QR code or reservation not found'
+                ]);
+            }
+
+            // Check if reservation belongs to current merchant
+            if ($reservation->offering->user_id !== Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This reservation does not belong to your business'
+                ]);
+            }
+
+            // Mark attendance
+            $additionalData = $reservation->additional_data ?? [];
+            $isAlreadyChecked = isset($additionalData['attendance_checked_at']);
+            
+            if (!$isAlreadyChecked) {
+                $additionalData['attendance_checked_at'] = now()->toISOString();
+                $additionalData['checked_by'] = Auth::id();
+                $reservation->update(['additional_data' => $additionalData]);
+            }
+
+            $reservation->load(['offering', 'user']);
+
+            return response()->json([
+                'success' => true,
+                'message' => $isAlreadyChecked ? 'Attendance already verified' : 'Attendance verified successfully',
+                'data' => [
+                    'reservation' => $reservation,
+                    'customer' => $reservation->user,
+                    'offering' => $reservation->offering,
+                    'already_checked' => $isAlreadyChecked,
+                    'checked_at' => $additionalData['attendance_checked_at'],
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('QR attendance check error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing QR code'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get services for POS (API endpoint)
+     */
+    public function getServices(Request $request)
+    {
+        $user = Auth::user();
+        $search = $request->get('search');
+        $category = $request->get('category');
+
+        $query = Offering::where('user_id', $user->id)
+            ->where('status', 'active');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($category && $category !== 'all') {
+            $query->where('category', $category);
+        }
+
+        $services = $query->select('id', 'title as name', 'price', 'description', 'category')
+            ->get()
+            ->map(function ($service) {
+                $service->icon = $this->getCategoryIcon($service->category);
+                return $service;
+            });
+
+        return response()->json([
+            'success' => true,
+            'services' => $services
+        ]);
+    }
+
+    /**
+     * Validate QR code (API endpoint)
+     */
+    public function validateQr(Request $request)
+    {
+        return $this->attendanceCheck($request);
+    }
+
+    /**
+     * Search customers (API endpoint)
+     */
+    public function searchCustomers(Request $request)
+    {
+        return $this->customerLookup($request);
+    }
+
+    /**
+     * Create new customer (API endpoint)
+     */
+    public function createCustomer(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|unique:users,phone',
+        ]);
+
+        try {
+            $customer = User::create([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'email' => $request->phone . '@pos.local',
+                'password' => bcrypt('temporary_password'),
+                'role' => 'customer',
+                'email_verified_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Customer created successfully',
+                'customer' => $customer->only(['id', 'name', 'phone'])
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Customer creation error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating customer: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * POS Reports
+     */
+    public function reports(Request $request)
+    {
+        $user = Auth::user();
+        $period = $request->get('period', 'today');
+
+        $analytics = $this->getPosAnalytics($user, $period);
+
+        return view('pos.reports', compact('analytics', 'period'));
+    }
+
+    /**
+     * Sales History
+     */
+    public function salesHistory(Request $request)
+    {
+        $user = Auth::user();
+        
+        $sales = PaidReservation::whereHas('offering', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->whereJsonContains('additional_data->source', 'pos')
+            ->with(['offering', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('pos.sales-history', compact('sales'));
+    }
+
+    /**
+     * Daily Summary
+     */
+    public function dailySummary(Request $request)
+    {
+        $user = Auth::user();
+        $date = $request->get('date', today()->toDateString());
+
+        $analytics = $this->getPosAnalytics($user, 'custom', $date);
+
+        return view('pos.daily-summary', compact('analytics', 'date'));
+    }
+
+    /**
+     * Get POS analytics helper method
+     */
+    private function getPosAnalytics($user, $period, $customDate = null)
+    {
+        $query = PaidReservation::whereHas('offering', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->whereJsonContains('additional_data->source', 'pos');
+
+        switch ($period) {
+            case 'today':
+                $query->whereDate('created_at', today());
+                break;
+            case 'week':
+                $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                break;
+            case 'month':
+                $query->whereMonth('created_at', now()->month)
+                      ->whereYear('created_at', now()->year);
+                break;
+            case 'year':
+                $query->whereYear('created_at', now()->year);
+                break;
+            case 'custom':
+                if ($customDate) {
+                    $query->whereDate('created_at', $customDate);
+                }
+                break;
+        }
+
+        $sales = $query->get();
+        
+        return [
+            'total_sales' => $sales->sum('total_amount'),
+            'total_transactions' => $sales->count(),
+            'average_sale' => $sales->count() > 0 ? $sales->avg('total_amount') : 0,
+            'total_customers' => $sales->whereNotNull('user_id')->unique('user_id')->count(),
+            'payment_methods' => $sales->groupBy('payment_method')->map(function ($group) {
+                return [
+                    'count' => $group->count(),
+                    'total' => $group->sum('total_amount')
+                ];
+            }),
+            'hourly_sales' => $sales->groupBy(function ($sale) {
+                return Carbon::parse($sale->created_at)->format('H');
+            })->map(function ($group) {
+                return $group->sum('total_amount');
+            }),
+            'period' => $period,
+            'sales' => $sales
+        ];
+    }
+
+    /**
+     * Legacy store method (kept for compatibility)
      */
     public function store(Request $request)
     {

@@ -108,10 +108,10 @@ class BookingFactory extends Factory
             },
 
             // For non-registered customers
-            'customer_name' => function (array $attributes) {
+            'customer_name' => function (array $attributes) use ($customerNames) {
                 return $attributes['customer_id'] ? null : $this->faker->randomElement($customerNames);
             },
-            'customer_phone' => function (array $attributes) {
+            'customer_phone' => function (array $attributes) use ($phoneNumbers) {
                 return $attributes['customer_id'] ? null : $this->faker->randomElement($phoneNumbers);
             },
             'customer_email' => function (array $attributes) {

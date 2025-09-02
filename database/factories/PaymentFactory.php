@@ -24,36 +24,46 @@ class PaymentFactory extends Factory
         $amount = $this->faker->randomFloat(2, 100, 15000);
         $gatewayFee = $amount * 0.029; // 2.9% gateway fee
         $platformFee = $amount * 0.025; // 2.5% platform fee
+        $totalAmount = $amount + $gatewayFee + $platformFee;
 
         $transactionIds = [
-            'pi_3M'.$this->faker->randomNumber(8).'_'.$this->faker->randomNumber(6),
-            'txn_'.$this->faker->randomNumber(8),
-            'pay_'.$this->faker->randomNumber(10),
-            'stripe_'.$this->faker->randomNumber(8),
-            'hyperpay_'.$this->faker->randomNumber(8),
-            'tap_'.$this->faker->randomNumber(8),
+            'pi_3M'.$this->faker->numberBetween(10000000, 99999999).'_'.$this->faker->numberBetween(100000, 999999),
+            'txn_'.$this->faker->numberBetween(10000000, 99999999),
+            'pay_'.$this->faker->numberBetween(1000000000, 9999999999),
+            'stripe_'.$this->faker->numberBetween(10000000, 99999999),
+            'hyperpay_'.$this->faker->numberBetween(10000000, 99999999),
+            'tap_'.$this->faker->numberBetween(10000000, 99999999),
         ];
 
-        $paymentMethods = ['card', 'bank_transfer', 'apple_pay', 'stc_pay', 'mada'];
-        $cardBrands = ['visa', 'mastercard', 'amex', 'mada'];
-        $bankNames = [
-            'البنك الأهلي التجاري',
-            'بنك الراجحي',
-            'بنك الرياض',
-            'البنك السعودي للاستثمار',
-            'البنك السعودي الفرنسي',
-            'بنك ساب',
-            'البنك الأول',
-        ];
+        $paymentMethods = ['card', 'digital_wallet', 'bank_transfer', 'cash'];
 
         return [
+            'payment_number' => 'PAY-'.date('Y').'-'.str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
             'booking_id' => Booking::factory(),
+            'merchant_id' => function (array $attributes) {
+                if (isset($attributes['booking_id']) && is_numeric($attributes['booking_id'])) {
+                    $booking = Booking::find($attributes['booking_id']);
+                    return $booking ? $booking->merchant_id : 1;
+                }
+                return 1; // Default merchant
+            },
             'payment_gateway_id' => PaymentGateway::factory(),
-            'transaction_id' => $this->faker->randomElement($transactionIds),
+            'customer_id' => function (array $attributes) {
+                if (isset($attributes['booking_id']) && is_numeric($attributes['booking_id'])) {
+                    $booking = Booking::find($attributes['booking_id']);
+                    return $booking ? $booking->customer_id : null;
+                }
+                return null;
+            },
             'amount' => $amount,
+            'gateway_fee' => round($gatewayFee, 2),
+            'platform_fee' => round($platformFee, 2),
+            'total_amount' => round($totalAmount, 2),
             'currency' => 'SAR',
+            'status' => $this->faker->randomElement(['pending', 'processing', 'completed', 'failed', 'cancelled', 'refunded']),
             'payment_method' => $this->faker->randomElement($paymentMethods),
-            'status' => $this->faker->randomElement(['pending', 'completed', 'failed', 'cancelled', 'refunded']),
+            'gateway_transaction_id' => $this->faker->randomElement($transactionIds),
+            'gateway_reference' => 'REF-'.$this->faker->numberBetween(10000000, 99999999),
             'gateway_response' => json_encode([
                 'id' => $this->faker->uuid(),
                 'status' => 'succeeded',
@@ -66,8 +76,15 @@ class PaymentFactory extends Factory
                     'platform' => 'shubak_tickets',
                 ],
             ]),
-            'processed_at' => function (array $attributes) {
-                return in_array($attributes['status'], ['completed', 'failed'])
+            'gateway_metadata' => json_encode([
+                'ip_address' => $this->faker->ipv4(),
+                'user_agent' => $this->faker->userAgent(),
+                'platform' => 'web',
+                'payment_flow' => $this->faker->randomElement(['direct', 'redirect', 'hosted']),
+            ]),
+            'initiated_at' => $this->faker->dateTimeBetween('-30 days', 'now'),
+            'completed_at' => function (array $attributes) {
+                return in_array($attributes['status'], ['completed', 'refunded'])
                     ? $this->faker->dateTimeBetween('-30 days', 'now')
                     : null;
             },
@@ -87,64 +104,10 @@ class PaymentFactory extends Factory
                         'processing_error',
                     ]);
                 }
-
                 return null;
             },
-            'refunded_at' => function (array $attributes) {
-                return $attributes['status'] === 'refunded'
-                    ? $this->faker->dateTimeBetween('-15 days', 'now')
-                    : null;
-            },
-            'refund_amount' => function (array $attributes) {
-                return $attributes['status'] === 'refunded'
-                    ? $this->faker->randomFloat(2, $attributes['amount'] * 0.5, $attributes['amount'])
-                    : null;
-            },
-            'refund_reason' => function (array $attributes) {
-                if ($attributes['status'] === 'refunded') {
-                    return $this->faker->randomElement([
-                        'customer_request',
-                        'cancelled_booking',
-                        'duplicate_charge',
-                        'merchant_request',
-                        'technical_issue',
-                    ]);
-                }
-
-                return null;
-            },
-            'gateway_fee' => round($gatewayFee, 2),
-            'platform_fee' => round($platformFee, 2),
-            'net_amount' => round($amount - $gatewayFee - $platformFee, 2),
-
-            // Payment method specific details
-            'card_last4' => function (array $attributes) {
-                return in_array($attributes['payment_method'], ['card', 'apple_pay', 'mada'])
-                    ? $this->faker->numerify('####')
-                    : null;
-            },
-            'card_brand' => function (array $attributes) {
-                return in_array($attributes['payment_method'], ['card', 'apple_pay', 'mada'])
-                    ? $this->faker->randomElement($cardBrands)
-                    : null;
-            },
-            'bank_name' => function (array $attributes) {
-                return $attributes['payment_method'] === 'bank_transfer'
-                    ? $this->faker->randomElement($bankNames)
-                    : null;
-            },
-
-            'receipt_url' => function () {
-                return $this->faker->optional(0.8)->url();
-            },
-            'receipt_number' => $this->faker->unique()->numerify('RCP-########'),
-
-            'metadata' => json_encode([
-                'ip_address' => $this->faker->ipv4(),
-                'user_agent' => $this->faker->userAgent(),
-                'platform' => 'web',
-                'payment_flow' => $this->faker->randomElement(['direct', 'redirect', 'hosted']),
-            ]),
+            'customer_ip' => $this->faker->ipv4(),
+            'notes' => $this->faker->optional(0.3)->sentence(),
         ];
     }
 
@@ -155,7 +118,7 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'completed',
-            'processed_at' => $this->faker->dateTimeBetween('-30 days', 'now'),
+            'completed_at' => $this->faker->dateTimeBetween('-30 days', 'now'),
             'failed_at' => null,
             'failure_reason' => null,
         ]);
@@ -175,7 +138,7 @@ class PaymentFactory extends Factory
                 'expired_card',
                 'invalid_cvc',
             ]),
-            'processed_at' => null,
+            'completed_at' => null,
         ]);
     }
 
@@ -186,7 +149,7 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'pending',
-            'processed_at' => null,
+            'completed_at' => null,
             'failed_at' => null,
             'failure_reason' => null,
         ]);
@@ -199,9 +162,8 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'refunded',
-            'refunded_at' => $this->faker->dateTimeBetween('-15 days', 'now'),
-            'refund_amount' => $attributes['amount'] ?? $this->faker->randomFloat(2, 100, 1000),
-            'refund_reason' => 'customer_request',
+            'completed_at' => $this->faker->dateTimeBetween('-15 days', 'now'),
+            'notes' => 'Refunded: customer_request',
         ]);
     }
 
@@ -212,22 +174,16 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'payment_method' => 'card',
-            'card_last4' => $this->faker->numerify('####'),
-            'card_brand' => $this->faker->randomElement(['visa', 'mastercard', 'amex']),
-            'bank_name' => null,
         ]);
     }
 
     /**
-     * Set MADA payment method.
+     * Set digital wallet payment method.
      */
-    public function madaPayment(): static
+    public function digitalWallet(): static
     {
         return $this->state(fn (array $attributes) => [
-            'payment_method' => 'mada',
-            'card_last4' => $this->faker->numerify('####'),
-            'card_brand' => 'mada',
-            'bank_name' => null,
+            'payment_method' => 'digital_wallet',
         ]);
     }
 
@@ -236,31 +192,18 @@ class PaymentFactory extends Factory
      */
     public function bankTransfer(): static
     {
-        $bankNames = [
-            'البنك الأهلي التجاري',
-            'بنك الراجحي',
-            'بنك الرياض',
-            'البنك السعودي للاستثمار',
-        ];
-
         return $this->state(fn (array $attributes) => [
             'payment_method' => 'bank_transfer',
-            'bank_name' => $this->faker->randomElement($bankNames),
-            'card_last4' => null,
-            'card_brand' => null,
         ]);
     }
 
     /**
-     * Set STC Pay payment method.
+     * Set cash payment method.
      */
-    public function stcPay(): static
+    public function cash(): static
     {
         return $this->state(fn (array $attributes) => [
-            'payment_method' => 'stc_pay',
-            'card_last4' => null,
-            'card_brand' => null,
-            'bank_name' => null,
+            'payment_method' => 'cash',
         ]);
     }
 
