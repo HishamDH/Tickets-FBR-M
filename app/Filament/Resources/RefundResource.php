@@ -4,9 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RefundResource\Pages;
 use App\Models\Refund;
-use App\Models\Payment;
-use App\Models\Booking;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,10 +16,15 @@ class RefundResource extends Resource
     protected static ?string $model = Refund::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-uturn-left';
+
     protected static ?string $navigationGroup = 'Financial Management';
+
     protected static ?int $navigationSort = 3;
+
     protected static ?string $navigationLabel = 'Refunds';
+
     protected static ?string $modelLabel = 'Refund';
+
     protected static ?string $pluralModelLabel = 'Refunds';
 
     public static function form(Form $form): Form
@@ -36,27 +38,25 @@ class RefundResource extends Resource
                             ->disabled()
                             ->dehydrated(false)
                             ->placeholder('Auto-generated'),
-                        
+
                         Forms\Components\Select::make('payment_id')
                             ->label('Payment')
                             ->relationship('payment', 'transaction_id')
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->getOptionLabelFromRecordUsing(fn ($record) => 
-                                $record->transaction_id . ' - $' . number_format($record->amount, 2)
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->transaction_id.' - $'.number_format($record->amount, 2)
                             ),
-                        
+
                         Forms\Components\Select::make('booking_id')
                             ->label('Booking')
                             ->relationship('booking', 'reference_number')
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->getOptionLabelFromRecordUsing(fn ($record) => 
-                                $record->reference_number . ' - ' . $record->service_name
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->reference_number.' - '.$record->service_name
                             ),
-                        
+
                         Forms\Components\Select::make('user_id')
                             ->label('Customer')
                             ->relationship('user', 'name')
@@ -65,7 +65,7 @@ class RefundResource extends Resource
                             ->preload(),
                     ])
                     ->columns(2),
-                
+
                 Forms\Components\Section::make('Refund Details')
                     ->schema([
                         Forms\Components\TextInput::make('amount')
@@ -79,7 +79,7 @@ class RefundResource extends Resource
                                 $fee = $get('fee') ?? 0;
                                 $set('net_amount', $state - $fee);
                             }),
-                        
+
                         Forms\Components\TextInput::make('fee')
                             ->label('Processing Fee')
                             ->numeric()
@@ -90,14 +90,14 @@ class RefundResource extends Resource
                                 $amount = $get('amount') ?? 0;
                                 $set('net_amount', $amount - $state);
                             }),
-                        
+
                         Forms\Components\TextInput::make('net_amount')
                             ->label('Net Refund Amount')
                             ->numeric()
                             ->prefix('$')
                             ->disabled()
                             ->dehydrated(),
-                        
+
                         Forms\Components\Select::make('type')
                             ->label('Refund Type')
                             ->options([
@@ -107,7 +107,7 @@ class RefundResource extends Resource
                             ])
                             ->required()
                             ->default('partial'),
-                        
+
                         Forms\Components\Select::make('status')
                             ->label('Status')
                             ->options([
@@ -121,27 +121,27 @@ class RefundResource extends Resource
                             ->default('pending'),
                     ])
                     ->columns(3),
-                
+
                 Forms\Components\Section::make('Reason & Notes')
                     ->schema([
                         Forms\Components\Textarea::make('reason')
                             ->label('Refund Reason')
                             ->required()
                             ->placeholder('Enter the reason for this refund...'),
-                        
+
                         Forms\Components\Textarea::make('admin_notes')
                             ->label('Admin Notes')
                             ->placeholder('Internal notes (not visible to customer)...'),
                     ])
                     ->columns(1),
-                
+
                 Forms\Components\Section::make('Gateway Response')
                     ->schema([
                         Forms\Components\KeyValue::make('gateway_response')
                             ->label('Gateway Response Data')
                             ->disabled()
                             ->columnSpanFull(),
-                        
+
                         Forms\Components\DateTimePicker::make('processed_at')
                             ->label('Processed At')
                             ->disabled(),
@@ -160,59 +160,63 @@ class RefundResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable(),
-                
+
                 Tables\Columns\TextColumn::make('payment.transaction_id')
                     ->label('Payment')
                     ->searchable()
                     ->copyable(),
-                
+
                 Tables\Columns\TextColumn::make('booking.reference_number')
                     ->label('Booking')
                     ->searchable()
                     ->url(fn ($record) => $record->booking ? route('filament.admin.resources.bookings.view', $record->booking) : null),
-                
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')
                     ->money('USD')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('fee')
                     ->label('Fee')
                     ->money('USD')
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('net_amount')
                     ->label('Net Amount')
                     ->money('USD')
                     ->sortable(),
-                
-                Tables\Columns\BadgeColumn::make('type')
+
+                Tables\Columns\TextColumn::make('type')
                     ->label('Type')
-                    ->formatStateUsing(fn ($state) => match($state) {
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'full' => 'Full Refund',
                         'partial' => 'Partial Refund',
                         'service_fee' => 'Service Fee Only',
                         default => $state,
                     })
-                    ->colors([
-                        'success' => 'full',
-                        'warning' => 'partial',
-                        'info' => 'service_fee',
-                    ]),
-                
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'primary' => 'processing',
-                        'success' => 'completed',
-                        'danger' => 'failed',
-                        'secondary' => 'cancelled',
-                    ]),
-                
+                    ->color(fn (string $state): string => match ($state) {
+                        'full' => 'success',
+                        'partial' => 'warning',
+                        'service_fee' => 'info',
+                        default => 'gray',
+                    }),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'processing' => 'primary',
+                        'completed' => 'success',
+                        'failed' => 'danger',
+                        'cancelled' => 'secondary',
+                        default => 'gray',
+                    }),
+
                 Tables\Columns\TextColumn::make('reason')
                     ->limit(50)
                     ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
@@ -220,15 +224,16 @@ class RefundResource extends Resource
                         if (strlen($state) <= 50) {
                             return null;
                         }
+
                         return $state;
                     }),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Requested')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('processed_at')
                     ->label('Processed')
                     ->dateTime()
@@ -244,14 +249,14 @@ class RefundResource extends Resource
                         'failed' => 'Failed',
                         'cancelled' => 'Cancelled',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
                         'full' => 'Full Refund',
                         'partial' => 'Partial Refund',
                         'service_fee' => 'Service Fee Only',
                     ]),
-                
+
                 Tables\Filters\Filter::make('amount')
                     ->form([
                         Forms\Components\TextInput::make('amount_from')
@@ -272,7 +277,7 @@ class RefundResource extends Resource
                                 fn (Builder $query, $amount): Builder => $query->where('amount', '<=', $amount),
                             );
                     }),
-                
+
                 Tables\Filters\Filter::make('date_range')
                     ->form([
                         Forms\Components\DatePicker::make('created_from'),
@@ -294,7 +299,7 @@ class RefundResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    
+
                     Tables\Actions\Action::make('approve')
                         ->label('Approve Refund')
                         ->icon('heroicon-o-check-circle')
@@ -309,10 +314,10 @@ class RefundResource extends Resource
                                     'status' => 'processing',
                                     'processed_at' => now(),
                                 ]);
-                                
+
                                 // Process refund logic here
                                 $record->update(['status' => 'completed']);
-                                
+
                                 \Filament\Notifications\Notification::make()
                                     ->title('Refund Approved')
                                     ->body('The refund has been processed successfully.')
@@ -326,7 +331,7 @@ class RefundResource extends Resource
                                     ->send();
                             }
                         }),
-                    
+
                     Tables\Actions\Action::make('reject')
                         ->label('Reject Refund')
                         ->icon('heroicon-o-x-circle')
@@ -341,23 +346,23 @@ class RefundResource extends Resource
                         ->action(function ($record, array $data) {
                             $record->update([
                                 'status' => 'failed',
-                                'admin_notes' => ($record->admin_notes ? $record->admin_notes . "\n\n" : '') . 
-                                               'Rejected: ' . $data['rejection_reason'],
+                                'admin_notes' => ($record->admin_notes ? $record->admin_notes."\n\n" : '').
+                                               'Rejected: '.$data['rejection_reason'],
                             ]);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Refund Rejected')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\DeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    
+
                     Tables\Actions\BulkAction::make('approve_selected')
                         ->label('Approve Selected')
                         ->icon('heroicon-o-check-circle')
@@ -366,7 +371,7 @@ class RefundResource extends Resource
                         ->action(function ($records) {
                             $successCount = 0;
                             $errorCount = 0;
-                            
+
                             foreach ($records as $record) {
                                 if ($record->status === 'pending') {
                                     try {
@@ -380,13 +385,13 @@ class RefundResource extends Resource
                                     }
                                 }
                             }
-                            
+
                             \Filament\Notifications\Notification::make()
-                                ->title("Processed {$successCount} refunds" . ($errorCount ? " ({$errorCount} failed)" : ''))
+                                ->title("Processed {$successCount} refunds".($errorCount ? " ({$errorCount} failed)" : ''))
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\BulkAction::make('export')
                         ->label('Export Refunds')
                         ->icon('heroicon-o-arrow-down-tray')
@@ -394,7 +399,7 @@ class RefundResource extends Resource
                         ->action(function ($records) {
                             return response()->streamDownload(function () use ($records) {
                                 $csv = fopen('php://output', 'w');
-                                
+
                                 // Headers
                                 fputcsv($csv, [
                                     'Reference',
@@ -410,7 +415,7 @@ class RefundResource extends Resource
                                     'Created At',
                                     'Processed At',
                                 ]);
-                                
+
                                 // Data
                                 foreach ($records as $refund) {
                                     fputcsv($csv, [
@@ -428,9 +433,9 @@ class RefundResource extends Resource
                                         $refund->processed_at,
                                     ]);
                                 }
-                                
+
                                 fclose($csv);
-                            }, 'refunds-export-' . now()->format('Y-m-d-H-i-s') . '.csv');
+                            }, 'refunds-export-'.now()->format('Y-m-d-H-i-s').'.csv');
                         }),
                 ]),
             ])

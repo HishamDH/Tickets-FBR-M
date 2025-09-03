@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PosController;
-use App\Http\Controllers\WithdrawController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SupportController;
+use App\Http\Controllers\WithdrawController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +33,7 @@ Route::prefix('auth')->group(function () {
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     // Chat/Messaging System
     Route::prefix('chat')->group(function () {
         Route::get('conversations', [ChatController::class, 'index']);
@@ -60,9 +60,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [WithdrawController::class, 'index']);
         Route::post('/', [WithdrawController::class, 'requestWithdrawal']);
         Route::patch('{withdrawal}/approve', [WithdrawController::class, 'approveWithdrawal'])
-             ->middleware('permission:withdrawals_approve');
+            ->middleware('permission:withdrawals_approve');
         Route::patch('{withdrawal}/reject', [WithdrawController::class, 'rejectWithdrawal'])
-             ->middleware('permission:withdrawals_approve');
+            ->middleware('permission:withdrawals_approve');
         Route::get('wallet', [WithdrawController::class, 'getWalletInfo']);
     });
 

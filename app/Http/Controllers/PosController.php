@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Offering;
 use App\Models\PaidReservation;
-use App\Models\Booking;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class PosController extends Controller
 {
@@ -28,7 +27,7 @@ class PosController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         // Get merchant's offerings/services for POS
         $services = Offering::where('user_id', $user->id)
             ->where('status', 'active')
@@ -36,6 +35,7 @@ class PosController extends Controller
             ->get()
             ->map(function ($service) {
                 $service->icon = $this->getCategoryIcon($service->category);
+
                 return $service;
             });
 
@@ -49,8 +49,8 @@ class PosController extends Controller
 
         // Get recent POS transactions
         $recentTransactions = PaidReservation::whereHas('offering', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+            $query->where('user_id', $user->id);
+        })
             ->whereJsonContains('additional_data->source', 'pos')
             ->with(['offering', 'user'])
             ->orderBy('created_at', 'desc')
@@ -75,7 +75,7 @@ class PosController extends Controller
             'audio_visual' => '🔊',
             'transportation' => '🚗',
             'security' => '🛡️',
-            'cleaning' => '🧹'
+            'cleaning' => '🧹',
         ];
 
         return $icons[$category] ?? '🎯';
@@ -87,7 +87,7 @@ class PosController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
-        
+
         $offerings = Offering::where('user_id', $user->id)
             ->where('status', 'active')
             ->get();
@@ -126,7 +126,7 @@ class PosController extends Controller
                 $offering = Offering::where('id', $item['id'])
                     ->where('user_id', $user->id)
                     ->firstOrFail();
-                
+
                 $subtotal += $offering->price * $item['quantity'];
             }
 
@@ -140,14 +140,14 @@ class PosController extends Controller
 
             // Find or create customer
             $customer = null;
-            if (!empty($request->customer['phone'])) {
+            if (! empty($request->customer['phone'])) {
                 $customer = User::where('phone', $request->customer['phone'])->first();
-                
-                if (!$customer && !empty($request->customer['name'])) {
+
+                if (! $customer && ! empty($request->customer['name'])) {
                     $customer = User::create([
                         'name' => $request->customer['name'],
                         'phone' => $request->customer['phone'],
-                        'email' => $request->customer['phone'] . '@pos.local',
+                        'email' => $request->customer['phone'].'@pos.local',
                         'password' => bcrypt('temporary_password'),
                         'role' => 'customer',
                         'email_verified_at' => now(),
@@ -174,18 +174,18 @@ class PosController extends Controller
                     'discount' => [
                         'amount' => $discount,
                         'type' => $request->discount_type,
-                        'original_value' => $request->discount
+                        'original_value' => $request->discount,
                     ],
                     'payment' => [
                         'method' => $request->payment_method,
                         'cash_received' => $request->cash_received,
-                        'change' => max(0, ($request->cash_received ?? 0) - $total)
+                        'change' => max(0, ($request->cash_received ?? 0) - $total),
                     ],
                     'customer_info' => $request->customer,
                     'notes' => $request->notes,
                     'processed_at' => now()->toISOString(),
-                    'receipt_number' => 'POS-' . now()->format('Ymd') . '-' . str_pad($user->id, 3, '0', STR_PAD_LEFT) . '-' . time(),
-                ]
+                    'receipt_number' => 'POS-'.now()->format('Ymd').'-'.str_pad($user->id, 3, '0', STR_PAD_LEFT).'-'.time(),
+                ],
             ]);
 
             DB::commit();
@@ -199,16 +199,16 @@ class PosController extends Controller
                     'total' => $total,
                     'change' => $reservation->additional_data['payment']['change'] ?? 0,
                     'customer' => $customer ? $customer->only(['id', 'name', 'phone']) : null,
-                ]
+                ],
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('POS sale processing error: ' . $e->getMessage());
-            
+            Log::error('POS sale processing error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error processing sale: ' . $e->getMessage()
+                'message' => 'Error processing sale: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -219,18 +219,18 @@ class PosController extends Controller
     public function customerLookup(Request $request)
     {
         $search = $request->get('search');
-        
+
         if (strlen($search) < 3) {
             return response()->json([
                 'success' => false,
-                'message' => 'Search term must be at least 3 characters'
+                'message' => 'Search term must be at least 3 characters',
             ]);
         }
 
         $customers = User::where('role', 'customer')
             ->where(function ($query) use ($search) {
-                $query->where('phone', 'like', '%' . $search . '%')
-                      ->orWhere('name', 'like', '%' . $search . '%');
+                $query->where('phone', 'like', '%'.$search.'%')
+                    ->orWhere('name', 'like', '%'.$search.'%');
             })
             ->select('id', 'name', 'phone', 'email')
             ->limit(10)
@@ -238,7 +238,7 @@ class PosController extends Controller
 
         return response()->json([
             'success' => true,
-            'customers' => $customers
+            'customers' => $customers,
         ]);
     }
 
@@ -248,14 +248,14 @@ class PosController extends Controller
     public function attendanceCheck(Request $request)
     {
         $request->validate([
-            'qr_code' => 'required|string'
+            'qr_code' => 'required|string',
         ]);
 
         try {
             // Try to decode QR data
             $qrData = json_decode($request->qr_code, true);
-            
-            if (!$qrData || !isset($qrData['reservation_id'])) {
+
+            if (! $qrData || ! isset($qrData['reservation_id'])) {
                 // Fallback: treat as reservation ID
                 $reservation = PaidReservation::where('id', $request->qr_code)
                     ->orWhere('verification_code', $request->qr_code)
@@ -264,10 +264,10 @@ class PosController extends Controller
                 $reservation = PaidReservation::find($qrData['reservation_id']);
             }
 
-            if (!$reservation) {
+            if (! $reservation) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid QR code or reservation not found'
+                    'message' => 'Invalid QR code or reservation not found',
                 ]);
             }
 
@@ -275,15 +275,15 @@ class PosController extends Controller
             if ($reservation->offering->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'This reservation does not belong to your business'
+                    'message' => 'This reservation does not belong to your business',
                 ]);
             }
 
             // Mark attendance
             $additionalData = $reservation->additional_data ?? [];
             $isAlreadyChecked = isset($additionalData['attendance_checked_at']);
-            
-            if (!$isAlreadyChecked) {
+
+            if (! $isAlreadyChecked) {
                 $additionalData['attendance_checked_at'] = now()->toISOString();
                 $additionalData['checked_by'] = Auth::id();
                 $reservation->update(['additional_data' => $additionalData]);
@@ -300,15 +300,15 @@ class PosController extends Controller
                     'offering' => $reservation->offering,
                     'already_checked' => $isAlreadyChecked,
                     'checked_at' => $additionalData['attendance_checked_at'],
-                ]
+                ],
             ]);
 
         } catch (\Exception $e) {
-            Log::error('QR attendance check error: ' . $e->getMessage());
-            
+            Log::error('QR attendance check error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error processing QR code'
+                'message' => 'Error processing QR code',
             ], 500);
         }
     }
@@ -327,8 +327,8 @@ class PosController extends Controller
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%');
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%');
             });
         }
 
@@ -340,12 +340,13 @@ class PosController extends Controller
             ->get()
             ->map(function ($service) {
                 $service->icon = $this->getCategoryIcon($service->category);
+
                 return $service;
             });
 
         return response()->json([
             'success' => true,
-            'services' => $services
+            'services' => $services,
         ]);
     }
 
@@ -379,7 +380,7 @@ class PosController extends Controller
             $customer = User::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
-                'email' => $request->phone . '@pos.local',
+                'email' => $request->phone.'@pos.local',
                 'password' => bcrypt('temporary_password'),
                 'role' => 'customer',
                 'email_verified_at' => now(),
@@ -388,15 +389,15 @@ class PosController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Customer created successfully',
-                'customer' => $customer->only(['id', 'name', 'phone'])
+                'customer' => $customer->only(['id', 'name', 'phone']),
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Customer creation error: ' . $e->getMessage());
-            
+            Log::error('Customer creation error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error creating customer: ' . $e->getMessage()
+                'message' => 'Error creating customer: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -420,10 +421,10 @@ class PosController extends Controller
     public function salesHistory(Request $request)
     {
         $user = Auth::user();
-        
+
         $sales = PaidReservation::whereHas('offering', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+            $query->where('user_id', $user->id);
+        })
             ->whereJsonContains('additional_data->source', 'pos')
             ->with(['offering', 'user'])
             ->orderBy('created_at', 'desc')
@@ -451,8 +452,8 @@ class PosController extends Controller
     private function getPosAnalytics($user, $period, $customDate = null)
     {
         $query = PaidReservation::whereHas('offering', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
+            $q->where('user_id', $user->id);
+        })
             ->whereJsonContains('additional_data->source', 'pos');
 
         switch ($period) {
@@ -464,7 +465,7 @@ class PosController extends Controller
                 break;
             case 'month':
                 $query->whereMonth('created_at', now()->month)
-                      ->whereYear('created_at', now()->year);
+                    ->whereYear('created_at', now()->year);
                 break;
             case 'year':
                 $query->whereYear('created_at', now()->year);
@@ -477,7 +478,7 @@ class PosController extends Controller
         }
 
         $sales = $query->get();
-        
+
         return [
             'total_sales' => $sales->sum('total_amount'),
             'total_transactions' => $sales->count(),
@@ -486,7 +487,7 @@ class PosController extends Controller
             'payment_methods' => $sales->groupBy('payment_method')->map(function ($group) {
                 return [
                     'count' => $group->count(),
-                    'total' => $group->sum('total_amount')
+                    'total' => $group->sum('total_amount'),
                 ];
             }),
             'hourly_sales' => $sales->groupBy(function ($sale) {
@@ -495,7 +496,7 @@ class PosController extends Controller
                 return $group->sum('total_amount');
             }),
             'period' => $period,
-            'sales' => $sales
+            'sales' => $sales,
         ];
     }
 
@@ -518,12 +519,12 @@ class PosController extends Controller
             DB::beginTransaction();
 
             $offering = Offering::findOrFail($request->offering_id);
-            
+
             // Check if user owns this offering
             if ($offering->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unauthorized access to this offering'
+                    'message' => 'Unauthorized access to this offering',
                 ], 403);
             }
 
@@ -538,12 +539,12 @@ class PosController extends Controller
             $customer = null;
             if ($request->customer_phone) {
                 $customer = User::where('phone', $request->customer_phone)->first();
-                
-                if (!$customer && $request->customer_name) {
+
+                if (! $customer && $request->customer_name) {
                     $customer = User::create([
                         'name' => $request->customer_name,
                         'phone' => $request->customer_phone,
-                        'email' => $request->customer_phone . '@pos.local',
+                        'email' => $request->customer_phone.'@pos.local',
                         'password' => bcrypt('temporary_password'),
                         'role' => 'customer',
                         'email_verified_at' => now(),
@@ -571,7 +572,7 @@ class PosController extends Controller
                     'notes' => $request->notes,
                     'processed_at' => now()->toISOString(),
                     'attendance_status' => 'present', // Auto-mark as present for POS sales
-                ]
+                ],
             ]);
 
             // Generate QR code for the reservation (for verification if needed)
@@ -593,16 +594,16 @@ class PosController extends Controller
                     'qr_data' => $qrData,
                     'total' => $total,
                     'customer' => $customer,
-                ]
+                ],
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('POS sale processing error: ' . $e->getMessage());
-            
+            Log::error('POS sale processing error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error processing POS sale: ' . $e->getMessage()
+                'message' => 'Error processing POS sale: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -613,10 +614,10 @@ class PosController extends Controller
     public function searchCustomer(Request $request)
     {
         $request->validate([
-            'phone' => 'required|string|min:8'
+            'phone' => 'required|string|min:8',
         ]);
 
-        $customer = User::where('phone', 'like', '%' . $request->phone . '%')
+        $customer = User::where('phone', 'like', '%'.$request->phone.'%')
             ->where('role', 'customer')
             ->first();
 
@@ -628,13 +629,13 @@ class PosController extends Controller
                     'name' => $customer->name,
                     'phone' => $customer->phone,
                     'email' => $customer->email,
-                ]
+                ],
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Customer not found'
+            'message' => 'Customer not found',
         ]);
     }
 
@@ -644,7 +645,7 @@ class PosController extends Controller
     public function verifyTicket(Request $request)
     {
         $request->validate([
-            'verification_code' => 'required|string'
+            'verification_code' => 'required|string',
         ]);
 
         $reservation = PaidReservation::where('verification_code', $request->verification_code)
@@ -652,10 +653,10 @@ class PosController extends Controller
             ->with(['offering', 'user'])
             ->first();
 
-        if (!$reservation) {
+        if (! $reservation) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid ticket or verification code'
+                'message' => 'Invalid ticket or verification code',
             ]);
         }
 
@@ -663,13 +664,13 @@ class PosController extends Controller
         if ($reservation->offering->user_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
-                'message' => 'This ticket does not belong to your business'
+                'message' => 'This ticket does not belong to your business',
             ]);
         }
 
         // Mark attendance if not already marked
         $additionalData = $reservation->additional_data ?? [];
-        if (!isset($additionalData['attendance_verified_at'])) {
+        if (! isset($additionalData['attendance_verified_at'])) {
             $additionalData['attendance_verified_at'] = now()->toISOString();
             $additionalData['verified_by'] = Auth::id();
             $reservation->update(['additional_data' => $additionalData]);
@@ -684,7 +685,7 @@ class PosController extends Controller
                 'offering' => $reservation->offering,
                 'already_verified' => isset($additionalData['attendance_verified_at']),
                 'verified_at' => $additionalData['attendance_verified_at'] ?? null,
-            ]
+            ],
         ]);
     }
 
@@ -712,8 +713,8 @@ class PosController extends Controller
         $period = $request->get('period', 'today'); // today, week, month, year
 
         $query = PaidReservation::whereHas('offering', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
+            $q->where('user_id', $user->id);
+        })
             ->whereJsonContains('additional_data->source', 'pos');
 
         switch ($period) {
@@ -725,7 +726,7 @@ class PosController extends Controller
                 break;
             case 'month':
                 $query->whereMonth('created_at', now()->month)
-                      ->whereYear('created_at', now()->year);
+                    ->whereYear('created_at', now()->year);
                 break;
             case 'year':
                 $query->whereYear('created_at', now()->year);
@@ -733,7 +734,7 @@ class PosController extends Controller
         }
 
         $sales = $query->get();
-        
+
         $analytics = [
             'total_sales' => $sales->sum('total_amount'),
             'total_transactions' => $sales->count(),
@@ -742,7 +743,7 @@ class PosController extends Controller
             'payment_methods' => $sales->groupBy('payment_method')->map(function ($group) {
                 return [
                     'count' => $group->count(),
-                    'total' => $group->sum('total_amount')
+                    'total' => $group->sum('total_amount'),
                 ];
             }),
             'hourly_sales' => $sales->groupBy(function ($sale) {
@@ -755,7 +756,7 @@ class PosController extends Controller
         return response()->json([
             'success' => true,
             'analytics' => $analytics,
-            'period' => $period
+            'period' => $period,
         ]);
     }
 }

@@ -15,13 +15,13 @@ class NotificationResource extends Resource
     protected static ?string $model = Notification::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';
-    
+
     protected static ?string $slug = 'system-notifications';
-    
+
     protected static ?string $navigationLabel = 'System Notifications';
-    
+
     protected static ?string $modelLabel = 'System Notification';
-    
+
     protected static ?string $pluralModelLabel = 'System Notifications';
 
     public static function form(Form $form): Form

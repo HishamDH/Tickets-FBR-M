@@ -14,14 +14,15 @@ class MerchantMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('merchant')->check()) {
+        if (! Auth::guard('merchant')->check()) {
             return redirect('/merchant/login');
         }
 
         $user = Auth::guard('merchant')->user();
-        
+
         if ($user->role !== 'merchant') {
             Auth::guard('merchant')->logout();
+
             return redirect('/merchant/login')->with('error', 'Access denied. Merchant privileges required.');
         }
 

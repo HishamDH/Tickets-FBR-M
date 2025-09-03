@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @mixin IdeHelperOrder
+ */
 class Order extends Model
 {
     use HasFactory;
@@ -41,21 +44,33 @@ class Order extends Model
     ];
 
     const STATUS_PENDING = 'pending';
+
     const STATUS_CONFIRMED = 'confirmed';
+
     const STATUS_PROCESSING = 'processing';
+
     const STATUS_SHIPPED = 'shipped';
+
     const STATUS_DELIVERED = 'delivered';
+
     const STATUS_CANCELLED = 'cancelled';
 
     const PAYMENT_STATUS_PENDING = 'pending';
+
     const PAYMENT_STATUS_COMPLETED = 'completed';
+
     const PAYMENT_STATUS_FAILED = 'failed';
+
     const PAYMENT_STATUS_REFUNDED = 'refunded';
+
     const PAYMENT_STATUS_PENDING_COD = 'pending_cod';
 
     const PAYMENT_METHOD_STRIPE = 'stripe';
+
     const PAYMENT_METHOD_PAYPAL = 'paypal';
+
     const PAYMENT_METHOD_BANK_TRANSFER = 'bank_transfer';
+
     const PAYMENT_METHOD_CASH_ON_DELIVERY = 'cash_on_delivery';
 
     public function user(): BelongsTo
@@ -137,7 +152,8 @@ class Order extends Model
     public function getBillingNameAttribute(): string
     {
         $billing = $this->billing_details ?? [];
-        return trim(($billing['first_name'] ?? '') . ' ' . ($billing['last_name'] ?? ''));
+
+        return trim(($billing['first_name'] ?? '').' '.($billing['last_name'] ?? ''));
     }
 
     public function getBillingAddressAttribute(): string

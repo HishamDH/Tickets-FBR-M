@@ -15,10 +15,10 @@ class DashboardController extends Controller
         // Get customer's bookings statistics
         $bookingsStats = [
             'total' => $user->bookings()->count(),
-            'pending' => $user->bookings()->where('booking_status', 'pending')->count(),
-            'confirmed' => $user->bookings()->where('booking_status', 'confirmed')->count(),
-            'completed' => $user->bookings()->where('booking_status', 'completed')->count(),
-            'cancelled' => $user->bookings()->where('booking_status', 'cancelled')->count(),
+            'pending' => $user->bookings()->where('status', 'pending')->count(),
+            'confirmed' => $user->bookings()->where('status', 'confirmed')->count(),
+            'completed' => $user->bookings()->where('status', 'completed')->count(),
+            'cancelled' => $user->bookings()->where('status', 'cancelled')->count(),
         ];
 
         // Get recent bookings
@@ -32,7 +32,7 @@ class DashboardController extends Controller
         $upcomingBookings = $user->bookings()
             ->with(['service', 'merchant'])
             ->where('booking_date', '>=', now())
-            ->where('booking_status', '!=', 'cancelled')
+            ->where('status', '!=', 'cancelled')
             ->orderBy('booking_date')
             ->limit(3)
             ->get();

@@ -1,13 +1,11 @@
 <?php
 
 use App\Http\Controllers\AnalyticsController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContentController;
-use App\Http\Controllers\Dashboard\UserDashboardController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
@@ -16,6 +14,7 @@ use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\Dashboard\CustomerDashboardController as DashboardCustomerDashboardController;
 use App\Http\Controllers\Dashboard\MerchantDashboardController;
 use App\Http\Controllers\Dashboard\PartnerDashboardController;
+use App\Http\Controllers\Dashboard\UserDashboardController;
 use App\Http\Controllers\Frontend\BookingController as FrontendBookingController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\MerchantStorefrontController;
@@ -158,7 +157,7 @@ Route::middleware(['auth'])->prefix('dashboard/user')->name('dashboard.user.')->
 // Legacy booking routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/booking/{service_id}', [BookingController::class, 'create'])->name('booking.create');
-    
+
     Route::get('/cart', function () {
         return view('cart');
     })->name('cart.index');
@@ -183,6 +182,7 @@ Route::get('/dashboard', function () {
                 (object) ['service_name' => 'Gourmet Catering', 'booking_date' => now()->addDays(10), 'status' => 'Confirmed'],
                 (object) ['service_name' => 'Luxury Wedding Hall', 'booking_date' => now()->subDays(5), 'status' => 'Completed'],
             ]);
+
             return view('dashboard', ['bookings' => $bookings]);
     }
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -231,7 +231,7 @@ Route::middleware(['auth', 'verified'])->prefix('chat')->name('chat.')->group(fu
     Route::post('/conversations/start', [ChatController::class, 'startConversation'])->name('conversations.start');
     Route::patch('/conversations/{conversation}/close', [ChatController::class, 'closeConversation'])->name('conversations.close');
     Route::delete('/messages/{message}', [ChatController::class, 'deleteMessage'])->name('messages.delete');
-    
+
     // Support specific routes
     Route::prefix('support')->name('support.')->group(function () {
         Route::get('/', [ChatController::class, 'support'])->name('index');
@@ -239,43 +239,6 @@ Route::middleware(['auth', 'verified'])->prefix('chat')->name('chat.')->group(fu
     });
 });
 
-// Customer Dashboard Routes
-Route::middleware(['auth', 'verified', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
-    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
-
-    // Services
-    Route::get('/services', [CustomerServiceController::class, 'index'])->name('services.index');
-    Route::get('/services/{service}', [CustomerServiceController::class, 'show'])->name('services.show');
-    Route::post('/services/{service}/favorite', [CustomerServiceController::class, 'addToFavorites'])->name('services.favorite');
-    Route::delete('/services/{service}/favorite', [CustomerServiceController::class, 'removeFromFavorites'])->name('services.unfavorite');
-
-    // Bookings
-    Route::get('/bookings', [CustomerBookingController::class, 'index'])->name('bookings.index');
-    Route::get('/bookings/{booking}', [CustomerBookingController::class, 'show'])->name('bookings.show');
-    Route::get('/services/{service}/book', [CustomerBookingController::class, 'create'])->name('bookings.create');
-    Route::post('/services/{service}/book', [CustomerBookingController::class, 'store'])->name('bookings.store');
-    Route::patch('/bookings/{booking}/cancel', [CustomerBookingController::class, 'cancel'])->name('bookings.cancel');
-    Route::get('/bookings/{booking}/invoice', [CustomerBookingController::class, 'downloadInvoice'])->name('bookings.invoice');
-
-    // AJAX endpoints for bookings
-    Route::get('/services/{service}/slots', [CustomerBookingController::class, 'getAvailableSlots'])->name('services.slots');
-    Route::post('/services/{service}/calculate-price', [CustomerBookingController::class, 'calculatePrice'])->name('services.calculate-price');
-
-    // Payments
-    Route::get('/bookings/{booking}/payment', [CustomerPaymentController::class, 'show'])->name('payments.show');
-    Route::post('/bookings/{booking}/payment', [CustomerPaymentController::class, 'process'])->name('payments.process');
-    Route::get('/bookings/{booking}/payment/success', [CustomerPaymentController::class, 'success'])->name('payments.success');
-    Route::get('/bookings/{booking}/payment/failed', [CustomerPaymentController::class, 'failed'])->name('payments.failed');
-    Route::get('/payments/history', [CustomerPaymentController::class, 'history'])->name('payments.history');
-    Route::get('/payments/{payment}/receipt', [CustomerPaymentController::class, 'downloadReceipt'])->name('payments.receipt');
-    Route::post('/payments/{payment}/refund', [CustomerPaymentController::class, 'requestRefund'])->name('payments.refund');
-
-    // Profile management
-    Route::get('/profile', [DashboardCustomerDashboardController::class, 'profile'])->name('profile');
-    Route::get('/bookings/{booking}/rebook', [DashboardCustomerDashboardController::class, 'rebookService'])->name('rebook-service');
-    Route::patch('/bookings/{booking}/reschedule', [DashboardCustomerDashboardController::class, 'rescheduleRequest'])->name('reschedule-request');
-    Route::patch('/bookings/{booking}/rate', [DashboardCustomerDashboardController::class, 'rateService'])->name('rate-service');
-});
 
 // Partner Dashboard Routes
 Route::middleware(['auth', 'verified', 'role:partner'])->prefix('partner')->name('partner.')->group(function () {
@@ -310,7 +273,7 @@ Route::middleware(['auth', 'verified'])->prefix('notifications')->name('notifica
     Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
     Route::delete('/{notification}', [NotificationController::class, 'destroy'])->name('destroy');
     Route::post('/bulk-action', [NotificationController::class, 'bulkAction'])->name('bulk-action');
-    
+
     Route::get('/preferences', function () {
         return view('notifications.preferences');
     })->name('preferences');
@@ -364,7 +327,7 @@ Route::middleware(['auth', 'verified', 'role:merchant'])->prefix('pos')->name('p
     Route::get('/reports', [\App\Http\Controllers\PosController::class, 'reports'])->name('reports');
     Route::get('/sales-history', [\App\Http\Controllers\PosController::class, 'salesHistory'])->name('sales.history');
     Route::get('/daily-summary', [\App\Http\Controllers\PosController::class, 'dailySummary'])->name('daily.summary');
-    
+
     // API routes for POS
     Route::prefix('api')->name('api.')->group(function () {
         Route::get('/services', [\App\Http\Controllers\PosController::class, 'getServices'])->name('services');
@@ -425,6 +388,7 @@ Route::middleware(['auth', 'verified'])->prefix('analytics')->name('analytics.')
 Route::middleware(['auth'])->prefix('payment')->name('payment.')->group(function () {
     Route::get('/checkout/{booking}', function ($bookingId) {
         $booking = Booking::findOrFail($bookingId);
+
         return view('payment.checkout', compact('booking'));
     })->name('checkout');
 

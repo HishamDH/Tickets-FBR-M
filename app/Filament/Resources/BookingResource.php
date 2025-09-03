@@ -235,14 +235,16 @@ class BookingResource extends Resource
                     ->money('SAR')
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('payment_status')
+                Tables\Columns\TextColumn::make('payment_status')
                     ->label('حالة الدفع')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'paid',
-                        'danger' => 'failed',
-                        'secondary' => 'refunded',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'failed' => 'danger',
+                        'refunded' => 'secondary',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => 'في الانتظار',
                         'paid' => 'مدفوع',
@@ -251,15 +253,17 @@ class BookingResource extends Resource
                         default => $state,
                     }),
 
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('حالة الحجز')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'confirmed',
-                        'primary' => 'completed',
-                        'danger' => 'cancelled',
-                        'secondary' => 'no_show',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'confirmed' => 'success',
+                        'completed' => 'primary',
+                        'cancelled' => 'danger',
+                        'no_show' => 'secondary',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => 'في الانتظار',
                         'confirmed' => 'مؤكد',
@@ -269,13 +273,15 @@ class BookingResource extends Resource
                         default => $state,
                     }),
 
-                Tables\Columns\BadgeColumn::make('booking_source')
+                Tables\Columns\TextColumn::make('booking_source')
                     ->label('المصدر')
-                    ->colors([
-                        'primary' => 'online',
-                        'warning' => 'manual',
-                        'success' => 'pos',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'online' => 'primary',
+                        'manual' => 'warning',
+                        'pos' => 'success',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'online' => 'إلكتروني',
                         'manual' => 'يدوي',

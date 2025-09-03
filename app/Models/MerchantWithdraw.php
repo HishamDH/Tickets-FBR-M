@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @mixin IdeHelperMerchantWithdraw
+ */
 class MerchantWithdraw extends Model
 {
     use HasFactory;
@@ -34,10 +37,15 @@ class MerchantWithdraw extends Model
 
     // Status constants
     const STATUS_PENDING = 'pending';
+
     const STATUS_APPROVED = 'approved';
+
     const STATUS_PROCESSING = 'processing';
+
     const STATUS_COMPLETED = 'completed';
+
     const STATUS_REJECTED = 'rejected';
+
     const STATUS_CANCELLED = 'cancelled';
 
     public static function getStatuses(): array
@@ -71,7 +79,7 @@ class MerchantWithdraw extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             self::STATUS_PENDING => 'warning',
             self::STATUS_APPROVED => 'info',
             self::STATUS_PROCESSING => 'primary',
@@ -136,7 +144,7 @@ class MerchantWithdraw extends Model
     public function scopeThisMonth($query)
     {
         return $query->whereMonth('created_at', now()->month)
-                    ->whereYear('created_at', now()->year);
+            ->whereYear('created_at', now()->year);
     }
 
     public function scopeThisYear($query)
@@ -202,7 +210,7 @@ class MerchantWithdraw extends Model
 
     public function getFormattedAmountAttribute(): string
     {
-        return number_format($this->amount, 2) . ' ' . config('app.currency', 'USD');
+        return number_format($this->amount, 2).' '.config('app.currency', 'USD');
     }
 
     public function getDaysAgoAttribute(): int

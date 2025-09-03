@@ -54,7 +54,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <!-- Search Input -->
                     <div class="lg:col-span-5">
-                        <label class="block text-sm font-bold text-gray-700 mb-4 flex items-center">
+                        <label class="text-sm font-bold text-gray-700 mb-4 flex items-center">
                             <span class="text-xl mr-2">🔍</span>
                             البحث في الخدمات
                         </label>
@@ -74,7 +74,7 @@
                     
                     <!-- Category Filter -->
                     <div class="lg:col-span-3">
-                        <label class="block text-sm font-bold text-gray-700 mb-4 flex items-center">
+                        <label class="text-sm font-bold text-gray-700 mb-4 flex items-center">
                             <span class="text-xl mr-2">🏷️</span>
                             الفئة
                         </label>
@@ -91,7 +91,7 @@
 
                     <!-- Price Range -->
                     <div class="lg:col-span-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-4 flex items-center">
+                        <label class="text-sm font-bold text-gray-700 mb-4 flex items-center">
                             <span class="text-xl mr-2">💰</span>
                             نطاق السعر (ريال)
                         </label>
@@ -153,13 +153,21 @@
 
                     <div class="space-y-4">
                         <a href="{{ route('services.index') }}" 
-                           class="group block px-6 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 {{ !request('category') ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-xl shadow-orange-500/25' : 'text-gray-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-600 bg-white border border-gray-200 hover:border-orange-200 hover:shadow-lg' }}">
+                           @class([
+                               'group block px-6 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105',
+                               'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-xl shadow-orange-500/25' => !request('category'),
+                               'text-gray-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-600 bg-white border border-gray-200 hover:border-orange-200 hover:shadow-lg' => request('category')
+                           ])>
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold flex items-center">
                                     <span class="text-xl mr-3">🌟</span>
                                     جميع الخدمات
                                 </span>
-                                <span class="text-sm {{ !request('category') ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600' }} px-3 py-1 rounded-full font-medium transition-all">
+                                <span @class([
+                                    'text-sm px-3 py-1 rounded-full font-medium transition-all',
+                                    'bg-white/20 text-white' => !request('category'),
+                                    'bg-gray-100 text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600' => request('category')
+                                ])>
                                     {{ $services->total() }}
                                 </span>
                             </div>
@@ -180,13 +188,21 @@
                                 $icon = $categoryIcons[$category] ?? '⭐';
                             @endphp
                             <a href="{{ route('services.index', ['category' => $category]) }}" 
-                               class="group block px-6 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 {{ request('category') == $category ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-xl shadow-orange-500/25' : 'text-gray-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-600 bg-white border border-gray-200 hover:border-orange-200 hover:shadow-lg' }}">
+                               @class([
+                                   'group block px-6 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105',
+                                   'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-xl shadow-orange-500/25' => request('category') == $category,
+                                   'text-gray-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-600 bg-white border border-gray-200 hover:border-orange-200 hover:shadow-lg' => request('category') != $category
+                               ])>
                                 <div class="flex justify-between items-center">
                                     <span class="font-semibold flex items-center">
                                         <span class="text-xl mr-3">{{ $icon }}</span>
                                         {{ $category }}
                                     </span>
-                                    <span class="text-sm {{ request('category') == $category ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600' }} px-3 py-1 rounded-full font-medium transition-all">
+                                    <span @class([
+                                        'text-sm px-3 py-1 rounded-full font-medium transition-all',
+                                        'bg-white/20 text-white' => request('category') == $category,
+                                        'bg-gray-100 text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600' => request('category') != $category
+                                    ])>
                                         {{ $categoryCount }}
                                     </span>
                                 </div>

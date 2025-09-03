@@ -32,11 +32,11 @@ class EnsureMerchantRole
         // Check if merchant is approved
         if ($user->user_type === 'merchant' || $user->hasRole('Merchant')) {
             $merchant = $user->merchant;
-            
+
             if (! $merchant) {
                 abort(403, 'Merchant profile not found. Please contact support.');
             }
-            
+
             if ($merchant->verification_status !== 'approved') {
                 // Redirect to pending approval page or show message
                 if ($merchant->verification_status === 'pending') {

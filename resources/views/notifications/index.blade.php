@@ -42,15 +42,27 @@
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex space-x-8">
                     <a href="{{ route('notifications.index', ['type' => 'all']) }}" 
-                       class="text-sm font-medium {{ $type === 'all' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700' }} pb-2">
+                       @class([
+                           'text-sm font-medium pb-2',
+                           'text-blue-600 border-b-2 border-blue-600' => $type === 'all',
+                           'text-gray-500 hover:text-gray-700' => $type !== 'all'
+                       ])>
                         الكل ({{ $counts['all'] }})
                     </a>
                     <a href="{{ route('notifications.index', ['type' => 'unread']) }}" 
-                       class="text-sm font-medium {{ $type === 'unread' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700' }} pb-2">
+                       @class([
+                           'text-sm font-medium pb-2',
+                           'text-blue-600 border-b-2 border-blue-600' => $type === 'unread',
+                           'text-gray-500 hover:text-gray-700' => $type !== 'unread'
+                       ])>
                         غير مقروءة ({{ $counts['unread'] }})
                     </a>
                     <a href="{{ route('notifications.index', ['type' => 'read']) }}" 
-                       class="text-sm font-medium {{ $type === 'read' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700' }} pb-2">
+                       @class([
+                           'text-sm font-medium pb-2',
+                           'text-blue-600 border-b-2 border-blue-600' => $type === 'read',
+                           'text-gray-500 hover:text-gray-700' => $type !== 'read'
+                       ])>
                         مقروءة ({{ $counts['read'] }})
                     </a>
                 </div>
@@ -61,19 +73,35 @@
                 <div class="flex items-center space-x-4">
                     <span class="text-sm font-medium text-gray-700">الأولوية:</span>
                     <a href="{{ route('notifications.index', ['type' => $type]) }}" 
-                       class="text-xs px-2 py-1 rounded {{ !$priority ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                       @class([
+                           'text-xs px-2 py-1 rounded',
+                           'bg-blue-100 text-blue-800' => !$priority,
+                           'bg-gray-100 text-gray-600 hover:bg-gray-200' => $priority
+                       ])>
                         الكل
                     </a>
                     <a href="{{ route('notifications.index', ['type' => $type, 'priority' => 'urgent']) }}" 
-                       class="text-xs px-2 py-1 rounded {{ $priority === 'urgent' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                       @class([
+                           'text-xs px-2 py-1 rounded',
+                           'bg-red-100 text-red-800' => $priority === 'urgent',
+                           'bg-gray-100 text-gray-600 hover:bg-gray-200' => $priority !== 'urgent'
+                       ])>
                         عاجل
                     </a>
                     <a href="{{ route('notifications.index', ['type' => $type, 'priority' => 'high']) }}" 
-                       class="text-xs px-2 py-1 rounded {{ $priority === 'high' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                       @class([
+                           'text-xs px-2 py-1 rounded',
+                           'bg-orange-100 text-orange-800' => $priority === 'high',
+                           'bg-gray-100 text-gray-600 hover:bg-gray-200' => $priority !== 'high'
+                       ])>
                         مهم
                     </a>
                     <a href="{{ route('notifications.index', ['type' => $type, 'priority' => 'normal']) }}" 
-                       class="text-xs px-2 py-1 rounded {{ $priority === 'normal' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                       @class([
+                           'text-xs px-2 py-1 rounded',
+                           'bg-green-100 text-green-800' => $priority === 'normal',
+                           'bg-gray-100 text-gray-600 hover:bg-gray-200' => $priority !== 'normal'
+                       ])>
                         عادي
                     </a>
                 </div>
@@ -107,10 +135,12 @@
                                                 جديد
                                             </span>
                                         @endif
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                            @if($notification->priority === 'urgent') bg-red-100 text-red-800
-                                            @elseif($notification->priority === 'high') bg-orange-100 text-orange-800
-                                            @else bg-green-100 text-green-800 @endif">
+                                        <span @class([
+                                            'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                                            'bg-red-100 text-red-800' => $notification->priority === 'urgent',
+                                            'bg-orange-100 text-orange-800' => $notification->priority === 'high',
+                                            'bg-green-100 text-green-800' => !in_array($notification->priority, ['urgent', 'high'])
+                                        ])>
                                             {{ $notification->priority }}
                                         </span>
                                     </div>

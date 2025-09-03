@@ -14,9 +14,9 @@ class CreateService extends CreateRecord
     {
         $user = Auth::user();
         $merchant = $user->merchant;
-        
+
         $data['merchant_id'] = $merchant->id;
-        
+
         return $data;
     }
 

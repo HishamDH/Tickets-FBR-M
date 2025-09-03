@@ -191,14 +191,16 @@ class ServiceResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\BadgeColumn::make('service_type')
+                Tables\Columns\TextColumn::make('service_type')
                     ->label('النوع')
-                    ->colors([
-                        'primary' => 'event',
-                        'success' => 'exhibition',
-                        'warning' => 'restaurant',
-                        'danger' => 'experience',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'event' => 'primary',
+                        'exhibition' => 'success',
+                        'restaurant' => 'warning',
+                        'experience' => 'danger',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'event' => 'فعالية',
                         'exhibition' => 'معرض',
@@ -218,14 +220,16 @@ class ServiceResource extends Resource
                     ->sortable()
                     ->suffix(' شخص'),
 
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
-                    ->colors([
-                        'secondary' => 'draft',
-                        'success' => 'active',
-                        'warning' => 'paused',
-                        'danger' => 'archived',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'secondary',
+                        'active' => 'success',
+                        'paused' => 'warning',
+                        'archived' => 'danger',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'draft' => 'مسودة',
                         'active' => 'نشطة',

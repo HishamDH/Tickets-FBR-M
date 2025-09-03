@@ -15,11 +15,17 @@ class ChatComponent extends Component
     use WithFileUploads;
 
     public $selectedConversation = null;
+
     public $conversations = [];
+
     public $messages = [];
+
     public $newMessage = '';
+
     public $attachments = [];
+
     public $searchTerm = '';
+
     public $onlineUsers = [];
 
     public function mount()
@@ -32,18 +38,18 @@ class ChatComponent extends Component
     {
         $query = Conversation::where(function ($q) {
             $q->where('customer_id', Auth::id())
-              ->orWhere('merchant_id', Auth::id())
-              ->orWhere('admin_id', Auth::id());
+                ->orWhere('merchant_id', Auth::id())
+                ->orWhere('admin_id', Auth::id());
         })
-        ->with(['customer', 'merchant', 'admin', 'lastMessage'])
-        ->orderBy('updated_at', 'desc');
+            ->with(['customer', 'merchant', 'admin', 'lastMessage'])
+            ->orderBy('updated_at', 'desc');
 
         if ($this->searchTerm) {
             $query->where(function ($q) {
-                $q->where('title', 'like', '%' . $this->searchTerm . '%')
-                  ->orWhereHas('messages', function ($messageQuery) {
-                      $messageQuery->where('content', 'like', '%' . $this->searchTerm . '%');
-                  });
+                $q->where('title', 'like', '%'.$this->searchTerm.'%')
+                    ->orWhereHas('messages', function ($messageQuery) {
+                        $messageQuery->where('content', 'like', '%'.$this->searchTerm.'%');
+                    });
             });
         }
 
@@ -54,14 +60,16 @@ class ChatComponent extends Component
     {
         $this->selectedConversation = Conversation::with(['customer', 'merchant', 'admin'])
             ->findOrFail($conversationId);
-        
+
         $this->loadMessages();
         $this->markMessagesAsRead();
     }
 
     public function loadMessages()
     {
-        if (!$this->selectedConversation) return;
+        if (! $this->selectedConversation) {
+            return;
+        }
 
         $this->messages = Message::where('conversation_id', $this->selectedConversation->id)
             ->with(['sender'])
@@ -71,7 +79,7 @@ class ChatComponent extends Component
 
     public function sendMessage()
     {
-        if (!$this->selectedConversation || (!$this->newMessage && empty($this->attachments))) {
+        if (! $this->selectedConversation || (! $this->newMessage && empty($this->attachments))) {
             return;
         }
 
@@ -80,8 +88,8 @@ class ChatComponent extends Component
             'sender_id' => Auth::id(),
             'sender_type' => $this->getSenderType(),
             'content' => $this->newMessage,
-            'type' => !empty($this->attachments) ? 'file' : 'text',
-            'attachments' => !empty($this->attachments) ? $this->processAttachments() : null,
+            'type' => ! empty($this->attachments) ? 'file' : 'text',
+            'attachments' => ! empty($this->attachments) ? $this->processAttachments() : null,
             'is_read' => false,
         ]);
 
@@ -102,7 +110,7 @@ class ChatComponent extends Component
         // Emit event for real-time updates
         $this->dispatch('message-sent', [
             'conversationId' => $this->selectedConversation->id,
-            'messageId' => $message->id
+            'messageId' => $message->id,
         ]);
     }
 
@@ -123,7 +131,9 @@ class ChatComponent extends Component
 
     public function markMessagesAsRead()
     {
-        if (!$this->selectedConversation) return;
+        if (! $this->selectedConversation) {
+            return;
+        }
 
         Message::where('conversation_id', $this->selectedConversation->id)
             ->where('sender_id', '!=', Auth::id())
@@ -134,7 +144,7 @@ class ChatComponent extends Component
     public function deleteMessage($messageId)
     {
         $message = Message::findOrFail($messageId);
-        
+
         // Check if user can delete this message
         if ($message->sender_id !== Auth::id()) {
             return;
@@ -148,9 +158,9 @@ class ChatComponent extends Component
     {
         $conversation = Conversation::findOrFail($conversationId);
         $conversation->update(['status' => 'archived']);
-        
+
         $this->loadConversations();
-        
+
         if ($this->selectedConversation && $this->selectedConversation->id === $conversationId) {
             $this->selectedConversation = null;
             $this->messages = [];
@@ -163,14 +173,14 @@ class ChatComponent extends Component
         if ($this->selectedConversation && $this->selectedConversation->id == $data['conversationId']) {
             $this->loadMessages();
         }
-        
+
         $this->loadConversations();
     }
 
     private function getSenderType()
     {
         $user = Auth::user();
-        
+
         if ($user->hasRole('admin')) {
             return 'admin';
         } elseif ($user->hasRole('merchant')) {
@@ -183,7 +193,7 @@ class ChatComponent extends Component
     private function getConversationType($participantType)
     {
         $userType = $this->getSenderType();
-        
+
         return match (true) {
             $userType === 'customer' && $participantType === 'merchant' => 'customer_merchant',
             $userType === 'merchant' && $participantType === 'customer' => 'customer_merchant',
@@ -200,14 +210,14 @@ class ChatComponent extends Component
         $participant = User::find($participantId);
         $userName = Auth::user()->name;
         $participantName = $participant->name ?? 'Unknown User';
-        
+
         return "Conversation between {$userName} and {$participantName}";
     }
 
     private function processAttachments()
     {
         $processedAttachments = [];
-        
+
         foreach ($this->attachments as $attachment) {
             $path = $attachment->store('chat-attachments', 'public');
             $processedAttachments[] = [
@@ -217,7 +227,7 @@ class ChatComponent extends Component
                 'type' => $attachment->getMimeType(),
             ];
         }
-        
+
         return $processedAttachments;
     }
 
@@ -227,13 +237,13 @@ class ChatComponent extends Component
         // This could use Laravel notifications, websockets, etc.
         if (function_exists('notifcate')) {
             $participants = $this->getConversationParticipants();
-            
+
             foreach ($participants as $participant) {
                 if ($participant->id !== Auth::id()) {
                     notifcate(
                         $participant->id,
                         'New Message',
-                        Auth::user()->name . ' sent you a message: ' . substr($message->content, 0, 50) . '...'
+                        Auth::user()->name.' sent you a message: '.substr($message->content, 0, 50).'...'
                     );
                 }
             }
@@ -243,19 +253,19 @@ class ChatComponent extends Component
     private function getConversationParticipants()
     {
         $participants = collect();
-        
+
         if ($this->selectedConversation->customer) {
             $participants->push($this->selectedConversation->customer);
         }
-        
+
         if ($this->selectedConversation->merchant) {
             $participants->push($this->selectedConversation->merchant);
         }
-        
+
         if ($this->selectedConversation->admin) {
             $participants->push($this->selectedConversation->admin);
         }
-        
+
         return $participants;
     }
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Mail\OrderConfirmation;
 use App\Models\Cart;
 use App\Models\Order;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,15 +16,15 @@ class CheckoutController extends Controller
 {
     public function index(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')->with('message', 'Please login to proceed with checkout');
         }
 
         $userId = Auth::id();
         $sessionId = $request->session()->getId();
-        
+
         $cartData = Cart::getCartTotal($userId, $sessionId);
-        
+
         if (empty($cartData['items']) || $cartData['count'] === 0) {
             return redirect()->route('services.index')->with('error', 'Your cart is empty');
         }
@@ -33,23 +32,23 @@ class CheckoutController extends Controller
         // Validate cart items availability
         $issues = [];
         foreach ($cartData['items'] as $cartItem) {
-            if (!$cartItem->isAvailable()) {
+            if (! $cartItem->isAvailable()) {
                 $issues[] = "Item '{$cartItem->getItemName()}' is no longer available";
             }
         }
 
-        if (!empty($issues)) {
+        if (! empty($issues)) {
             return redirect()->route('services.index')->with('error', implode(', ', $issues));
         }
 
         $user = Auth::user();
-        
+
         return view('checkout.index', compact('cartData', 'user'));
     }
 
     public function store(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
@@ -63,7 +62,7 @@ class CheckoutController extends Controller
             'billing_state' => 'required|string|max:100',
             'billing_postal_code' => 'required|string|max:20',
             'payment_method' => 'required|in:stripe,paypal,bank_transfer,cash_on_delivery',
-            'terms_accepted' => 'accepted'
+            'terms_accepted' => 'accepted',
         ]);
 
         if ($validator->fails()) {
@@ -72,9 +71,9 @@ class CheckoutController extends Controller
 
         $userId = Auth::id();
         $sessionId = $request->session()->getId();
-        
+
         $cartData = Cart::getCartTotal($userId, $sessionId);
-        
+
         if (empty($cartData['items']) || $cartData['count'] === 0) {
             return redirect()->route('services.index')->with('error', 'Your cart is empty');
         }
@@ -140,6 +139,7 @@ class CheckoutController extends Controller
                     return redirect()->route('checkout.confirmation', $order)->with('success', 'Order created successfully. Please complete the bank transfer.');
                 case 'cash_on_delivery':
                     $order->update(['payment_status' => 'pending_cod']);
+
                     return redirect()->route('checkout.confirmation', $order)->with('success', 'Order created successfully. Payment will be collected on delivery.');
                 default:
                     return redirect()->route('checkout.confirmation', $order);
@@ -147,7 +147,8 @@ class CheckoutController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Checkout error: ' . $e->getMessage());
+            \Log::error('Checkout error: '.$e->getMessage());
+
             return back()->with('error', 'An error occurred during checkout. Please try again.')->withInput();
         }
     }
@@ -192,7 +193,7 @@ class CheckoutController extends Controller
     public function processStripePayment(Request $request, Order $order)
     {
         $validator = Validator::make($request->all(), [
-            'stripeToken' => 'required'
+            'stripeToken' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -202,21 +203,22 @@ class CheckoutController extends Controller
         try {
             // Process Stripe payment
             // This would integrate with Stripe API
-            
+
             $order->update([
                 'payment_status' => 'completed',
                 'status' => 'confirmed',
                 'payment_details' => [
-                    'stripe_charge_id' => 'ch_test_' . Str::random(24),
+                    'stripe_charge_id' => 'ch_test_'.Str::random(24),
                     'paid_at' => now(),
-                ]
+                ],
             ]);
 
             return redirect()->route('checkout.confirmation', $order)
                 ->with('success', 'Payment successful! Your order has been confirmed.');
 
         } catch (\Exception $e) {
-            \Log::error('Stripe payment error: ' . $e->getMessage());
+            \Log::error('Stripe payment error: '.$e->getMessage());
+
             return back()->with('error', 'Payment failed. Please try again.');
         }
     }
@@ -226,21 +228,22 @@ class CheckoutController extends Controller
         try {
             // Process PayPal payment
             // This would integrate with PayPal API
-            
+
             $order->update([
                 'payment_status' => 'completed',
                 'status' => 'confirmed',
                 'payment_details' => [
-                    'paypal_transaction_id' => 'PAYPAL_' . Str::random(16),
+                    'paypal_transaction_id' => 'PAYPAL_'.Str::random(16),
                     'paid_at' => now(),
-                ]
+                ],
             ]);
 
             return redirect()->route('checkout.confirmation', $order)
                 ->with('success', 'Payment successful! Your order has been confirmed.');
 
         } catch (\Exception $e) {
-            \Log::error('PayPal payment error: ' . $e->getMessage());
+            \Log::error('PayPal payment error: '.$e->getMessage());
+
             return back()->with('error', 'Payment failed. Please try again.');
         }
     }
@@ -250,7 +253,7 @@ class CheckoutController extends Controller
         $prefix = 'ORD';
         $timestamp = now()->format('Ymd');
         $random = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-        
-        return $prefix . $timestamp . $random;
+
+        return $prefix.$timestamp.$random;
     }
 }

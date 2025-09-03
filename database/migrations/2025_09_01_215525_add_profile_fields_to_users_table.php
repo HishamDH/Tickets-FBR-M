@@ -38,7 +38,7 @@ return new class extends Migration
                 'state',
                 'postal_code',
                 'country',
-                'last_login_at'
+                'last_login_at',
             ]);
         });
     }

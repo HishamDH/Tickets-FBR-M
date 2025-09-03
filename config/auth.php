@@ -40,22 +40,22 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        
+
         'admin' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        
+
         'merchant' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        
+
         'customer' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        
+
         'partner' => [
             'driver' => 'session',
             'provider' => 'users',
@@ -117,21 +117,21 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        
+
         'admins' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],
-        
+
         'merchants' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],
-        
+
         'customers' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',

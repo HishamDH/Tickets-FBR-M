@@ -39,17 +39,17 @@ class AdminBookingResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
-                        
+
                         Forms\Components\Select::make('service_id')
                             ->label('Service')
                             ->relationship('service', 'title')
                             ->searchable()
                             ->preload()
                             ->required(),
-                        
+
                         Forms\Components\DateTimePicker::make('booking_date')
                             ->required(),
-                        
+
                         Forms\Components\TextInput::make('guest_count')
                             ->numeric()
                             ->required()
@@ -61,15 +61,15 @@ class AdminBookingResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('contact_name')
                             ->maxLength(255),
-                        
+
                         Forms\Components\TextInput::make('contact_phone')
                             ->tel()
                             ->maxLength(255),
-                        
+
                         Forms\Components\TextInput::make('contact_email')
                             ->email()
                             ->maxLength(255),
-                        
+
                         Forms\Components\Textarea::make('special_requests')
                             ->maxLength(1000)
                             ->columnSpanFull(),
@@ -82,22 +82,22 @@ class AdminBookingResource extends Resource
                             ->numeric()
                             ->prefix('$')
                             ->required(),
-                        
+
                         Forms\Components\TextInput::make('service_fee')
                             ->numeric()
                             ->prefix('$')
                             ->default(0),
-                        
+
                         Forms\Components\TextInput::make('tax_amount')
                             ->numeric()
                             ->prefix('$')
                             ->default(0),
-                        
+
                         Forms\Components\TextInput::make('discount_amount')
                             ->numeric()
                             ->prefix('$')
                             ->default(0),
-                        
+
                         Forms\Components\TextInput::make('total_amount')
                             ->numeric()
                             ->prefix('$')
@@ -118,7 +118,7 @@ class AdminBookingResource extends Resource
                             ])
                             ->required()
                             ->default('pending'),
-                        
+
                         Forms\Components\Select::make('payment_status')
                             ->options([
                                 'pending' => 'Pending',
@@ -128,14 +128,14 @@ class AdminBookingResource extends Resource
                                 'failed' => 'Failed',
                             ])
                             ->default('pending'),
-                        
+
                         Forms\Components\TextInput::make('confirmation_code')
                             ->maxLength(255),
-                        
+
                         Forms\Components\DateTimePicker::make('confirmed_at'),
-                        
+
                         Forms\Components\DateTimePicker::make('completed_at'),
-                        
+
                         Forms\Components\DateTimePicker::make('cancelled_at'),
                     ])
                     ->columns(3),
@@ -146,12 +146,12 @@ class AdminBookingResource extends Resource
                             ->label('Admin Notes')
                             ->maxLength(1000)
                             ->columnSpanFull(),
-                        
+
                         Forms\Components\Textarea::make('merchant_notes')
                             ->label('Merchant Notes')
                             ->maxLength(1000)
                             ->columnSpanFull(),
-                        
+
                         Forms\Components\Textarea::make('cancellation_reason')
                             ->maxLength(500)
                             ->columnSpanFull(),
@@ -169,58 +169,62 @@ class AdminBookingResource extends Resource
                     ->copyable()
                     ->copyMessage('Confirmation code copied')
                     ->copyMessageDuration(1500),
-                
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('service.title')
                     ->label('Service')
                     ->searchable()
                     ->sortable()
                     ->limit(30),
-                
+
                 Tables\Columns\TextColumn::make('service.merchant.business_name')
                     ->label('Merchant')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('booking_date')
                     ->label('Date & Time')
                     ->dateTime()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('guest_count')
                     ->label('Guests')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('total_amount')
                     ->money('USD')
                     ->sortable(),
-                
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'confirmed',
-                        'primary' => 'in_progress',
-                        'success' => 'completed',
-                        'danger' => 'cancelled',
-                        'secondary' => 'refunded',
-                    ]),
-                
-                Tables\Columns\BadgeColumn::make('payment_status')
+
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'confirmed' => 'success',
+                        'in_progress' => 'primary',
+                        'completed' => 'success',
+                        'cancelled' => 'danger',
+                        'refunded' => 'secondary',
+                        default => 'gray',
+                    }),
+
+                Tables\Columns\TextColumn::make('payment_status')
                     ->label('Payment')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'paid',
-                        'info' => 'partially_paid',
-                        'secondary' => 'refunded',
-                        'danger' => 'failed',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'partially_paid' => 'info',
+                        'refunded' => 'secondary',
+                        'failed' => 'danger',
+                        default => 'gray',
+                    })
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Booked At')
                     ->dateTime()
@@ -237,7 +241,7 @@ class AdminBookingResource extends Resource
                         'cancelled' => 'Cancelled',
                         'refunded' => 'Refunded',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('payment_status')
                     ->options([
                         'pending' => 'Pending',
@@ -246,17 +250,17 @@ class AdminBookingResource extends Resource
                         'refunded' => 'Refunded',
                         'failed' => 'Failed',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('merchant')
                     ->relationship('service.merchant', 'business_name')
                     ->searchable()
                     ->preload(),
-                
+
                 Tables\Filters\SelectFilter::make('service')
                     ->relationship('service', 'title')
                     ->searchable()
                     ->preload(),
-                
+
                 Tables\Filters\Filter::make('booking_date')
                     ->form([
                         Forms\Components\DatePicker::make('from')
@@ -275,7 +279,7 @@ class AdminBookingResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('booking_date', '<=', $date),
                             );
                     }),
-                
+
                 Tables\Filters\Filter::make('amount_range')
                     ->form([
                         Forms\Components\TextInput::make('amount_from')
@@ -301,7 +305,7 @@ class AdminBookingResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    
+
                     Tables\Actions\Action::make('confirm')
                         ->label('Confirm')
                         ->icon('heroicon-o-check-circle')
@@ -311,17 +315,17 @@ class AdminBookingResource extends Resource
                             $record->update([
                                 'status' => 'confirmed',
                                 'confirmed_at' => now(),
-                                'confirmation_code' => 'BK' . str_pad($record->id, 6, '0', STR_PAD_LEFT),
+                                'confirmation_code' => 'BK'.str_pad($record->id, 6, '0', STR_PAD_LEFT),
                             ]);
                         }),
-                    
+
                     Tables\Actions\Action::make('start')
                         ->label('Start Service')
                         ->icon('heroicon-o-play')
                         ->color('primary')
                         ->visible(fn (Booking $record): bool => $record->status === 'confirmed')
                         ->action(fn (Booking $record) => $record->update(['status' => 'in_progress'])),
-                    
+
                     Tables\Actions\Action::make('complete')
                         ->label('Complete')
                         ->icon('heroicon-o-check-badge')
@@ -331,7 +335,7 @@ class AdminBookingResource extends Resource
                             'status' => 'completed',
                             'completed_at' => now(),
                         ])),
-                    
+
                     Tables\Actions\Action::make('cancel')
                         ->label('Cancel')
                         ->icon('heroicon-o-x-circle')
@@ -350,14 +354,14 @@ class AdminBookingResource extends Resource
                                 'cancellation_reason' => $data['cancellation_reason'],
                             ]);
                         }),
-                    
+
                     Tables\Actions\DeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    
+
                     Tables\Actions\BulkAction::make('confirm_bookings')
                         ->label('Confirm Selected')
                         ->icon('heroicon-o-check-circle')
@@ -368,12 +372,12 @@ class AdminBookingResource extends Resource
                                     $record->update([
                                         'status' => 'confirmed',
                                         'confirmed_at' => now(),
-                                        'confirmation_code' => 'BK' . str_pad($record->id, 6, '0', STR_PAD_LEFT),
+                                        'confirmation_code' => 'BK'.str_pad($record->id, 6, '0', STR_PAD_LEFT),
                                     ]);
                                 }
                             });
                         }),
-                    
+
                     Tables\Actions\BulkAction::make('complete_bookings')
                         ->label('Mark Completed')
                         ->icon('heroicon-o-check-badge')

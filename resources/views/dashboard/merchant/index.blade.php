@@ -3,150 +3,153 @@
 @section('title', 'لوحة تحكم التاجر')
 
 @section('content')
-<div class="min-h-screen bg-gradient-soft" dir="rtl">
-    <div class="container mx-auto px-4 py-8">
-        <!-- 🔥 Enhanced Header with Creative Design -->
-        <div class="mb-12 text-center">
-            <div class="relative inline-block">
-                <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-fire mb-4 floating">
-                    مرحباً، {{ $merchant->business_name }}
-                </h1>
-                <div class="absolute -top-2 -right-2 w-6 h-6 bg-orange-fire rounded-full animate-pulse sparkle"></div>
-            </div>
-            <p class="text-xl text-gray-700 font-medium">إدارة خدماتك وحجوزاتك من مكان واحد بتصميم متطور</p>
-            <div class="w-24 h-1 bg-gradient-primary rounded-full mx-auto mt-4"></div>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100" dir="rtl">
+    <!-- Hero Header -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-10 right-10 w-32 h-32 bg-white rounded-full opacity-10 animate-pulse"></div>
+            <div class="absolute bottom-10 left-10 w-24 h-24 bg-white rounded-full opacity-15 animate-pulse" style="animation-delay: 1s;"></div>
+            <div class="absolute top-20 left-1/3 w-16 h-16 bg-white rounded-full opacity-10 animate-pulse" style="animation-delay: 2s;"></div>
         </div>
-
-        <!-- ⚡ Enhanced Quick Stats with Creative Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            <!-- إجمالي الخدمات -->
-            <div class="card fire-glow interactive-card bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 bounce-in">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-600 mb-2">إجمالي الخدمات</p>
-                        <p class="text-4xl font-black text-transparent bg-clip-text bg-gradient-fire mb-2">{{ number_format($stats['total_services']) }}</p>
-                        <div class="flex items-center">
-                            <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full">
-                                {{ $stats['active_services'] }} نشطة
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-16 h-16 bg-gradient-fire rounded-2xl flex items-center justify-center shadow-lg floating">
-                        <i class="fas fa-store text-3xl text-white"></i>
+        
+        <div class="relative container mx-auto px-4 py-12">
+            <div class="flex items-center justify-between text-white">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">مرحباً بك، {{ $merchant->business_name }} 🏪</h1>
+                    <p class="text-blue-100 text-lg">إدارة خدماتك وحجوزاتك من مكان واحد بتصميم متطور</p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
                     </div>
                 </div>
-                <div class="mt-4 bg-gradient-soft rounded-xl p-3">
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-chart-line text-green-500 ml-2"></i>
-                        نمو 12% هذا الشهر
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Enhanced Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 -mt-16 relative z-10">
+            <!-- إجمالي الخدمات -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-blue-100 hover:shadow-2xl transition-all duration-300 group">
+                <div class="flex items-center">
+                    <div class="p-4 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <div class="mr-4 flex-1">
+                        <p class="text-sm font-medium text-gray-600 mb-1">إجمالي الخدمات</p>
+                        <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">{{ number_format($stats['total_services']) }}</p>
+                        <p class="text-xs text-blue-600 font-medium">{{ $stats['active_services'] }} نشطة</p>
                     </div>
                 </div>
             </div>
 
             <!-- إجمالي الحجوزات -->
-            <div class="card fire-glow interactive-card bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 bounce-in" style="animation-delay: 0.1s;">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-600 mb-2">إجمالي الحجوزات</p>
-                        <p class="text-4xl font-black text-transparent bg-clip-text bg-gradient-fire mb-2">{{ number_format($stats['total_bookings']) }}</p>
-                        <div class="flex items-center">
-                            <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">
-                                {{ $stats['pending_bookings'] }} في الانتظار
-                            </span>
-                        </div>
-                    </div>
-                    <div class="w-16 h-16 bg-gradient-sunset rounded-2xl flex items-center justify-center shadow-lg floating" style="animation-delay: 0.5s;">
-                        <i class="fas fa-calendar-check text-3xl text-white"></i>
-                    </div>
-                </div>
-                <div class="mt-4 bg-gradient-soft rounded-xl p-3">
-                    <div class="flex items-center text-sm text-gray-600">
-                        <i class="fas fa-trending-up text-blue-500 ml-2"></i>
-                        {{ $stats['pending_bookings'] > 0 ? 'يتطلب مراجعة' : 'كل شيء محدث' }}
-                    </div>
-                </div>
-            </div>
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-green-100 hover:shadow-2xl transition-all duration-300 group">
+                <div class="flex items-center">
+                    <div class="p-4 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
                     </div>
-                </div>
-            </div>
-
-            <!-- صافي الإيرادات -->
-            <div class="glass-effect rounded-xl p-6 card-hover">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">صافي الإيرادات</p>
-                        <p class="text-2xl font-bold text-green-600">{{ number_format($stats['net_revenue']) }}</p>
-                        <p class="text-xs text-gray-500">ريال سعودي</p>
-                    </div>
-                    <div class="p-3 bg-green-100 rounded-xl">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
+                    <div class="mr-4 flex-1">
+                        <p class="text-sm font-medium text-gray-600 mb-1">إجمالي الحجوزات</p>
+                        <p class="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">{{ number_format($stats['total_bookings']) }}</p>
+                        <p class="text-xs text-green-600 font-medium">{{ $stats['pending_bookings'] }} في الانتظار</p>
                     </div>
                 </div>
             </div>
 
-            <!-- الحجوزات المؤكدة -->
-            <div class="glass-effect rounded-xl p-6 card-hover">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">الحجوزات المؤكدة</p>
-                        <p class="text-2xl font-bold text-orange-600">{{ number_format($stats['confirmed_bookings']) }}</p>
-                        <p class="text-xs text-orange-500">جاهزة للتنفيذ</p>
-                    </div>
-                    <div class="p-3 bg-orange-100 rounded-xl">
-                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <!-- إجمالي الإيرادات -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-purple-100 hover:shadow-2xl transition-all duration-300 group">
+                <div class="flex items-center">
+                    <div class="p-4 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
                         </svg>
+                    </div>
+                    <div class="mr-4 flex-1">
+                        <p class="text-sm font-medium text-gray-600 mb-1">إجمالي الإيرادات</p>
+                        <p class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">{{ number_format($stats['total_revenue']) }} ريال</p>
+                        <p class="text-xs text-purple-600 font-medium">هذا الشهر</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- العملاء الجدد -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-yellow-100 hover:shadow-2xl transition-all duration-300 group">
+                <div class="flex items-center">
+                    <div class="p-4 rounded-xl bg-gradient-to-br from-yellow-500 to-yellow-600 text-white group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <div class="mr-4 flex-1">
+                        <p class="text-sm font-medium text-gray-600 mb-1">العملاء الجدد</p>
+                        <p class="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-700 bg-clip-text text-transparent">{{ number_format($stats['new_customers'] ?? 0) }}</p>
+                        <p class="text-xs text-yellow-600 font-medium">هذا الأسبوع</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <a href="{{ route('merchant.dashboard.services') }}" 
-               class="glass-effect rounded-xl p-4 text-center card-hover group transition-all duration-300 hover:scale-105">
-                <div class="p-3 bg-blue-100 rounded-xl mx-auto w-fit mb-3 group-hover:bg-blue-200 transition-colors">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                    </svg>
-                </div>
-                <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">إدارة الخدمات</h3>
-                <p class="text-sm text-gray-600">إضافة وتعديل خدماتك</p>
-            </a>
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-2xl shadow-xl border border-blue-100 mb-8 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                <h2 class="text-xl font-bold text-white">إجراءات سريعة ⚡</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <a href="{{ route('merchant.dashboard.services') }}" 
+                       class="group flex flex-col items-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border-2 border-blue-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold text-gray-900">إدارة الخدمات</span>
+                        <span class="text-sm text-blue-600 font-medium">إضافة وتعديل</span>
+                    </a>
 
-            <a href="{{ route('merchant.dashboard.bookings') }}" 
-               class="glass-effect rounded-xl p-4 text-center card-hover group transition-all duration-300 hover:scale-105">
-                <div class="p-3 bg-purple-100 rounded-xl mx-auto w-fit mb-3 group-hover:bg-purple-200 transition-colors">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                </div>
-                <h3 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">إدارة الحجوزات</h3>
-                <p class="text-sm text-gray-600">متابعة طلبات العملاء</p>
-            </a>
+                    <a href="{{ route('merchant.dashboard.bookings') }}" 
+                       class="group flex flex-col items-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-green-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold text-gray-900">إدارة الحجوزات</span>
+                        <span class="text-sm text-green-600 font-medium">متابعة الطلبات</span>
+                    </a>
 
-            <a href="{{ route('merchant.dashboard.analytics') }}" 
-               class="glass-effect rounded-xl p-4 text-center card-hover group transition-all duration-300 hover:scale-105">
-                <div class="p-3 bg-green-100 rounded-xl mx-auto w-fit mb-3 group-hover:bg-green-200 transition-colors">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                </div>
-                <h3 class="font-semibold text-gray-900 group-hover:text-green-600 transition-colors">التحليلات</h3>
-                <p class="text-sm text-gray-600">تقارير الأداء</p>
-            </a>
+                    <a href="{{ route('merchant.dashboard.analytics') }}" 
+                       class="group flex flex-col items-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border-2 border-purple-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold text-gray-900">التحليلات</span>
+                        <span class="text-sm text-purple-600 font-medium">تقارير الأداء</span>
+                    </a>
 
-            <a href="{{ route('merchant.dashboard.payment-settings') }}" 
-               class="glass-effect rounded-xl p-4 text-center card-hover group transition-all duration-300 hover:scale-105">
-                <div class="p-3 bg-orange-100 rounded-xl mx-auto w-fit mb-3 group-hover:bg-orange-200 transition-colors">
-                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                    </svg>
+                    <a href="{{ route('merchant.dashboard.payment-settings') }}" 
+                       class="group flex flex-col items-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border-2 border-yellow-200 hover:border-yellow-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-yellow-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold text-gray-900">إعدادات الدفع</span>
+                        <span class="text-sm text-yellow-600 font-medium">طرق الدفع</span>
+                    </a>
+                </div>
+            </div>
+        </div>
                 </div>
                 <h3 class="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">إعدادات الدفع</h3>
                 <p class="text-sm text-gray-600">إدارة بوابات الدفع</p>
@@ -364,10 +367,12 @@
                             <div class="text-left">
                                 <p class="font-semibold text-gray-900">{{ Carbon\Carbon::parse($booking->booking_time)->format('H:i') }}</p>
                                 <p class="text-sm text-gray-600">{{ number_format($booking->total_amount) }} ريال</p>
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                    @if($booking->booking_status === 'confirmed') bg-green-100 text-green-800
-                                    @elseif($booking->booking_status === 'pending') bg-yellow-100 text-yellow-800
-                                    @else bg-red-100 text-red-800 @endif">
+                                <span @class([
+                                    'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                                    'bg-green-100 text-green-800' => $booking->booking_status === 'confirmed',
+                                    'bg-yellow-100 text-yellow-800' => $booking->booking_status === 'pending',
+                                    'bg-red-100 text-red-800' => !in_array($booking->booking_status, ['confirmed', 'pending'])
+                                ])>
                                     {{ $booking->booking_status }}
                                 </span>
                             </div>
@@ -443,11 +448,13 @@
                             </div>
                             <div class="text-left">
                                 <p class="text-sm font-semibold text-gray-900">{{ number_format($booking->total_amount) }} ريال</p>
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                    @if($booking->booking_status === 'confirmed') bg-green-100 text-green-800
-                                    @elseif($booking->booking_status === 'pending') bg-yellow-100 text-yellow-800
-                                    @elseif($booking->booking_status === 'completed') bg-blue-100 text-blue-800
-                                    @else bg-red-100 text-red-800 @endif">
+                                <span @class([
+                                    'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                                    'bg-green-100 text-green-800' => $booking->booking_status === 'confirmed',
+                                    'bg-yellow-100 text-yellow-800' => $booking->booking_status === 'pending',
+                                    'bg-blue-100 text-blue-800' => $booking->booking_status === 'completed',
+                                    'bg-red-100 text-red-800' => !in_array($booking->booking_status, ['confirmed', 'pending', 'completed'])
+                                ])>
                                     {{ $booking->booking_status }}
                                 </span>
                             </div>

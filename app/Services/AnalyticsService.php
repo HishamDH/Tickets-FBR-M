@@ -90,27 +90,27 @@ class AnalyticsService
      */
     protected function getKPIData($startDate, $endDate)
     {
-        $totalRevenue = Booking::whereBetween('booking_date', [$startDate, $endDate])
+        $totalRevenue = Booking::whereBetween('created_at', [$startDate, $endDate])
             ->where('status', 'completed')
             ->sum('total_amount');
 
-        $totalBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])->count();
+        $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
 
         $activeMerchants = User::whereHas('services.bookings', function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('booking_date', [$startDate, $endDate]);
+            $query->whereBetween('created_at', [$startDate, $endDate]);
         })
             ->where('user_type', 'merchant')
             ->count();
 
         $avgBookingValue = $totalBookings > 0 ? $totalRevenue / $totalBookings : 0;
 
-        $customerSatisfaction = Booking::whereBetween('booking_date', [$startDate, $endDate])
+        $customerSatisfaction = Booking::whereBetween('created_at', [$startDate, $endDate])
             ->whereNotNull('rating')
             ->avg('rating') ?? 0;
 
         // Daily revenue for trend calculation
-        $dailyRevenue = Booking::selectRaw('DATE(booking_date) as date, SUM(total_amount) as revenue')
-            ->whereBetween('booking_date', [$startDate, $endDate])
+        $dailyRevenue = Booking::selectRaw('DATE(created_at) as date, SUM(total_amount) as revenue')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->where('status', 'completed')
             ->groupBy('date')
             ->orderBy('date')
@@ -118,8 +118,8 @@ class AnalyticsService
             ->toArray();
 
         // Daily bookings for trend calculation
-        $dailyBookings = Booking::selectRaw('DATE(booking_date) as date, COUNT(*) as bookings')
-            ->whereBetween('booking_date', [$startDate, $endDate])
+        $dailyBookings = Booking::selectRaw('DATE(created_at) as date, COUNT(*) as bookings')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('date')
             ->orderBy('date')
             ->pluck('bookings')
@@ -404,50 +404,224 @@ class AnalyticsService
 
     // Placeholder methods for complex analytics (to be implemented)
     protected function getRevenueTrend($startDate, $endDate)
-    { /* Implementation */
+    {
+        return [];
     }
 
     protected function getBookingTrend($startDate, $endDate)
-    { /* Implementation */
+    {
+        return [];
     }
 
     protected function getPopularServicesTrend($startDate, $endDate)
-    { /* Implementation */
+    {
+        return [];
     }
 
     protected function getPeakHoursTrend($startDate, $endDate)
-    { /* Implementation */
+    {
+        return [];
     }
 
     protected function getGeographicTrend($startDate, $endDate)
-    { /* Implementation */
+    {
+        return [];
     }
 
     protected function analyzeRevenueGrowth($period)
-    { /* Implementation */
+    {
+        return ['significant' => false];
     }
 
     protected function analyzeCustomerSatisfaction($period)
-    { /* Implementation */
+    {
+        return ['noteworthy' => false];
     }
 
     protected function analyzeMerchantPerformance($period)
-    { /* Implementation */
+    {
+        return [];
     }
 
     protected function analyzeSeasonalPatterns()
-    { /* Implementation */
+    {
+        return [];
     }
 
     protected function getLowPerformingMerchants()
-    { /* Implementation */
+    {
+        return collect();
     }
 
     protected function checkRevenueDropAlert()
-    { /* Implementation */
+    {
+        return null;
     }
 
     protected function getSystemPerformanceAlerts()
-    { /* Implementation */
+    {
+        return [];
+    }
+
+    public function getCustomerAcquisition($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getCustomerRetention($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getCustomerSegments()
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getCustomerJourney($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getCustomerSatisfaction($period)
+    {
+        // TODO: Implement actual logic
+        return ['current' => 0, 'previous' => 0, 'change' => 0];
+    }
+
+    public function getGeographicDistribution($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getMerchantRankings($period, $sortBy)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getMerchantPerformanceMetrics($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getServiceCategoryAnalysis($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getMerchantGrowthAnalysis($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getQualityMetrics($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getSystemPerformance($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getBookingFunnel($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getPeakHours($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getDeviceAnalytics($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getErrorTracking($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getFeatureUsage($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getActiveUsers()
+    {
+        // TODO: Implement actual logic
+        return 0;
+    }
+
+    public function getLiveBookings()
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getTodayRevenue()
+    {
+        // TODO: Implement actual logic
+        return 0;
+    }
+
+    public function getTrendingServices()
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getSystemStatus()
+    {
+        // TODO: Implement actual logic
+        return ['status' => 'ok'];
+    }
+
+    public function getDemandPrediction($period)
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getChurnPrediction()
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getSeasonalAnalysis()
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function getRecommendations()
+    {
+        // TODO: Implement actual logic
+        return [];
+    }
+
+    public function buildCustomQuery(array $metrics, array $dimensions, array $filters, array $dateRange)
+    {
+        // TODO: Implement actual logic
+        return [];
     }
 }

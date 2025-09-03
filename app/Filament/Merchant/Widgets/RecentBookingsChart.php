@@ -3,17 +3,18 @@
 namespace App\Filament\Merchant\Widgets;
 
 use App\Models\Booking;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class RecentBookingsChart extends ChartWidget
 {
     protected static ?string $heading = 'Booking Trends';
+
     protected static ?string $description = 'Bookings by status over the last 7 days';
-    
-    protected int | string | array $columnSpan = 2;
-    
+
+    protected int|string|array $columnSpan = 2;
+
     protected static ?string $maxHeight = '300px';
 
     protected function getData(): array
@@ -28,11 +29,11 @@ class RecentBookingsChart extends ChartWidget
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
             $days->push($date->format('M j'));
-            
-            $baseQuery = Booking::whereHas('offering', function($query) use ($userId) {
+
+            $baseQuery = Booking::whereHas('offering', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->whereDate('created_at', $date->toDateString());
-            
+
             $confirmedBookings->push($baseQuery->clone()->where('status', 'confirmed')->count());
             $pendingBookings->push($baseQuery->clone()->where('status', 'pending')->count());
             $cancelledBookings->push($baseQuery->clone()->where('status', 'cancelled')->count());

@@ -6,12 +6,11 @@ use App\Filament\Resources\MerchantResource\Pages;
 use App\Models\Merchant;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Support\Colors\Color;
 use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
+use Filament\Tables\Table;
 
 class MerchantResource extends Resource
 {
@@ -45,7 +44,7 @@ class MerchantResource extends Resource
                     ->required()
                     ->options([
                         'pending' => 'Pending',
-                        'approved' => 'Approved', 
+                        'approved' => 'Approved',
                         'rejected' => 'Rejected',
                     ])
                     ->default('pending')
@@ -118,7 +117,7 @@ class MerchantResource extends Resource
                     ->requiresConfirmation()
                     ->action(function (Merchant $record) {
                         $record->update(['verification_status' => 'approved']);
-                        
+
                         Notification::make()
                             ->title('Merchant Approved')
                             ->body("Merchant '{$record->business_name}' has been approved.")
@@ -126,14 +125,14 @@ class MerchantResource extends Resource
                             ->send();
                     })
                     ->visible(fn (Merchant $record) => $record->verification_status === 'pending'),
-                    
+
                 Action::make('reject')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->action(function (Merchant $record) {
                         $record->update(['verification_status' => 'rejected']);
-                        
+
                         Notification::make()
                             ->title('Merchant Rejected')
                             ->body("Merchant '{$record->business_name}' has been rejected.")

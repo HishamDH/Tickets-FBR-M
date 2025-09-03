@@ -3,17 +3,18 @@
 namespace App\Filament\Merchant\Widgets;
 
 use App\Models\Booking;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class MerchantRevenueWidget extends ChartWidget
 {
     protected static ?string $heading = 'Revenue Overview';
+
     protected static ?string $description = 'Daily revenue for the last 30 days';
-    
-    protected int | string | array $columnSpan = 2;
-    
+
+    protected int|string|array $columnSpan = 2;
+
     protected static ?string $maxHeight = '300px';
 
     protected function getData(): array
@@ -26,14 +27,14 @@ class MerchantRevenueWidget extends ChartWidget
         for ($i = 29; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
             $days->push($date->format('M j'));
-            
-            $dayRevenue = Booking::whereHas('offering', function($query) use ($userId) {
+
+            $dayRevenue = Booking::whereHas('offering', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
-            ->where('status', 'completed')
-            ->whereDate('created_at', $date->toDateString())
-            ->sum('total_amount');
-            
+                ->where('status', 'completed')
+                ->whereDate('created_at', $date->toDateString())
+                ->sum('total_amount');
+
             $revenues->push($dayRevenue);
         }
 

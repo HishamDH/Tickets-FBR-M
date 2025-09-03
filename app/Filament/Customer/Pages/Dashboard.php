@@ -7,8 +7,6 @@ use App\Filament\Customer\Widgets\RecentBookingsWidget;
 use App\Filament\Customer\Widgets\RecommendedServicesWidget;
 use App\Filament\Customer\Widgets\UpcomingEventsWidget;
 use App\Models\Booking;
-use App\Models\Offering;
-use App\Models\User;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +25,8 @@ class Dashboard extends BaseDashboard
     {
         $user = Auth::user();
         $greeting = $this->getTimeBasedGreeting();
-        return "{$greeting}, " . ($user->name ?? 'Valued Customer') . "!";
+
+        return "{$greeting}, ".($user->name ?? 'Valued Customer').'!';
     }
 
     public function getSubheading(): ?string
@@ -35,9 +34,9 @@ class Dashboard extends BaseDashboard
         $upcomingBookings = Booking::where('customer_id', Auth::id())
             ->where('booking_date', '>=', now())
             ->count();
-            
-        return $upcomingBookings > 0 
-            ? "You have {$upcomingBookings} upcoming booking" . ($upcomingBookings > 1 ? 's' : '') 
+
+        return $upcomingBookings > 0
+            ? "You have {$upcomingBookings} upcoming booking".($upcomingBookings > 1 ? 's' : '')
             : 'Discover amazing services and make new bookings';
     }
 
@@ -51,7 +50,7 @@ class Dashboard extends BaseDashboard
         ];
     }
 
-    public function getColumns(): int | string | array
+    public function getColumns(): int|string|array
     {
         return [
             'default' => 1,
@@ -64,7 +63,7 @@ class Dashboard extends BaseDashboard
     protected function getTimeBasedGreeting(): string
     {
         $hour = now()->hour;
-        
+
         if ($hour < 12) {
             return 'Good Morning';
         } elseif ($hour < 17) {
@@ -83,7 +82,7 @@ class Dashboard extends BaseDashboard
                 ->color('primary')
                 ->url('/services')
                 ->openUrlInNewTab(false),
-                
+
             \Filament\Actions\Action::make('viewCart')
                 ->label('View Cart')
                 ->icon('heroicon-o-shopping-cart')

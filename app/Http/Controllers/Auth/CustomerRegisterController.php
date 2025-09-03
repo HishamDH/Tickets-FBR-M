@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,7 +42,7 @@ class CustomerRegisterController extends Controller
         $user = User::create([
             'f_name' => $request->f_name,
             'l_name' => $request->l_name,
-            'name' => $request->f_name . ' ' . $request->l_name,
+            'name' => $request->f_name.' '.$request->l_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => 'customer',

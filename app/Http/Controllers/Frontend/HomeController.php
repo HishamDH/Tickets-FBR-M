@@ -52,12 +52,12 @@ class HomeController extends Controller
     public function merchantShow($id)
     {
         $merchant = Merchant::with(['user'])->findOrFail($id);
-        
+
         // Get offerings for this merchant
         $offerings = Offering::where('user_id', $merchant->user_id)
             ->where('status', 'active')
             ->get();
-        
+
         $merchant->offerings = $offerings;
 
         return view('frontend.merchant-show', compact('merchant'));

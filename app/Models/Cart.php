@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @mixin IdeHelperCart
+ */
 class Cart extends Model
 {
     use HasFactory;
@@ -84,7 +87,7 @@ class Cart extends Model
         if ($this->item && method_exists($this->item, 'isAvailable')) {
             return $this->item->isAvailable($this->quantity);
         }
-        
+
         return true;
     }
 
@@ -124,6 +127,7 @@ class Cart extends Model
 
         if ($existingItem) {
             $existingItem->increment('quantity', $quantity);
+
             return $existingItem;
         }
 

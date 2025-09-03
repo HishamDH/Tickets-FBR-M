@@ -3,8 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
-use App\Models\Service;
-use App\Models\Booking;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
@@ -20,15 +18,15 @@ class UserGrowthChart extends ChartWidget
             DB::raw('MONTH(created_at) as month'),
             DB::raw('COUNT(*) as users')
         )
-        ->whereYear('created_at', now()->year)
-        ->groupBy('month')
-        ->pluck('users', 'month')
-        ->toArray();
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->pluck('users', 'month')
+            ->toArray();
 
         $months = [
             1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
             5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Aug',
-            9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec'
+            9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec',
         ];
 
         $chartData = [];

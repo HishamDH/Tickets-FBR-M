@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('merchant_id')->constrained('users')->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->enum('status', ['pending', 'approved', 'processing', 'completed', 'rejected', 'cancelled'])
-                  ->default('pending');
+                ->default('pending');
             $table->json('bank_details'); // Store bank account info
             $table->string('transaction_id')->nullable(); // Bank transaction reference
             $table->text('notes')->nullable(); // Merchant notes

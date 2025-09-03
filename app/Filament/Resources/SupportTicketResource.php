@@ -4,8 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SupportTicketResource\Pages;
 use App\Models\SupportTicket;
-use App\Models\User;
-use App\Models\Booking;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,10 +16,15 @@ class SupportTicketResource extends Resource
     protected static ?string $model = SupportTicket::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
+
     protected static ?string $navigationGroup = 'Support & Communication';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationLabel = 'Support Tickets';
+
     protected static ?string $modelLabel = 'Support Ticket';
+
     protected static ?string $pluralModelLabel = 'Support Tickets';
 
     public static function form(Form $form): Form
@@ -35,36 +38,34 @@ class SupportTicketResource extends Resource
                             ->disabled()
                             ->dehydrated(false)
                             ->placeholder('Auto-generated'),
-                        
+
                         Forms\Components\Select::make('user_id')
                             ->label('Customer')
                             ->relationship('user', 'name')
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->getOptionLabelFromRecordUsing(fn ($record) => 
-                                $record->name . ' (' . $record->email . ')'
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' ('.$record->email.')'
                             ),
-                        
+
                         Forms\Components\Select::make('assigned_to')
                             ->label('Assigned To')
                             ->relationship('assignedTo', 'name')
                             ->searchable()
                             ->preload()
                             ->placeholder('Unassigned'),
-                        
+
                         Forms\Components\Select::make('booking_id')
                             ->label('Related Booking')
                             ->relationship('booking', 'reference_number')
                             ->searchable()
                             ->preload()
-                            ->getOptionLabelFromRecordUsing(fn ($record) => 
-                                $record->reference_number . ' - ' . $record->service_name
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->reference_number.' - '.$record->service_name
                             )
                             ->placeholder('No related booking'),
                     ])
                     ->columns(2),
-                
+
                 Forms\Components\Section::make('Ticket Details')
                     ->schema([
                         Forms\Components\TextInput::make('subject')
@@ -72,12 +73,12 @@ class SupportTicketResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
-                        
+
                         Forms\Components\RichEditor::make('description')
                             ->label('Description')
                             ->required()
                             ->columnSpanFull(),
-                        
+
                         Forms\Components\Select::make('category')
                             ->label('Category')
                             ->options([
@@ -91,7 +92,7 @@ class SupportTicketResource extends Resource
                             ])
                             ->required()
                             ->default('general'),
-                        
+
                         Forms\Components\Select::make('priority')
                             ->label('Priority')
                             ->options([
@@ -102,7 +103,7 @@ class SupportTicketResource extends Resource
                             ])
                             ->required()
                             ->default('normal'),
-                        
+
                         Forms\Components\Select::make('status')
                             ->label('Status')
                             ->options([
@@ -114,7 +115,7 @@ class SupportTicketResource extends Resource
                             ])
                             ->required()
                             ->default('open'),
-                        
+
                         Forms\Components\Select::make('source')
                             ->label('Source')
                             ->options([
@@ -127,14 +128,14 @@ class SupportTicketResource extends Resource
                             ->default('admin'),
                     ])
                     ->columns(3),
-                
+
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
                         Forms\Components\TagsInput::make('tags')
                             ->label('Tags')
                             ->placeholder('Add tags...')
                             ->columnSpanFull(),
-                        
+
                         Forms\Components\Textarea::make('resolution_notes')
                             ->label('Resolution Notes')
                             ->placeholder('Add notes when resolving the ticket...')
@@ -142,17 +143,17 @@ class SupportTicketResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->collapsed(),
-                
+
                 Forms\Components\Section::make('Timestamps')
                     ->schema([
                         Forms\Components\DateTimePicker::make('first_response_at')
                             ->label('First Response At')
                             ->disabled(),
-                        
+
                         Forms\Components\DateTimePicker::make('resolved_at')
                             ->label('Resolved At')
                             ->disabled(),
-                        
+
                         Forms\Components\DateTimePicker::make('closed_at')
                             ->label('Closed At')
                             ->disabled(),
@@ -171,31 +172,35 @@ class SupportTicketResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable(),
-                
-                Tables\Columns\BadgeColumn::make('priority')
-                    ->colors([
-                        'secondary' => 'low',
-                        'primary' => 'normal',
-                        'warning' => 'high',
-                        'danger' => 'urgent',
-                    ])
-                    ->formatStateUsing(fn ($state) => match($state) {
+
+                Tables\Columns\TextColumn::make('priority')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'low' => 'secondary',
+                        'normal' => 'primary',
+                        'high' => 'warning',
+                        'urgent' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'low' => 'Low',
                         'normal' => 'Normal',
                         'high' => 'High',
                         'urgent' => 'Urgent',
                         default => $state,
                     }),
-                
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'danger' => 'open',
-                        'warning' => 'in_progress',
-                        'info' => 'waiting_response',
-                        'success' => 'resolved',
-                        'secondary' => 'closed',
-                    ])
-                    ->formatStateUsing(fn ($state) => match($state) {
+
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'open' => 'danger',
+                        'in_progress' => 'warning',
+                        'waiting_response' => 'info',
+                        'resolved' => 'success',
+                        'closed' => 'secondary',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'open' => 'Open',
                         'in_progress' => 'In Progress',
                         'waiting_response' => 'Waiting Response',
@@ -203,7 +208,7 @@ class SupportTicketResource extends Resource
                         'closed' => 'Closed',
                         default => $state,
                     }),
-                
+
                 Tables\Columns\TextColumn::make('subject')
                     ->searchable()
                     ->limit(40)
@@ -212,29 +217,32 @@ class SupportTicketResource extends Resource
                         if (strlen($state) <= 40) {
                             return null;
                         }
+
                         return $state;
                     }),
-                
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('assignedTo.name')
                     ->label('Assigned To')
                     ->placeholder('Unassigned')
                     ->toggleable(),
-                
-                Tables\Columns\BadgeColumn::make('category')
-                    ->colors([
-                        'primary' => 'general',
-                        'success' => 'booking',
-                        'warning' => 'payment',
-                        'danger' => 'refund',
-                        'info' => 'technical',
-                        'gray' => 'complaint',
-                        'purple' => 'feature_request',
-                    ])
-                    ->formatStateUsing(fn ($state) => match($state) {
+
+                Tables\Columns\TextColumn::make('category')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'general' => 'primary',
+                        'booking' => 'success',
+                        'payment' => 'warning',
+                        'refund' => 'danger',
+                        'technical' => 'info',
+                        'complaint' => 'gray',
+                        'feature_request' => 'purple',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'general' => 'General',
                         'booking' => 'Booking',
                         'payment' => 'Payment',
@@ -244,28 +252,28 @@ class SupportTicketResource extends Resource
                         'feature_request' => 'Feature Request',
                         default => $state,
                     }),
-                
+
                 Tables\Columns\TextColumn::make('booking.reference_number')
                     ->label('Booking')
                     ->placeholder('No booking')
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('source')
                     ->badge()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('first_response_at')
                     ->label('First Response')
                     ->dateTime()
                     ->toggleable()
                     ->placeholder('No response'),
-                
+
                 Tables\Columns\TextColumn::make('resolved_at')
                     ->label('Resolved')
                     ->dateTime()
@@ -281,7 +289,7 @@ class SupportTicketResource extends Resource
                         'resolved' => 'Resolved',
                         'closed' => 'Closed',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('priority')
                     ->options([
                         'low' => 'Low',
@@ -289,7 +297,7 @@ class SupportTicketResource extends Resource
                         'high' => 'High',
                         'urgent' => 'Urgent',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('category')
                     ->options([
                         'general' => 'General',
@@ -300,19 +308,19 @@ class SupportTicketResource extends Resource
                         'complaint' => 'Complaint',
                         'feature_request' => 'Feature Request',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('assigned_to')
                     ->relationship('assignedTo', 'name')
                     ->searchable()
                     ->preload(),
-                
+
                 Tables\Filters\TernaryFilter::make('has_booking')
                     ->label('Has Related Booking')
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('booking_id'),
                         false: fn (Builder $query) => $query->whereNull('booking_id'),
                     ),
-                
+
                 Tables\Filters\Filter::make('response_time')
                     ->label('Response Time')
                     ->form([
@@ -341,7 +349,7 @@ class SupportTicketResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    
+
                     Tables\Actions\Action::make('assign')
                         ->label('Assign')
                         ->icon('heroicon-o-user-plus')
@@ -356,24 +364,24 @@ class SupportTicketResource extends Resource
                         ])
                         ->action(function ($record, array $data) {
                             $record->update($data);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Ticket Assigned')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('respond')
                         ->label('Add Response')
                         ->icon('heroicon-o-chat-bubble-left-right')
                         ->color('primary')
-                        ->url(fn ($record) => route('filament.admin.resources.support-tickets.view', $record) . '#responses'),
-                    
+                        ->url(fn ($record) => route('filament.admin.resources.support-tickets.view', $record).'#responses'),
+
                     Tables\Actions\Action::make('resolve')
                         ->label('Mark as Resolved')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->visible(fn ($record): bool => !in_array($record->status, ['resolved', 'closed']))
+                        ->visible(fn ($record): bool => ! in_array($record->status, ['resolved', 'closed']))
                         ->form([
                             Forms\Components\Textarea::make('resolution_notes')
                                 ->label('Resolution Notes')
@@ -382,13 +390,13 @@ class SupportTicketResource extends Resource
                         ])
                         ->action(function ($record, array $data) {
                             $record->markAsResolved($data['resolution_notes']);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Ticket Resolved')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('close')
                         ->label('Close Ticket')
                         ->icon('heroicon-o-lock-closed')
@@ -397,13 +405,13 @@ class SupportTicketResource extends Resource
                         ->requiresConfirmation()
                         ->action(function ($record) {
                             $record->markAsClosed();
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Ticket Closed')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('reopen')
                         ->label('Reopen Ticket')
                         ->icon('heroicon-o-lock-open')
@@ -416,13 +424,13 @@ class SupportTicketResource extends Resource
                                 'closed_at' => null,
                                 'resolved_at' => null,
                             ]);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Ticket Reopened')
                                 ->success()
                                 ->send();
                         }),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -442,13 +450,13 @@ class SupportTicketResource extends Resource
                             foreach ($records as $record) {
                                 $record->update($data);
                             }
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Tickets Assigned')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\BulkAction::make('change_status')
                         ->label('Change Status')
                         ->icon('heroicon-o-arrow-path')
@@ -468,13 +476,13 @@ class SupportTicketResource extends Resource
                             foreach ($records as $record) {
                                 $record->update($data);
                             }
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Status Updated')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\BulkAction::make('export')
                         ->label('Export Tickets')
                         ->icon('heroicon-o-arrow-down-tray')
@@ -482,7 +490,7 @@ class SupportTicketResource extends Resource
                         ->action(function ($records) {
                             return response()->streamDownload(function () use ($records) {
                                 $csv = fopen('php://output', 'w');
-                                
+
                                 // Headers
                                 fputcsv($csv, [
                                     'Ticket Number',
@@ -497,7 +505,7 @@ class SupportTicketResource extends Resource
                                     'First Response',
                                     'Resolved At',
                                 ]);
-                                
+
                                 // Data
                                 foreach ($records as $ticket) {
                                     fputcsv($csv, [
@@ -514,11 +522,11 @@ class SupportTicketResource extends Resource
                                         $ticket->resolved_at,
                                     ]);
                                 }
-                                
+
                                 fclose($csv);
-                            }, 'support-tickets-export-' . now()->format('Y-m-d-H-i-s') . '.csv');
+                            }, 'support-tickets-export-'.now()->format('Y-m-d-H-i-s').'.csv');
                         }),
-                    
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])

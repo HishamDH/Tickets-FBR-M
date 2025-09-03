@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
-use App\Models\PaidReservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ChatController extends Controller
 {
@@ -21,7 +19,7 @@ class ChatController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             $conversations = Conversation::forUser($user->id)
                 ->with(['customer', 'merchant', 'supportAgent', 'latestMessage.sender'])
                 ->active()
@@ -66,7 +64,7 @@ class ChatController extends Controller
                         'current_page' => $paginatedConversations->currentPage(),
                         'last_page' => $paginatedConversations->lastPage(),
                         'total' => $paginatedConversations->total(),
-                    ]
+                    ],
                 ]);
             }
 
@@ -75,16 +73,16 @@ class ChatController extends Controller
 
             return view('chat.index', [
                 'conversations' => $conversationsList,
-                'user' => $user
+                'user' => $user,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Chat conversations error: ' . $e->getMessage());
-            
+            Log::error('Chat conversations error: '.$e->getMessage());
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to load conversations'
+                    'message' => 'Failed to load conversations',
                 ], 500);
             }
 
@@ -98,7 +96,7 @@ class ChatController extends Controller
     public function support()
     {
         $user = Auth::user();
-        
+
         // Get or create support conversation
         $supportConversation = Conversation::where('customer_id', $user->id)
             ->where('type', 'customer_support')
@@ -137,7 +135,7 @@ class ChatController extends Controller
             'metadata' => [
                 'priority' => $request->priority,
                 'category' => $request->category,
-            ]
+            ],
         ]);
 
         // Create initial message
@@ -160,16 +158,16 @@ class ChatController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             $conversation = Conversation::where('id', $conversationId)
                 ->forUser($user->id)
                 ->with(['customer', 'merchant', 'supportAgent'])
                 ->first();
 
-            if (!$conversation) {
+            if (! $conversation) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Conversation not found or access denied'
+                    'message' => 'Conversation not found or access denied',
                 ], 404);
             }
 
@@ -207,14 +205,15 @@ class ChatController extends Controller
                     'current_page' => $messages->currentPage(),
                     'last_page' => $messages->lastPage(),
                     'total' => $messages->total(),
-                ]
+                ],
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Get messages error: ' . $e->getMessage());
+            Log::error('Get messages error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load messages'
+                'message' => 'Failed to load messages',
             ], 500);
         }
     }
@@ -236,20 +235,20 @@ class ChatController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
             $user = Auth::user();
-            
+
             $conversation = Conversation::where('id', $conversationId)
                 ->forUser($user->id)
                 ->first();
 
-            if (!$conversation) {
+            if (! $conversation) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Conversation not found or access denied'
+                    'message' => 'Conversation not found or access denied',
                 ], 404);
             }
 
@@ -257,7 +256,7 @@ class ChatController extends Controller
             if ($conversation->status !== 'active') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Cannot send messages to closed conversation'
+                    'message' => 'Cannot send messages to closed conversation',
                 ], 422);
             }
 
@@ -282,14 +281,15 @@ class ChatController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Message sent successfully',
-                'data' => $message->toDisplayArray()
+                'data' => $message->toDisplayArray(),
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Send message error: ' . $e->getMessage());
+            Log::error('Send message error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send message'
+                'message' => 'Failed to send message',
             ], 500);
         }
     }
@@ -312,7 +312,7 @@ class ChatController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
@@ -334,7 +334,7 @@ class ChatController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Using existing conversation',
-                    'conversation_id' => $existingConversation->id
+                    'conversation_id' => $existingConversation->id,
                 ]);
             }
 
@@ -358,14 +358,15 @@ class ChatController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Conversation started successfully',
-                'conversation_id' => $conversation->id
+                'conversation_id' => $conversation->id,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Start conversation error: ' . $e->getMessage());
+            Log::error('Start conversation error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to start conversation'
+                'message' => 'Failed to start conversation',
             ], 500);
         }
     }
@@ -377,23 +378,23 @@ class ChatController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             $conversation = Conversation::where('id', $conversationId)
                 ->forUser($user->id)
                 ->first();
 
-            if (!$conversation) {
+            if (! $conversation) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Conversation not found or access denied'
+                    'message' => 'Conversation not found or access denied',
                 ], 404);
             }
 
             // Only merchant, support agent, or admin can close conversations
-            if (!in_array($user->role, ['admin', 'merchant']) && $conversation->support_agent_id !== $user->id) {
+            if (! in_array($user->role, ['admin', 'merchant']) && $conversation->support_agent_id !== $user->id) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You are not authorized to close this conversation'
+                    'message' => 'You are not authorized to close this conversation',
                 ], 403);
             }
 
@@ -409,14 +410,15 @@ class ChatController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Conversation closed successfully'
+                'message' => 'Conversation closed successfully',
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Close conversation error: ' . $e->getMessage());
+            Log::error('Close conversation error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to close conversation'
+                'message' => 'Failed to close conversation',
             ], 500);
         }
     }
@@ -428,7 +430,7 @@ class ChatController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             $unreadCount = Conversation::forUser($user->id)
                 ->active()
                 ->get()
@@ -438,14 +440,15 @@ class ChatController extends Controller
 
             return response()->json([
                 'success' => true,
-                'unread_count' => $unreadCount
+                'unread_count' => $unreadCount,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Get unread count error: ' . $e->getMessage());
+            Log::error('Get unread count error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get unread count'
+                'message' => 'Failed to get unread count',
             ], 500);
         }
     }
@@ -456,12 +459,12 @@ class ChatController extends Controller
     private function handleAttachments($files)
     {
         $attachments = [];
-        
+
         foreach ($files as $file) {
             if ($file->isValid()) {
-                $fileName = time() . '_' . $file->getClientOriginalName();
+                $fileName = time().'_'.$file->getClientOriginalName();
                 $filePath = $file->storeAs('chat-attachments', $fileName, 'public');
-                
+
                 $attachments[] = [
                     'name' => $file->getClientOriginalName(),
                     'path' => $filePath,
@@ -495,14 +498,15 @@ class ChatController extends Controller
     private function generateConversationTitle($conversation, $currentUser)
     {
         if ($conversation->type === 'customer_support') {
-            return 'Support Request #' . $conversation->id;
+            return 'Support Request #'.$conversation->id;
         }
 
         if ($conversation->type === 'merchant_customer') {
             $otherParticipant = $conversation->getOtherParticipants($currentUser->id)->first();
-            return $otherParticipant ? 'Chat with ' . $otherParticipant->name : 'Private Chat';
+
+            return $otherParticipant ? 'Chat with '.$otherParticipant->name : 'Private Chat';
         }
 
-        return 'Conversation #' . $conversation->id;
+        return 'Conversation #'.$conversation->id;
     }
 }

@@ -7,14 +7,12 @@ use App\Models\User;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
 use Filament\Http\Responses\Auth\Contracts\RegistrationResponse;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Register as BaseRegister;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -66,7 +64,7 @@ class Register extends BaseRegister
                     ->label('Business Name')
                     ->required()
                     ->maxLength(255),
-                
+
                 Select::make('business_type')
                     ->label('Business Type')
                     ->required()
@@ -81,19 +79,19 @@ class Register extends BaseRegister
                         'services' => 'Professional Services',
                         'other' => 'Other',
                     ]),
-                
+
                 TextInput::make('cr_number')
                     ->label('Commercial Registration Number')
                     ->required()
                     ->maxLength(50)
                     ->unique(Merchant::class, 'cr_number'),
-                
+
                 Textarea::make('business_address')
                     ->label('Business Address')
                     ->required()
                     ->rows(3)
                     ->columnSpanFull(),
-                
+
                 TextInput::make('city')
                     ->label('City')
                     ->required()
@@ -115,7 +113,7 @@ class Register extends BaseRegister
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->same('passwordConfirmation')
                     ->validationAttribute(__('filament-panels::pages/auth/register.form.password.validation_attribute')),
-                
+
                 TextInput::make('passwordConfirmation')
                     ->label(__('filament-panels::pages/auth/register.form.password_confirmation.label'))
                     ->password()
@@ -132,7 +130,7 @@ class Register extends BaseRegister
 
         // Create the user first
         $user = User::create([
-            'name' => $data['f_name'] . ' ' . $data['l_name'], // Combine first and last name
+            'name' => $data['f_name'].' '.$data['l_name'], // Combine first and last name
             'f_name' => $data['f_name'],
             'l_name' => $data['l_name'],
             'email' => $data['email'],
@@ -172,7 +170,8 @@ class Register extends BaseRegister
             ->send();
 
         // Return a custom registration response that redirects to login
-        return new class implements RegistrationResponse {
+        return new class implements RegistrationResponse
+        {
             public function toResponse($request)
             {
                 return redirect('/merchant/login');

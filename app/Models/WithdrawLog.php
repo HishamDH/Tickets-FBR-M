@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin IdeHelperWithdrawLog
+ */
 class WithdrawLog extends Model
 {
     use HasFactory;
@@ -28,10 +31,15 @@ class WithdrawLog extends Model
 
     // Action constants
     const ACTION_REQUESTED = 'requested';
+
     const ACTION_APPROVED = 'approved';
+
     const ACTION_REJECTED = 'rejected';
+
     const ACTION_PROCESSING = 'processing';
+
     const ACTION_COMPLETED = 'completed';
+
     const ACTION_CANCELLED = 'cancelled';
 
     public static function getActions(): array
@@ -70,7 +78,7 @@ class WithdrawLog extends Model
 
     public function getActionColorAttribute(): string
     {
-        return match($this->action) {
+        return match ($this->action) {
             self::ACTION_REQUESTED => 'info',
             self::ACTION_APPROVED => 'success',
             self::ACTION_REJECTED => 'danger',
@@ -83,7 +91,7 @@ class WithdrawLog extends Model
 
     public function getFormattedAmountAttribute(): string
     {
-        return number_format($this->amount, 2) . ' ' . config('app.currency', 'USD');
+        return number_format($this->amount, 2).' '.config('app.currency', 'USD');
     }
 
     // Scopes
@@ -105,7 +113,7 @@ class WithdrawLog extends Model
     public function scopeThisMonth($query)
     {
         return $query->whereMonth('created_at', now()->month)
-                    ->whereYear('created_at', now()->year);
+            ->whereYear('created_at', now()->year);
     }
 
     // Helper methods

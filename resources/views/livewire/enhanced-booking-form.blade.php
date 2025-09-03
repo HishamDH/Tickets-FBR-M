@@ -1,7 +1,14 @@
 <div class="max-w-4xl mx-auto" x-data="{ 
     currentStep: @entangle('step'),
     maxSteps: {{ $maxSteps }},
-    showSuccessAnimation: false
+    showSuccess                        <input type="number" 
+                               wire:model="guestCount" 
+                               min="1" max="20"
+                               @class([
+                                   'flex-1 px-4 py-3 border-2 text-center focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
+                                   'border-gray-200' => !$errors->has('guestCount'),
+                                   'border-red-500' => $errors->has('guestCount')
+                               ])>ation: false
 }" 
 x-init="
     $watch('currentStep', value => {
@@ -82,7 +89,11 @@ x-init="
                     <input type="date" 
                            wire:model="selectedDate"
                            min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all @error('selectedDate') border-red-500 @enderror">
+                           @class([
+                               'w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
+                               'border-gray-200' => !$errors->has('selectedDate'),
+                               'border-red-500' => $errors->has('selectedDate')
+                           ])>
                     @error('selectedDate')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -92,7 +103,11 @@ x-init="
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-3">🕐 وقت الحجز</label>
                     <select wire:model="selectedTime" 
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all @error('selectedTime') border-red-500 @enderror">
+                            @class([
+                                'w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
+                                'border-gray-200' => !$errors->has('selectedTime'),
+                                'border-red-500' => $errors->has('selectedTime')
+                            ])>
                         <option value="">اختر الوقت</option>
                         @foreach($this->availableTimes as $time)
                             <option value="{{ $time }}">{{ $time }}</option>
@@ -179,7 +194,11 @@ x-init="
                     <input type="text" 
                            wire:model="customerName"
                            placeholder="أدخل اسمك الكامل"
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all @error('customerName') border-red-500 @enderror">
+                           @class([
+                               'w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
+                               'border-gray-200' => !$errors->has('customerName'),
+                               'border-red-500' => $errors->has('customerName')
+                           ])>
                     @error('customerName')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -188,10 +207,14 @@ x-init="
                 <!-- Customer Email -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-3">📧 البريد الإلكتروني</label>
-                    <input type="email" 
+                                        <input type="email" 
                            wire:model="customerEmail"
-                           placeholder="example@domain.com"
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all @error('customerEmail') border-red-500 @enderror">
+                           placeholder="بريدك الإلكتروني"
+                           @class([
+                               'w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
+                               'border-gray-200' => !$errors->has('customerEmail'),
+                               'border-red-500' => $errors->has('customerEmail')
+                           ])>
                     @error('customerEmail')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -203,7 +226,11 @@ x-init="
                     <input type="tel" 
                            wire:model="customerPhone"
                            placeholder="+966 5X XXX XXXX"
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all @error('customerPhone') border-red-500 @enderror">
+                           @class([
+                               'w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
+                               'border-gray-200' => !$errors->has('customerPhone'),
+                               'border-red-500' => $errors->has('customerPhone')
+                           ])>
                     @error('customerPhone')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -215,7 +242,11 @@ x-init="
                     <textarea wire:model="customerAddress" 
                               placeholder="العنوان بالتفصيل..."
                               rows="3"
-                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all resize-none @error('customerAddress') border-red-500 @enderror"></textarea>
+                              @class([
+                                  'w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all resize-none',
+                                  'border-gray-200' => !$errors->has('customerAddress'),
+                                  'border-red-500' => $errors->has('customerAddress')
+                              ])></textarea>
                     @error('customerAddress')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror

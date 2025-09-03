@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +26,14 @@ class MerchantLoginController extends Controller
     {
         // Validate the user has merchant role
         $credentials = $request->validated();
-        
+
         if (Auth::guard('merchant')->attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::guard('merchant')->user();
-            
+
             // Check if user has merchant role
             if ($user->role !== 'merchant') {
                 Auth::guard('merchant')->logout();
+
                 return back()->withErrors([
                     'email' => 'These credentials do not match our merchant records.',
                 ]);

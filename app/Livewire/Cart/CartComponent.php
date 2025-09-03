@@ -3,8 +3,6 @@
 namespace App\Livewire\Cart;
 
 use App\Models\Cart;
-use App\Models\Offering;
-use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -12,10 +10,15 @@ use Livewire\Component;
 class CartComponent extends Component
 {
     public $cartItems = [];
+
     public $subtotal = 0;
+
     public $discount = 0;
+
     public $total = 0;
+
     public $count = 0;
+
     public $showCart = false;
 
     public function mount()
@@ -27,9 +30,9 @@ class CartComponent extends Component
     {
         $userId = Auth::id();
         $sessionId = session()->getId();
-        
+
         $cartData = Cart::getCartTotal($userId, $sessionId);
-        
+
         $this->cartItems = $cartData['items'];
         $this->subtotal = $cartData['subtotal'];
         $this->discount = $cartData['discount'];
@@ -45,14 +48,16 @@ class CartComponent extends Component
 
             // Validate item exists
             $item = $itemType::find($itemId);
-            if (!$item) {
+            if (! $item) {
                 $this->dispatch('cart-error', message: 'Item not found');
+
                 return;
             }
 
             // Check availability
-            if (method_exists($item, 'isAvailable') && !$item->isAvailable($quantity)) {
+            if (method_exists($item, 'isAvailable') && ! $item->isAvailable($quantity)) {
                 $this->dispatch('cart-error', message: 'Item is not available');
+
                 return;
             }
 
@@ -77,6 +82,7 @@ class CartComponent extends Component
     {
         if ($quantity < 1) {
             $this->removeItem($cartItemId);
+
             return;
         }
 
@@ -94,14 +100,16 @@ class CartComponent extends Component
                 })
                 ->first();
 
-            if (!$cartItem) {
+            if (! $cartItem) {
                 $this->dispatch('cart-error', message: 'Cart item not found');
+
                 return;
             }
 
             // Check availability
-            if ($cartItem->item && method_exists($cartItem->item, 'isAvailable') && !$cartItem->item->isAvailable($quantity)) {
+            if ($cartItem->item && method_exists($cartItem->item, 'isAvailable') && ! $cartItem->item->isAvailable($quantity)) {
                 $this->dispatch('cart-error', message: 'Requested quantity is not available');
+
                 return;
             }
 
@@ -161,7 +169,7 @@ class CartComponent extends Component
 
     public function toggleCart()
     {
-        $this->showCart = !$this->showCart;
+        $this->showCart = ! $this->showCart;
     }
 
     #[On('cart-refresh')]
@@ -176,10 +184,10 @@ class CartComponent extends Component
         if (Auth::check()) {
             $userId = Auth::id();
             $sessionId = session()->getId();
-            
+
             Cart::mergeGuestCart($sessionId, $userId);
             $this->loadCart();
-            
+
             $this->dispatch('cart-updated', count: $this->count);
         }
     }
@@ -188,24 +196,27 @@ class CartComponent extends Component
     {
         if ($this->count === 0) {
             $this->dispatch('cart-error', message: 'Cart is empty');
+
             return;
         }
 
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             $this->dispatch('show-login-modal');
+
             return;
         }
 
         // Validate cart before checkout
         $issues = [];
         foreach ($this->cartItems as $cartItem) {
-            if (!$cartItem->isAvailable()) {
+            if (! $cartItem->isAvailable()) {
                 $issues[] = "Item '{$cartItem->getItemName()}' is no longer available";
             }
         }
 
-        if (!empty($issues)) {
+        if (! empty($issues)) {
             $this->dispatch('cart-error', message: implode(', ', $issues));
+
             return;
         }
 

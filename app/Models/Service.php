@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @mixin IdeHelperService
+ */
 class Service extends Model
 {
     use HasFactory;
@@ -50,7 +53,7 @@ class Service extends Model
      */
     public function merchant(): BelongsTo
     {
-        return $this->belongsTo(Merchant::class);
+        return $this->belongsTo(User::class, 'merchant_id');
     }
 
     /**

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Merchant;
 use App\Models\Offering;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class MerchantStorefrontController extends Controller
@@ -16,17 +15,17 @@ class MerchantStorefrontController extends Controller
     {
         // Find merchant by business slug or ID
         $merchant = Merchant::where('business_slug', $slug)
-                           ->orWhere('id', $slug)
-                           ->with(['user', 'branches'])
-                           ->firstOrFail();
+            ->orWhere('id', $slug)
+            ->with(['user', 'branches'])
+            ->firstOrFail();
 
         // Get active offerings for this merchant
         $offerings = Offering::where('user_id', $merchant->user_id)
-                            ->where('status', 'active')
-                            ->with(['category', 'reviews'])
-                            ->withAvg('reviews', 'rating')
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+            ->where('status', 'active')
+            ->with(['category', 'reviews'])
+            ->withAvg('reviews', 'rating')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // Track page view
         if (function_exists('set_viewed')) {
@@ -35,7 +34,7 @@ class MerchantStorefrontController extends Controller
 
         // Determine template to use
         $template = $merchant->template ?? 'template1';
-        
+
         return view("templates.{$template}.index", compact('merchant', 'offerings'));
     }
 
@@ -45,16 +44,16 @@ class MerchantStorefrontController extends Controller
     public function showOffering(Request $request, $merchantSlug, $offeringId)
     {
         $merchant = Merchant::where('business_slug', $merchantSlug)
-                           ->orWhere('id', $merchantSlug)
-                           ->with(['user', 'branches'])
-                           ->firstOrFail();
+            ->orWhere('id', $merchantSlug)
+            ->with(['user', 'branches'])
+            ->firstOrFail();
 
         $offering = Offering::where('id', $offeringId)
-                           ->where('user_id', $merchant->user_id)
-                           ->where('status', 'active')
-                           ->with(['category', 'reviews.user'])
-                           ->withAvg('reviews', 'rating')
-                           ->firstOrFail();
+            ->where('user_id', $merchant->user_id)
+            ->where('status', 'active')
+            ->with(['category', 'reviews.user'])
+            ->withAvg('reviews', 'rating')
+            ->firstOrFail();
 
         // Track page view
         if (function_exists('set_viewed')) {
@@ -62,7 +61,7 @@ class MerchantStorefrontController extends Controller
         }
 
         $template = $merchant->template ?? 'template1';
-        
+
         return view("templates.{$template}.offering", compact('merchant', 'offering'));
     }
 
@@ -72,9 +71,9 @@ class MerchantStorefrontController extends Controller
     public function contact(Request $request, $slug)
     {
         $merchant = Merchant::where('business_slug', $slug)
-                           ->orWhere('id', $slug)
-                           ->with(['user', 'branches'])
-                           ->firstOrFail();
+            ->orWhere('id', $slug)
+            ->with(['user', 'branches'])
+            ->firstOrFail();
 
         if ($request->isMethod('post')) {
             // Handle contact form submission
@@ -90,7 +89,7 @@ class MerchantStorefrontController extends Controller
                     'type' => 'merchant_customer',
                     'customer_id' => auth()->id() ?? null,
                     'merchant_id' => $merchant->user_id,
-                    'title' => 'Contact from website: ' . $request->name,
+                    'title' => 'Contact from website: '.$request->name,
                     'initial_message' => "Name: {$request->name}\nEmail: {$request->email}\n\nMessage:\n{$request->message}",
                 ]);
 
@@ -110,7 +109,7 @@ class MerchantStorefrontController extends Controller
         }
 
         $template = $merchant->template ?? 'template1';
-        
+
         return view("templates.{$template}.contact", compact('merchant'));
     }
 
@@ -120,9 +119,9 @@ class MerchantStorefrontController extends Controller
     public function apiInfo($slug)
     {
         $merchant = Merchant::where('business_slug', $slug)
-                           ->orWhere('id', $slug)
-                           ->with(['user', 'branches'])
-                           ->firstOrFail();
+            ->orWhere('id', $slug)
+            ->with(['user', 'branches'])
+            ->firstOrFail();
 
         return response()->json([
             'success' => true,
@@ -131,8 +130,8 @@ class MerchantStorefrontController extends Controller
                 'business_name' => $merchant->business_name,
                 'business_type' => $merchant->business_type,
                 'description' => $merchant->description,
-                'logo' => $merchant->logo ? asset('storage/' . $merchant->logo) : null,
-                'cover_image' => $merchant->cover_image ? asset('storage/' . $merchant->cover_image) : null,
+                'logo' => $merchant->logo ? asset('storage/'.$merchant->logo) : null,
+                'cover_image' => $merchant->cover_image ? asset('storage/'.$merchant->cover_image) : null,
                 'theme_color' => $merchant->theme_color,
                 'social_links' => [
                     'facebook' => $merchant->facebook_url,
@@ -153,7 +152,7 @@ class MerchantStorefrontController extends Controller
                         'is_active' => $branch->is_active,
                     ];
                 }),
-            ]
+            ],
         ]);
     }
 
@@ -163,15 +162,15 @@ class MerchantStorefrontController extends Controller
     public function search(Request $request)
     {
         $query = Merchant::with(['user'])
-                        ->where('status', 'active')
-                        ->where('is_public', true);
+            ->where('status', 'active')
+            ->where('is_public', true);
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('business_name', 'like', "%{$search}%")
-                  ->orWhere('business_type', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('business_type', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -184,7 +183,7 @@ class MerchantStorefrontController extends Controller
         }
 
         $merchants = $query->orderBy('business_name')
-                          ->paginate(12);
+            ->paginate(12);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -194,7 +193,7 @@ class MerchantStorefrontController extends Controller
                     'current_page' => $merchants->currentPage(),
                     'last_page' => $merchants->lastPage(),
                     'total' => $merchants->total(),
-                ]
+                ],
             ]);
         }
 

@@ -14,7 +14,9 @@
       "Bash(php:*)",
       "Bash(./vendor/bin/pint:*)",
       "Bash(dir:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(rm:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": [],
     "ask": []

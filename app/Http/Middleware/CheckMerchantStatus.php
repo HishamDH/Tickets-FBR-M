@@ -43,7 +43,7 @@ class CheckMerchantStatus
             }
 
             return redirect()->route('merchant.status')
-                ->with('error', 'تم رفض طلب التسجيل. السبب: ' . ($user->verification_notes ?? 'لم يتم تحديد السبب'));
+                ->with('error', 'تم رفض طلب التسجيل. السبب: '.($user->verification_notes ?? 'لم يتم تحديد السبب'));
         }
 
         if ($user->merchant_status === 'suspended') {

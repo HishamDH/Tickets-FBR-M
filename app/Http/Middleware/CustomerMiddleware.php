@@ -14,14 +14,15 @@ class CustomerMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('customer')->check()) {
+        if (! Auth::guard('customer')->check()) {
             return redirect('/customer/login');
         }
 
         $user = Auth::guard('customer')->user();
-        
+
         if ($user->role !== 'customer') {
             Auth::guard('customer')->logout();
+
             return redirect('/customer/login')->with('error', 'Access denied. Customer account required.');
         }
 

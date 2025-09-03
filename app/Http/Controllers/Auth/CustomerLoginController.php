@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +26,14 @@ class CustomerLoginController extends Controller
     {
         // Validate the user has customer role
         $credentials = $request->validated();
-        
+
         if (Auth::guard('customer')->attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::guard('customer')->user();
-            
+
             // Check if user has customer role
             if ($user->role !== 'customer') {
                 Auth::guard('customer')->logout();
+
                 return back()->withErrors([
                     'email' => 'These credentials do not match our customer records.',
                 ]);

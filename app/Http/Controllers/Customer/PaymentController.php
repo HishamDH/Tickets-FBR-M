@@ -196,11 +196,16 @@ class PaymentController extends Controller
                 ->with('error', 'لا يمكن تحميل إيصال الدفع لدفعة غير مكتملة');
         }
 
+        $filePath = storage_path('app/receipts/payment-'.$payment->id.'.pdf');
+
+        if (!file_exists($filePath)) {
+            return redirect()->back()
+                ->with('error', 'ملف الإيصال غير موجود أو لم يتم إنشاؤه بعد.');
+        }
+
         // Generate and return receipt PDF
         // This would integrate with a PDF generation service
-        return response()->download(
-            storage_path('app/receipts/payment-'.$payment->id.'.pdf')
-        );
+        return response()->download($filePath);
     }
 
     /**

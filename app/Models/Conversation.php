@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @mixin IdeHelperConversation
+ */
 class Conversation extends Model
 {
     use HasFactory;
@@ -82,9 +85,9 @@ class Conversation extends Model
     public function getUnreadCountForUser($userId)
     {
         return $this->messages()
-                   ->where('sender_id', '!=', $userId)
-                   ->whereNull('read_at')
-                   ->count();
+            ->where('sender_id', '!=', $userId)
+            ->whereNull('read_at')
+            ->count();
     }
 
     /**
@@ -93,9 +96,9 @@ class Conversation extends Model
     public function markAsReadForUser($userId)
     {
         $this->messages()
-             ->where('sender_id', '!=', $userId)
-             ->whereNull('read_at')
-             ->update(['read_at' => now()]);
+            ->where('sender_id', '!=', $userId)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
     }
 
     /**
@@ -103,8 +106,8 @@ class Conversation extends Model
      */
     public function hasParticipant($userId)
     {
-        return $this->customer_id == $userId || 
-               $this->merchant_id == $userId || 
+        return $this->customer_id == $userId ||
+               $this->merchant_id == $userId ||
                $this->support_agent_id == $userId;
     }
 
@@ -116,7 +119,7 @@ class Conversation extends Model
         $participants = collect([
             $this->customer_id,
             $this->merchant_id,
-            $this->support_agent_id
+            $this->support_agent_id,
         ])->filter()->unique()->reject(function ($id) use ($currentUserId) {
             return $id == $currentUserId;
         });
@@ -168,8 +171,8 @@ class Conversation extends Model
     {
         return $query->where(function ($q) use ($userId) {
             $q->where('customer_id', $userId)
-              ->orWhere('merchant_id', $userId)
-              ->orWhere('support_agent_id', $userId);
+                ->orWhere('merchant_id', $userId)
+                ->orWhere('support_agent_id', $userId);
         });
     }
 

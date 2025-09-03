@@ -64,10 +64,10 @@ class RoleSeeder extends Seeder
 
             // Reports and analytics
             'reports_view',
-            
+
             // Notifications
             'notifications_view',
-            
+
             // Messages and chat
             'messages_view',
             'messages_send',

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +26,14 @@ class AdminLoginController extends Controller
     {
         // Validate the user has admin role
         $credentials = $request->validated();
-        
+
         if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::guard('admin')->user();
-            
+
             // Check if user has admin role
             if ($user->role !== 'admin') {
                 Auth::guard('admin')->logout();
+
                 return back()->withErrors([
                     'email' => 'These credentials do not match our admin records.',
                 ]);

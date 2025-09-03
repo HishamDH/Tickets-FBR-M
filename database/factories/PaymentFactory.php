@@ -43,16 +43,20 @@ class PaymentFactory extends Factory
             'merchant_id' => function (array $attributes) {
                 if (isset($attributes['booking_id']) && is_numeric($attributes['booking_id'])) {
                     $booking = Booking::find($attributes['booking_id']);
+
                     return $booking ? $booking->merchant_id : 1;
                 }
+
                 return 1; // Default merchant
             },
             'payment_gateway_id' => PaymentGateway::factory(),
             'customer_id' => function (array $attributes) {
                 if (isset($attributes['booking_id']) && is_numeric($attributes['booking_id'])) {
                     $booking = Booking::find($attributes['booking_id']);
+
                     return $booking ? $booking->customer_id : null;
                 }
+
                 return null;
             },
             'amount' => $amount,
@@ -104,6 +108,7 @@ class PaymentFactory extends Factory
                         'processing_error',
                     ]);
                 }
+
                 return null;
             },
             'customer_ip' => $this->faker->ipv4(),

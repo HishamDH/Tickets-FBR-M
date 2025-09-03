@@ -45,7 +45,7 @@ class BookingResource extends Resource
                             ])
                             ->required(),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Payment Details')
                     ->schema([
                         Forms\Components\TextInput::make('total_amount')
@@ -60,7 +60,7 @@ class BookingResource extends Resource
                             ])
                             ->required(),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Notes')
                     ->schema([
                         Forms\Components\Textarea::make('notes')
@@ -87,19 +87,23 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('booking_date')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'confirmed',
-                        'info' => 'completed',
-                        'danger' => 'cancelled',
-                    ]),
-                Tables\Columns\BadgeColumn::make('payment_status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'paid',
-                        'danger' => 'refunded',
-                    ]),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'confirmed' => 'success',
+                        'completed' => 'info',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('payment_status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'refunded' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->money('USD')
                     ->sortable(),
@@ -151,9 +155,9 @@ class BookingResource extends Resource
     {
         $user = Auth::user();
         $merchant = $user->merchant;
-        
+
         return parent::getEloquentQuery()
-            ->whereHas('service', function($query) use ($merchant) {
+            ->whereHas('service', function ($query) use ($merchant) {
                 $query->where('merchant_id', $merchant->id ?? 0);
             });
     }

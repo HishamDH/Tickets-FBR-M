@@ -1,30 +1,28 @@
 <?php
 
-use App\Models\User;
+use App\Models\Branch;
+use App\Models\MerchantWallet;
 use App\Models\Offering;
 use App\Models\PaidReservation;
-use App\Models\MerchantWallet;
-use App\Models\Branch;
-use App\Models\Category;
-use App\Models\Cart;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 // ===========================================
 // PAYMENT AND FINANCIAL FUNCTIONS
 // ===========================================
 
-if (!function_exists('getCard')) {
+if (! function_exists('getCard')) {
     /**
      * Get current user's payment card
      */
     function getCard($userId = null)
     {
         $userId = $userId ?? Auth::id();
-        
+
         // This would integrate with your payment gateway
         // For now, return a default structure
         return [
@@ -37,7 +35,7 @@ if (!function_exists('getCard')) {
     }
 }
 
-if (!function_exists('logPayment')) {
+if (! function_exists('logPayment')) {
     /**
      * Log payment transaction and update wallet
      */
@@ -82,8 +80,8 @@ if (!function_exists('logPayment')) {
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Payment logging error: ' . $e->getMessage());
-            
+            Log::error('Payment logging error: '.$e->getMessage());
+
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -92,7 +90,7 @@ if (!function_exists('logPayment')) {
     }
 }
 
-if (!function_exists('calculateNet')) {
+if (! function_exists('calculateNet')) {
     /**
      * Calculate net profit (total payments - refunds)
      */
@@ -111,7 +109,7 @@ if (!function_exists('calculateNet')) {
                 break;
             case 'month':
                 $query->whereMonth('created_at', now()->month)
-                      ->whereYear('created_at', now()->year);
+                    ->whereYear('created_at', now()->year);
                 break;
             case 'year':
                 $query->whereYear('created_at', now()->year);
@@ -130,18 +128,18 @@ if (!function_exists('calculateNet')) {
 }
 
 // ===========================================
-// PERMISSIONS AND SECURITY FUNCTIONS  
+// PERMISSIONS AND SECURITY FUNCTIONS
 // ===========================================
 
-if (!function_exists('has_Permetion')) {
+if (! function_exists('has_Permetion')) {
     /**
      * Check if user has specific permission
      */
     function has_Permetion($permission, $userId = null, $merchantId = null)
     {
         $user = $userId ? User::find($userId) : Auth::user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
 
@@ -155,19 +153,19 @@ if (!function_exists('has_Permetion')) {
     }
 }
 
-if (!function_exists('adminPermission')) {
+if (! function_exists('adminPermission')) {
     /**
      * Check admin permissions
      */
     function adminPermission($userId = null)
     {
         $user = $userId ? User::find($userId) : Auth::user();
-        
+
         return $user && $user->role === 'admin';
     }
 }
 
-if (!function_exists('can_enter')) {
+if (! function_exists('can_enter')) {
     /**
      * Check if user can access specific page/feature
      */
@@ -177,15 +175,15 @@ if (!function_exists('can_enter')) {
     }
 }
 
-if (!function_exists('is_m_admin')) {
+if (! function_exists('is_m_admin')) {
     /**
      * Check if user is merchant admin
      */
     function is_m_admin($userId = null, $merchantId = null)
     {
         $user = $userId ? User::find($userId) : Auth::user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
 
@@ -193,15 +191,15 @@ if (!function_exists('is_m_admin')) {
     }
 }
 
-if (!function_exists('work_in')) {
+if (! function_exists('work_in')) {
     /**
      * Check if user works for specific merchant
      */
     function work_in($merchantId, $userId = null)
     {
         $user = $userId ? User::find($userId) : Auth::user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
 
@@ -214,15 +212,15 @@ if (!function_exists('work_in')) {
 // BUSINESS LOGIC FUNCTIONS
 // ===========================================
 
-if (!function_exists('hasEssentialFields')) {
+if (! function_exists('hasEssentialFields')) {
     /**
      * Check if offering has all essential fields (21 required fields)
      */
     function hasEssentialFields($offeringId)
     {
         $offering = Offering::find($offeringId);
-        
-        if (!$offering) {
+
+        if (! $offering) {
             return false;
         }
 
@@ -243,7 +241,7 @@ if (!function_exists('hasEssentialFields')) {
         $requiredAdditionalFields = [
             'features', 'highlights', 'includes', 'excludes',
             'cancellation_policy', 'age_restrictions', 'dress_code',
-            'what_to_bring', 'meeting_point'
+            'what_to_bring', 'meeting_point',
         ];
 
         foreach ($requiredAdditionalFields as $field) {
@@ -256,21 +254,21 @@ if (!function_exists('hasEssentialFields')) {
     }
 }
 
-if (!function_exists('can_booking_now')) {
+if (! function_exists('can_booking_now')) {
     /**
      * Check if offering can be booked now with time and quantity constraints
      */
     function can_booking_now($offeringId, $branchId = null, $quantity = 1)
     {
         $offering = Offering::find($offeringId);
-        
-        if (!$offering || $offering->status !== 'active') {
+
+        if (! $offering || $offering->status !== 'active') {
             return false;
         }
 
         // Check if offering is published
         $additionalData = $offering->additional_data ?? [];
-        if (isset($additionalData['is_published']) && !$additionalData['is_published']) {
+        if (isset($additionalData['is_published']) && ! $additionalData['is_published']) {
             return false;
         }
 
@@ -294,20 +292,20 @@ if (!function_exists('can_booking_now')) {
     }
 }
 
-if (!function_exists('get_quantity')) {
+if (! function_exists('get_quantity')) {
     /**
      * Get available quantity for booking in real-time
      */
     function get_quantity($offeringId, $branchId = null)
     {
         $offering = Offering::find($offeringId);
-        
-        if (!$offering) {
+
+        if (! $offering) {
             return 0;
         }
 
         $maxAttendees = $offering->max_attendees ?? 0;
-        
+
         // Count existing bookings
         $bookedQuantity = PaidReservation::where('offering_id', $offeringId)
             ->where('status', '!=', 'cancelled')
@@ -321,20 +319,20 @@ if (!function_exists('get_quantity')) {
     }
 }
 
-if (!function_exists('fetch_time')) {
+if (! function_exists('fetch_time')) {
     /**
      * Fetch available times for offering (services/events)
      */
     function fetch_time($offeringId)
     {
         $offering = Offering::find($offeringId);
-        
-        if (!$offering) {
+
+        if (! $offering) {
             return null;
         }
 
         $additionalData = $offering->additional_data ?? [];
-        
+
         if ($offering->type === 'event') {
             return [
                 'type' => 'event',
@@ -343,7 +341,7 @@ if (!function_exists('fetch_time')) {
                     'end_date' => $offering->end_date,
                     'start_time' => $additionalData['start_time'] ?? '09:00',
                     'end_time' => $additionalData['end_time'] ?? '17:00',
-                ]]
+                ]],
             ];
         }
 
@@ -359,7 +357,7 @@ if (!function_exists('fetch_time')) {
                     'friday' => ['09:00-17:00'],
                     'saturday' => ['09:00-15:00'],
                     'sunday' => [],
-                ]
+                ],
             ];
         }
 
@@ -367,15 +365,15 @@ if (!function_exists('fetch_time')) {
     }
 }
 
-if (!function_exists('set_presence')) {
+if (! function_exists('set_presence')) {
     /**
      * Set customer presence/attendance with QR Code verification
      */
     function set_presence($reservationId, $verificationCode = null)
     {
         $reservation = PaidReservation::find($reservationId);
-        
-        if (!$reservation) {
+
+        if (! $reservation) {
             return false;
         }
 
@@ -395,20 +393,20 @@ if (!function_exists('set_presence')) {
     }
 }
 
-if (!function_exists('can_cancel')) {
+if (! function_exists('can_cancel')) {
     /**
      * Check if booking can be cancelled based on merchant policy
      */
     function can_cancel($reservationId)
     {
         $reservation = PaidReservation::find($reservationId);
-        
-        if (!$reservation || $reservation->status === 'cancelled') {
+
+        if (! $reservation || $reservation->status === 'cancelled') {
             return false;
         }
 
         $offering = $reservation->offering;
-        if (!$offering) {
+        if (! $offering) {
             return false;
         }
 
@@ -427,14 +425,14 @@ if (!function_exists('can_cancel')) {
 // STATISTICS AND ANALYTICS FUNCTIONS
 // ===========================================
 
-if (!function_exists('get_statistics')) {
+if (! function_exists('get_statistics')) {
     /**
      * Get comprehensive merchant statistics
      */
     function get_statistics($merchantId)
     {
         $wallet = MerchantWallet::where('merchant_id', $merchantId)->first();
-        
+
         $reservations = PaidReservation::whereHas('offering', function ($q) use ($merchantId) {
             $q->where('user_id', $merchantId);
         });
@@ -465,7 +463,7 @@ if (!function_exists('get_statistics')) {
     }
 }
 
-if (!function_exists('Peak_Time')) {
+if (! function_exists('Peak_Time')) {
     /**
      * Analyze peak times with 24/7 heatmap data
      */
@@ -527,7 +525,7 @@ if (!function_exists('Peak_Time')) {
     }
 }
 
-if (!function_exists('pending_reservations')) {
+if (! function_exists('pending_reservations')) {
     /**
      * Get pending reservations by time period
      */
@@ -553,7 +551,7 @@ if (!function_exists('pending_reservations')) {
     }
 }
 
-if (!function_exists('set_viewed')) {
+if (! function_exists('set_viewed')) {
     /**
      * Track page views with IP and timestamp
      */
@@ -561,15 +559,15 @@ if (!function_exists('set_viewed')) {
     {
         try {
             $ipAddress = request()->ip();
-            
+
             // Simple view tracking (you can expand this)
             Cache::increment("views:{$pageType}:{$pageId}");
-            
+
             if ($userId) {
                 Cache::increment("user_views:{$userId}:{$pageType}:{$pageId}");
             }
 
-            Log::info("Page viewed", [
+            Log::info('Page viewed', [
                 'page_type' => $pageType,
                 'page_id' => $pageId,
                 'user_id' => $userId,
@@ -579,7 +577,8 @@ if (!function_exists('set_viewed')) {
 
             return true;
         } catch (\Exception $e) {
-            Log::error('View tracking error: ' . $e->getMessage());
+            Log::error('View tracking error: '.$e->getMessage());
+
             return false;
         }
     }
@@ -589,7 +588,7 @@ if (!function_exists('set_viewed')) {
 // SYSTEM AND CONFIGURATION FUNCTIONS
 // ===========================================
 
-if (!function_exists('LoadConfig')) {
+if (! function_exists('LoadConfig')) {
     /**
      * Load system configuration
      */
@@ -609,7 +608,7 @@ if (!function_exists('LoadConfig')) {
     }
 }
 
-if (!function_exists('first_setup')) {
+if (! function_exists('first_setup')) {
     /**
      * Check if system is in first setup mode
      */
@@ -619,7 +618,7 @@ if (!function_exists('first_setup')) {
     }
 }
 
-if (!function_exists('Create_Wallet')) {
+if (! function_exists('Create_Wallet')) {
     /**
      * Create new merchant wallet
      */
@@ -632,33 +631,33 @@ if (!function_exists('Create_Wallet')) {
     }
 }
 
-if (!function_exists('get_branches')) {
+if (! function_exists('get_branches')) {
     /**
      * Get branches for specific offering
      */
     function get_branches($offeringId)
     {
         $offering = Offering::find($offeringId);
-        
-        if (!$offering) {
+
+        if (! $offering) {
             return collect();
         }
 
         return Branch::where('merchant_id', $offering->user_id)
-                    ->where('is_active', true)
-                    ->get();
+            ->where('is_active', true)
+            ->get();
     }
 }
 
-if (!function_exists('get_coupons')) {
+if (! function_exists('get_coupons')) {
     /**
      * Get active coupons for offering
      */
     function get_coupons($offeringId)
     {
         $offering = Offering::find($offeringId);
-        
-        if (!$offering) {
+
+        if (! $offering) {
             return [];
         }
 
@@ -668,12 +667,13 @@ if (!function_exists('get_coupons')) {
         // Filter active coupons only
         return array_filter($coupons, function ($coupon) {
             $expiresAt = Carbon::parse($coupon['expires_at'] ?? now()->addDays(30));
+
             return $expiresAt->isFuture() && ($coupon['is_active'] ?? true);
         });
     }
 }
 
-if (!function_exists('sendOTP')) {
+if (! function_exists('sendOTP')) {
     /**
      * Send OTP verification code via email
      */
@@ -682,15 +682,17 @@ if (!function_exists('sendOTP')) {
         try {
             // This would integrate with your email service
             Log::info("OTP sent to {$email}: {$code}");
+
             return true;
         } catch (\Exception $e) {
-            Log::error('OTP sending error: ' . $e->getMessage());
+            Log::error('OTP sending error: '.$e->getMessage());
+
             return false;
         }
     }
 }
 
-if (!function_exists('translate')) {
+if (! function_exists('translate')) {
     /**
      * Auto-translate text using Lingva API
      */
@@ -700,20 +702,21 @@ if (!function_exists('translate')) {
             // This would integrate with translation service
             return $text; // Fallback: return original text
         } catch (\Exception $e) {
-            Log::error('Translation error: ' . $e->getMessage());
+            Log::error('Translation error: '.$e->getMessage());
+
             return $text;
         }
     }
 }
 
-if (!function_exists('pendingRes')) {
+if (! function_exists('pendingRes')) {
     /**
      * Analyze expired pending reservations
      */
     function pendingRes($merchantId = null)
     {
         $query = PaidReservation::where('status', 'pending')
-                               ->where('created_at', '<', now()->subHours(24));
+            ->where('created_at', '<', now()->subHours(24));
 
         if ($merchantId) {
             $query->whereHas('offering', function ($q) use ($merchantId) {
@@ -725,7 +728,7 @@ if (!function_exists('pendingRes')) {
     }
 }
 
-if (!function_exists('notifcate')) {
+if (! function_exists('notifcate')) {
     /**
      * Send notification to user
      */
@@ -733,8 +736,8 @@ if (!function_exists('notifcate')) {
     {
         try {
             $user = User::find($userId);
-            
-            if (!$user) {
+
+            if (! $user) {
                 return false;
             }
 
@@ -747,10 +750,12 @@ if (!function_exists('notifcate')) {
             ]);
 
             Log::info("Notification sent to user {$userId}: {$title}");
+
             return true;
 
         } catch (\Exception $e) {
-            Log::error('Notification error: ' . $e->getMessage());
+            Log::error('Notification error: '.$e->getMessage());
+
             return false;
         }
     }

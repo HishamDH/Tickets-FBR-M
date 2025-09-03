@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin IdeHelperMessage
+ */
 class Message extends Model
 {
     use HasFactory;
@@ -47,7 +50,7 @@ class Message extends Model
      */
     public function isRead(): bool
     {
-        return !is_null($this->read_at);
+        return ! is_null($this->read_at);
     }
 
     /**
@@ -55,7 +58,7 @@ class Message extends Model
      */
     public function markAsRead()
     {
-        if (!$this->isRead()) {
+        if (! $this->isRead()) {
             $this->update(['read_at' => now()]);
         }
     }
@@ -65,7 +68,7 @@ class Message extends Model
      */
     public function hasAttachments(): bool
     {
-        return !empty($this->attachments);
+        return ! empty($this->attachments);
     }
 
     /**
@@ -73,14 +76,14 @@ class Message extends Model
      */
     public function getAttachmentUrls()
     {
-        if (!$this->hasAttachments()) {
+        if (! $this->hasAttachments()) {
             return [];
         }
 
         return collect($this->attachments)->map(function ($attachment) {
             return [
                 'name' => $attachment['name'],
-                'url' => asset('storage/' . $attachment['path']),
+                'url' => asset('storage/'.$attachment['path']),
                 'type' => $attachment['type'] ?? 'file',
                 'size' => $attachment['size'] ?? null,
             ];

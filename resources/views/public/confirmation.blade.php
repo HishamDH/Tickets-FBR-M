@@ -143,10 +143,12 @@
                             @endif
                             <div class="flex justify-between items-center pt-2 border-t">
                                 <span class="text-slate-600">حالة الدفع:</span>
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-                                    @if($booking->payment_status === 'paid') bg-green-100 text-green-800
-                                    @elseif($booking->payment_status === 'pending') bg-yellow-100 text-yellow-800
-                                    @else bg-red-100 text-red-800 @endif">
+                                <span @class([
+                                    'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                                    'bg-green-100 text-green-800' => $booking->payment_status === 'paid',
+                                    'bg-yellow-100 text-yellow-800' => $booking->payment_status === 'pending',
+                                    'bg-red-100 text-red-800' => !in_array($booking->payment_status, ['paid', 'pending'])
+                                ])>
                                     @switch($booking->payment_status)
                                         @case('paid')
                                             مدفوع

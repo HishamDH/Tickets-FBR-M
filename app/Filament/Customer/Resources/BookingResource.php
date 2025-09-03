@@ -17,7 +17,7 @@ class BookingResource extends Resource
     protected static ?string $model = Booking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    
+
     protected static ?string $slug = 'my-bookings';
 
     protected static ?string $navigationLabel = 'My Bookings';
@@ -44,43 +44,47 @@ class BookingResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable(),
-                
+
                 Tables\Columns\TextColumn::make('service.name')
                     ->label('Service')
                     ->searchable()
                     ->limit(30),
-                
+
                 Tables\Columns\TextColumn::make('service.merchant.business_name')
                     ->label('Provider')
                     ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('booking_date')
                     ->label('Date & Time')
                     ->dateTime()
                     ->sortable(),
-                
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'info' => 'confirmed',
-                        'success' => 'completed',
-                        'danger' => 'cancelled',
-                    ]),
-                
-                Tables\Columns\BadgeColumn::make('payment_status')
+
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'confirmed' => 'info',
+                        'completed' => 'success',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    }),
+
+                Tables\Columns\TextColumn::make('payment_status')
                     ->label('Payment')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'paid',
-                        'danger' => 'refunded',
-                        'secondary' => 'failed',
-                    ]),
-                
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'refunded' => 'danger',
+                        'failed' => 'secondary',
+                        default => 'gray',
+                    }),
+
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Amount')
                     ->money('USD')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Booked On')
                     ->dateTime()
@@ -95,7 +99,7 @@ class BookingResource extends Resource
                         'completed' => 'Completed',
                         'cancelled' => 'Cancelled',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('payment_status')
                     ->label('Payment Status')
                     ->options([
@@ -104,7 +108,7 @@ class BookingResource extends Resource
                         'refunded' => 'Refunded',
                         'failed' => 'Failed',
                     ]),
-                
+
                 Tables\Filters\Filter::make('booking_date')
                     ->form([
                         Forms\Components\DatePicker::make('from')
@@ -127,7 +131,7 @@ class BookingResource extends Resource
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
-                    
+
                     Tables\Actions\Action::make('cancel')
                         ->label('Cancel Booking')
                         ->icon('heroicon-o-x-circle')
@@ -138,20 +142,19 @@ class BookingResource extends Resource
                         ->modalDescription('Are you sure you want to cancel this booking? This action cannot be undone.')
                         ->action(function ($record) {
                             $record->update(['status' => 'cancelled']);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Booking Cancelled')
                                 ->body('Your booking has been cancelled successfully.')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('request_refund')
                         ->label('Request Refund')
                         ->icon('heroicon-o-arrow-uturn-left')
                         ->color('warning')
-                        ->visible(fn ($record): bool => 
-                            $record->status === 'cancelled' && 
+                        ->visible(fn ($record): bool => $record->status === 'cancelled' &&
                             $record->payment_status === 'paid'
                         )
                         ->form([
@@ -171,14 +174,14 @@ class BookingResource extends Resource
                                 'reason' => $data['refund_reason'],
                                 'status' => 'pending',
                             ]);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Refund Requested')
                                 ->body('Your refund request has been submitted and will be reviewed.')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('download_receipt')
                         ->label('Download Receipt')
                         ->icon('heroicon-o-document-arrow-down')
@@ -191,7 +194,7 @@ class BookingResource extends Resource
                                 ->success()
                                 ->send();
                         }),
-                ])
+                ]),
             ])
             ->emptyStateHeading('No bookings yet')
             ->emptyStateDescription('When you make your first booking, it will appear here.')

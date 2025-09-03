@@ -484,18 +484,26 @@ class ChartDataService
 
     // Placeholder methods for additional charts
     protected function getBookingsByDayOfWeekChart($startDate, $endDate)
-    { /* Implementation */
+    {
+        // TODO: Implement actual logic
+        return [];
     }
 
     protected function getServicePerformanceChart($startDate, $endDate, $filters)
-    { /* Implementation */
+    {
+        // TODO: Implement actual logic
+        return [];
     }
 
     protected function getGeographicDistributionChart($startDate, $endDate)
-    { /* Implementation */
+    {
+        // TODO: Implement actual logic
+        return [];
     }
 
     protected function getPaymentMethodsChart($startDate, $endDate)
-    { /* Implementation */
+    {
+        // TODO: Implement actual logic
+        return [];
     }
 }

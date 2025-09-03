@@ -40,7 +40,7 @@ class ServiceResource extends Resource
                             ->relationship('category', 'name')
                             ->required(),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Availability')
                     ->schema([
                         Forms\Components\Toggle::make('is_available')
@@ -53,7 +53,7 @@ class ServiceResource extends Resource
                             ->numeric()
                             ->label('Maximum capacity'),
                     ])->columns(3),
-                    
+
                 Forms\Components\Section::make('Media')
                     ->schema([
                         Forms\Components\FileUpload::make('image')
@@ -113,7 +113,7 @@ class ServiceResource extends Resource
     {
         $user = Auth::user();
         $merchant = $user->merchant;
-        
+
         return parent::getEloquentQuery()
             ->where('merchant_id', $merchant->id ?? 0);
     }

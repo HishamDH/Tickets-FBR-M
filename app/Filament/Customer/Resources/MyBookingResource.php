@@ -44,17 +44,17 @@ class MyBookingResource extends Resource
                             ->relationship('service', 'title')
                             ->required()
                             ->disabled(),
-                        
+
                         Forms\Components\DateTimePicker::make('booking_date')
                             ->label('Booking Date')
                             ->required()
                             ->disabled(),
-                        
+
                         Forms\Components\TextInput::make('guest_count')
                             ->label('Number of Guests')
                             ->numeric()
                             ->disabled(),
-                        
+
                         Forms\Components\Textarea::make('special_requests')
                             ->label('Special Requests')
                             ->disabled(),
@@ -67,7 +67,7 @@ class MyBookingResource extends Resource
                             ->label('Base Amount')
                             ->prefix('$')
                             ->disabled(),
-                        
+
                         Forms\Components\TextInput::make('total_amount')
                             ->label('Total Amount')
                             ->prefix('$')
@@ -87,10 +87,10 @@ class MyBookingResource extends Resource
                                 'cancelled' => 'Cancelled',
                             ])
                             ->disabled(),
-                        
+
                         Forms\Components\TextInput::make('contact_phone')
                             ->label('Contact Phone'),
-                        
+
                         Forms\Components\TextInput::make('contact_email')
                             ->label('Contact Email')
                             ->email(),
@@ -107,36 +107,38 @@ class MyBookingResource extends Resource
                     ->label('Service')
                     ->sortable()
                     ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('service.merchant.business_name')
                     ->label('Business')
                     ->sortable()
                     ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('booking_date')
                     ->label('Date & Time')
                     ->dateTime()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('guest_count')
                     ->label('Guests')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Total')
                     ->money('USD')
                     ->sortable(),
-                
-                Tables\Columns\BadgeColumn::make('status')
+
+                Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'confirmed',
-                        'primary' => 'in_progress',
-                        'success' => 'completed',
-                        'danger' => 'cancelled',
-                    ]),
-                
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'confirmed' => 'success',
+                        'in_progress' => 'primary',
+                        'completed' => 'success',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    }),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Booked At')
                     ->dateTime()
@@ -152,7 +154,7 @@ class MyBookingResource extends Resource
                         'completed' => 'Completed',
                         'cancelled' => 'Cancelled',
                     ]),
-                
+
                 Tables\Filters\Filter::make('booking_date')
                     ->form([
                         Forms\Components\DatePicker::make('from')
@@ -179,15 +181,15 @@ class MyBookingResource extends Resource
                     ->form([
                         Forms\Components\TextInput::make('contact_phone')
                             ->label('Contact Phone'),
-                        
+
                         Forms\Components\TextInput::make('contact_email')
                             ->label('Contact Email')
                             ->email(),
-                        
+
                         Forms\Components\Textarea::make('special_requests')
                             ->label('Special Requests'),
                     ]),
-                
+
                 Tables\Actions\Action::make('cancel')
                     ->label('Cancel Booking')
                     ->icon('heroicon-o-x-mark')

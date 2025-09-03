@@ -251,7 +251,12 @@ class AnalyticsController extends Controller
             'config' => 'required|array',
         ]);
 
-        $dashboard = auth()->user()->customDashboards()->create([
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $dashboard = $user->customDashboards()->create([
             'name' => $request->name,
             'config' => $request->config,
         ]);
@@ -261,7 +266,12 @@ class AnalyticsController extends Controller
 
     public function loadDashboard($id)
     {
-        $dashboard = auth()->user()->customDashboards()->findOrFail($id);
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $dashboard = $user->customDashboards()->findOrFail($id);
 
         return response()->json(['dashboard' => $dashboard]);
     }

@@ -4,14 +4,13 @@ namespace App\Filament\Customer\Widgets;
 
 use App\Models\Offering;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 
 class UpcomingEventsWidget extends Widget
 {
     protected static string $view = 'filament.customer.widgets.upcoming-events';
 
-    protected int | string | array $columnSpan = [
+    protected int|string|array $columnSpan = [
         'default' => 1,
         'sm' => 2,
         'lg' => 2,
@@ -32,7 +31,7 @@ class UpcomingEventsWidget extends Widget
                     'id' => $event->id,
                     'title' => $event->title,
                     'description' => $event->description,
-                    'image' => $event->image ? asset('storage/' . $event->image) : asset('images/placeholder-event.jpg'),
+                    'image' => $event->image ? asset('storage/'.$event->image) : asset('images/placeholder-event.jpg'),
                     'start_date' => $event->start_date,
                     'end_date' => $event->end_date,
                     'location' => $event->location ?? 'Online Event',

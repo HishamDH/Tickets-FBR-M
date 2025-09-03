@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @mixin IdeHelperOrderItem
+ */
 class OrderItem extends Model
 {
     use HasFactory;
@@ -68,18 +71,21 @@ class OrderItem extends Model
     public function getBranchInfoAttribute(): ?array
     {
         $additionalData = $this->getAdditionalDataAttribute();
+
         return $additionalData['branch'] ?? null;
     }
 
     public function getTimeSlotAttribute(): ?array
     {
         $additionalData = $this->getAdditionalDataAttribute();
+
         return $additionalData['time_slot'] ?? null;
     }
 
     public function getSelectedOptionsAttribute(): array
     {
         $additionalData = $this->getAdditionalDataAttribute();
+
         return $additionalData['options'] ?? [];
     }
 }

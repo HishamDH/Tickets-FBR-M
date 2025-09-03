@@ -11,6 +11,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+
 class SettingResource extends Resource
 {
     protected static ?string $model = Setting::class;
@@ -21,20 +24,21 @@ class SettingResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('key')
+                TextInput::make('key')
                     ->label('المفتاح')
                     ->required()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                Forms\Components\Textarea::make('value')
+                Textarea::make('value')
                     ->label('القيمة')
                     ->required()
                     ->rows(3),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->label('الوصف')
                     ->rows(2),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {

@@ -13,7 +13,7 @@ class UserDashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Get user's orders with statistics
         $orders = Order::where('user_id', $user->id)
             ->with('items')
@@ -49,7 +49,7 @@ class UserDashboardController extends Controller
     public function orders(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = Order::where('user_id', $user->id)->with(['items']);
 
         // Filter by status
@@ -64,7 +64,7 @@ class UserDashboardController extends Controller
 
         // Search by order number
         if ($request->has('search') && $request->search) {
-            $query->where('order_number', 'like', '%' . $request->search . '%');
+            $query->where('order_number', 'like', '%'.$request->search.'%');
         }
 
         $orders = $query->latest()->paginate(10);
@@ -109,7 +109,7 @@ class UserDashboardController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        
+
         return view('dashboard.user.profile', compact('user'));
     }
 
@@ -120,7 +120,7 @@ class UserDashboardController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
             'date_of_birth' => 'nullable|date|before:today',
             'gender' => 'nullable|in:male,female,other',
@@ -135,7 +135,7 @@ class UserDashboardController extends Controller
         $user->update([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
-            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+            'name' => $validated['first_name'].' '.$validated['last_name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'date_of_birth' => $validated['date_of_birth'],
@@ -159,20 +159,20 @@ class UserDashboardController extends Controller
         }
 
         // Check if order can be cancelled
-        if (!$order->canBeCancelled()) {
+        if (! $order->canBeCancelled()) {
             return redirect()->back()
                 ->with('error', 'This order cannot be cancelled at this time.');
         }
 
         $validated = $request->validate([
-            'cancellation_reason' => 'required|string|max:500'
+            'cancellation_reason' => 'required|string|max:500',
         ]);
 
         // Update order status
         $order->update([
             'status' => 'cancelled',
-            'notes' => ($order->notes ? $order->notes . "\n\n" : '') . 
-                      "Cancelled by customer: " . $validated['cancellation_reason']
+            'notes' => ($order->notes ? $order->notes."\n\n" : '').
+                      'Cancelled by customer: '.$validated['cancellation_reason'],
         ]);
 
         // TODO: Process refund if payment was completed
@@ -195,12 +195,12 @@ class UserDashboardController extends Controller
         foreach ($recentOrders as $order) {
             $activities->push([
                 'type' => 'order',
-                'title' => 'Order #' . $order->order_number,
-                'description' => 'Order ' . strtolower($order->status_label),
+                'title' => 'Order #'.$order->order_number,
+                'description' => 'Order '.strtolower($order->status_label),
                 'date' => $order->updated_at,
                 'icon' => 'shopping-cart',
                 'color' => $order->status_color,
-                'url' => route('dashboard.user.orders.show', $order)
+                'url' => route('dashboard.user.orders.show', $order),
             ]);
         }
 

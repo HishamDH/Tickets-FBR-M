@@ -2,10 +2,8 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Booking;
 use App\Models\Service;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 
 class PopularServicesChart extends ChartWidget
 {

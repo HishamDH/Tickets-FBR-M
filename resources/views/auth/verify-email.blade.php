@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>تأكيد البريد الإلكتروني - شباك التذاكر</title>
+    <title>تأكيد البريد الإلكتروني - منصة التذاكر FBR-M</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,44 +12,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
     
     <style>
         body {
             font-family: 'Cairo', sans-serif;
         }
+        .gradient-bg {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+        .floating-shape {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-50">
     <div class="min-h-screen flex">
         <!-- Left Side - Content -->
-        <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24">
-            <div class="mx-auto w-full max-w-sm lg:w-96">
-                <!-- Logo -->
+        <div class="flex-1 flex flex-col justify-center py-8 px-4 sm:px-6 lg:px-16">
+            <div class="mx-auto w-full max-w-md">
+                <!-- Logo and Title -->
                 <div class="text-center mb-8">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                    <div class="flex items-center justify-center mb-6">
+                        <div class="w-14 h-14 bg-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <span class="mr-3 text-xl font-bold text-dark">شباك التذاكر</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-dark">تأكيد البريد الإلكتروني</h2>
-                    <p class="mt-2 text-gray">نحتاج للتأكد من صحة بريدك الإلكتروني</p>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">تأكيد البريد الإلكتروني</h1>
+                    <p class="text-gray-600">نحتاج للتأكد من صحة بريدك الإلكتروني</p>
                 </div>
 
                 <!-- Message -->
-                <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div class="flex">
-                        <svg class="flex-shrink-0 w-5 h-5 text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                <div class="mb-6 p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-cyan-600 mt-0.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                         </svg>
-                        <div class="mr-3">
-                            <h3 class="text-sm font-medium text-blue-800">تم إرسال رابط التأكيد</h3>
-                            <p class="mt-1 text-sm text-blue-700">
+                        <div>
+                            <h3 class="text-sm font-semibold text-cyan-800">تم إرسال رابط التأكيد</h3>
+                            <p class="mt-1 text-sm text-cyan-700">
                                 شكراً لك على التسجيل! قبل البدء، يمكنك تأكيد عنوان بريدك الإلكتروني بالنقر على الرابط الذي أرسلناه إليك للتو. إذا لم تتلق البريد الإلكتروني، فسنرسل لك بكل سرور رابطاً آخر.
                             </p>
                         </div>
@@ -58,8 +65,13 @@
 
                 <!-- Session Status -->
                 @if (session('status') == 'verification-link-sent')
-                    <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
-                        تم إرسال رابط تأكيد جديد إلى عنوان البريد الإلكتروني الذي قدمته أثناء التسجيل.
+                    <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            تم إرسال رابط تأكيد جديد إلى عنوان البريد الإلكتروني الذي قدمته أثناء التسجيل.
+                        </div>
                     </div>
                 @endif
 
@@ -67,7 +79,7 @@
                 <form method="POST" action="{{ route('verification.send') }}" class="space-y-6">
                     @csrf
                     
-                    <button type="submit" class="btn btn-primary w-full">
+                    <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
                         إعادة إرسال رابط التأكيد
                     </button>
                 </form>
@@ -77,21 +89,21 @@
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         
-                        <button type="submit" class="btn btn-ghost w-full">
+                        <button type="submit" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
                             تسجيل الخروج
                         </button>
                     </form>
                 </div>
 
                 <!-- Help Section -->
-                <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div class="flex">
-                        <svg class="flex-shrink-0 w-5 h-5 text-yellow-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <div class="mt-6 p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-cyan-600 mt-0.5 ml-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                         </svg>
-                        <div class="mr-3">
-                            <h3 class="text-sm font-medium text-yellow-800">لم تتلق البريد الإلكتروني؟</h3>
-                            <ul class="mt-1 text-sm text-yellow-700 space-y-1">
+                        <div>
+                            <h3 class="text-sm font-semibold text-cyan-800">لم تتلق البريد الإلكتروني؟</h3>
+                            <ul class="mt-1 text-sm text-cyan-700 space-y-1">
                                 <li>• تحقق من صندوق البريد المزعج</li>
                                 <li>• تأكد من صحة عنوان البريد الإلكتروني</li>
                                 <li>• انتظر بضع دقائق ثم حاول مرة أخرى</li>
@@ -102,25 +114,61 @@
 
                 <!-- Back to Home -->
                 <div class="mt-6 text-center">
-                    <a href="{{ route('home') }}" class="text-sm text-gray hover:text-dark">
-                        العودة للرئيسية
+                    <a href="{{ route('welcome') }}" class="text-cyan-600 hover:text-cyan-700 text-sm font-semibold">
+                        العودة للصفحة الرئيسية
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Right Side - Image -->
-        <div class="hidden lg:block relative w-0 flex-1">
-            <div class="absolute inset-0 h-full w-full bg-primary flex items-center justify-center">
-                <div class="text-center text-white">
-                    <svg class="w-32 h-32 mx-auto mb-8" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                    </svg>
-                    <h3 class="text-3xl font-bold mb-4">تأكيد البريد الإلكتروني</h3>
-                    <p class="text-xl text-primary-light max-w-md">
-                        خطوة مهمة لضمان أمان حسابك وتلقي التحديثات المهمة
-                    </p>
+        <!-- Right Side - Design -->
+        <div class="hidden lg:block relative w-96 xl:w-1/2">
+            <div class="absolute inset-0 gradient-bg">
+                <!-- Floating Shapes -->
+                <div class="absolute top-20 right-20 floating-shape">
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full"></div>
+                </div>
+                <div class="absolute top-40 right-1/3 floating-shape" style="animation-delay: -2s;">
+                    <div class="w-12 h-12 bg-white bg-opacity-15 rounded-full"></div>
+                </div>
+                <div class="absolute bottom-32 right-16 floating-shape" style="animation-delay: -4s;">
+                    <div class="w-20 h-20 bg-white bg-opacity-10 rounded-full"></div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-center text-white px-8">
+                        <div class="mb-8">
+                            <svg class="w-24 h-24 mx-auto mb-6 text-white opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-4xl font-bold mb-4">تأكيد البريد الإلكتروني</h2>
+                        <p class="text-xl text-cyan-100 mb-6 leading-relaxed">
+                            خطوة مهمة لضمان أمان حسابك وتلقي التحديثات المهمة
+                        </p>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-6 backdrop-blur-sm">
+                            <h3 class="font-semibold mb-4 text-lg">خطوات التأكيد</h3>
+                            <div class="grid grid-cols-1 gap-3 text-sm text-cyan-100">
+                                <div class="flex items-center text-right">
+                                    <span class="w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center text-xs font-bold ml-2">1</span>
+                                    <span>تحقق من بريدك الإلكتروني</span>
+                                </div>
+                                <div class="flex items-center text-right">
+                                    <span class="w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center text-xs font-bold ml-2">2</span>
+                                    <span>ابحث في البريد المزعج أيضاً</span>
+                                </div>
+                                <div class="flex items-center text-right">
+                                    <span class="w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center text-xs font-bold ml-2">3</span>
+                                    <span>اضغط على رابط التأكيد</span>
+                                </div>
+                                <div class="flex items-center text-right">
+                                    <span class="w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center text-xs font-bold ml-2">4</span>
+                                    <span>ابدأ استخدام حسابك</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

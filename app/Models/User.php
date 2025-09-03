@@ -14,6 +14,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @mixin IdeHelperUser
+ */
 class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
@@ -277,8 +280,8 @@ class User extends Authenticatable implements FilamentUser
     public function allConversations()
     {
         return Conversation::where('customer_id', $this->id)
-                          ->orWhere('merchant_id', $this->id)
-                          ->orWhere('support_agent_id', $this->id);
+            ->orWhere('merchant_id', $this->id)
+            ->orWhere('support_agent_id', $this->id);
     }
 
     /**
@@ -287,6 +290,22 @@ class User extends Authenticatable implements FilamentUser
     public function sentMessages(): HasMany
     {
         return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    /**
+     * Get the custom dashboards for the user.
+     */
+    public function customDashboards(): HasMany
+    {
+        return $this->hasMany(CustomDashboard::class);
+    }
+
+    /**
+     * Get the services for the user (if they are a merchant).
+     */
+    public function merchantServices(): HasMany
+    {
+        return $this->hasMany(Service::class, 'merchant_id');
     }
 
     // Accessor and Mutator methods for compatibility with checkout forms
@@ -314,7 +333,7 @@ class User extends Authenticatable implements FilamentUser
 
     private function updateFullName(): void
     {
-        $this->attributes['name'] = trim(($this->f_name ?? '') . ' ' . ($this->l_name ?? ''));
+        $this->attributes['name'] = trim(($this->f_name ?? '').' '.($this->l_name ?? ''));
     }
 
     public function getFullAddressAttribute(): string
@@ -324,7 +343,7 @@ class User extends Authenticatable implements FilamentUser
             $this->city,
             $this->state,
             $this->postal_code,
-            $this->country
+            $this->country,
         ]);
 
         return implode(', ', $parts);

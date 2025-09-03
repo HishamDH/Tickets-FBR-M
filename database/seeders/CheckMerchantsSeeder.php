@@ -10,14 +10,15 @@ class CheckMerchantsSeeder extends Seeder
     public function run(): void
     {
         $this->command->info('Current merchants:');
-        
+
         $merchants = Merchant::with('user')->get();
-        
+
         if ($merchants->isEmpty()) {
             $this->command->info('No merchants found');
+
             return;
         }
-        
+
         foreach ($merchants as $merchant) {
             $this->command->info(sprintf(
                 'ID: %d | Business: %s | Status: %s | User: %s',
@@ -27,7 +28,7 @@ class CheckMerchantsSeeder extends Seeder
                 $merchant->user->email
             ));
         }
-        
-        $this->command->info('Total merchants: ' . $merchants->count());
+
+        $this->command->info('Total merchants: '.$merchants->count());
     }
 }

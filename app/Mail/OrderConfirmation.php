@@ -31,7 +31,7 @@ class OrderConfirmation extends Mailable implements ShouldQueue
     {
         return new Envelope(
             to: [$this->order->billing_details['email']],
-            subject: 'Order Confirmation #' . $this->order->order_number,
+            subject: 'Order Confirmation #'.$this->order->order_number,
         );
     }
 

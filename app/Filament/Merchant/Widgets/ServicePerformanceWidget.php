@@ -2,7 +2,6 @@
 
 namespace App\Filament\Merchant\Widgets;
 
-use App\Models\Booking;
 use App\Models\Offering;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -13,7 +12,7 @@ class ServicePerformanceWidget extends BaseWidget
 {
     protected static ?string $heading = 'Top Performing Services';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
@@ -35,36 +34,38 @@ class ServicePerformanceWidget extends BaseWidget
                     ->label('Image')
                     ->circular()
                     ->defaultImageUrl(url('/images/placeholder-service.jpg')),
-                    
+
                 Tables\Columns\TextColumn::make('title')
                     ->label('Service Name')
                     ->searchable()
                     ->sortable()
                     ->limit(40)
                     ->wrap(),
-                    
-                Tables\Columns\BadgeColumn::make('type')
+
+                Tables\Columns\TextColumn::make('type')
                     ->label('Type')
-                    ->colors([
-                        'primary' => 'service',
-                        'success' => 'event',
-                    ]),
-                    
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'service' => 'primary',
+                        'event' => 'success',
+                        default => 'gray',
+                    }),
+
                 Tables\Columns\TextColumn::make('bookings_count')
                     ->label('Bookings')
                     ->sortable()
                     ->badge()
                     ->color('info'),
-                    
+
                 Tables\Columns\TextColumn::make('bookings_sum_total_amount')
                     ->label('Revenue')
                     ->money('USD')
                     ->sortable()
                     ->color('success'),
-                    
+
                 Tables\Columns\TextColumn::make('reviews_avg_rating')
                     ->label('Rating')
-                    ->formatStateUsing(fn (string $state): string => number_format($state, 1) . '/5')
+                    ->formatStateUsing(fn (string $state): string => number_format($state, 1).'/5')
                     ->badge()
                     ->color(fn (string $state): string => match (true) {
                         $state >= 4.5 => 'success',
@@ -72,7 +73,7 @@ class ServicePerformanceWidget extends BaseWidget
                         $state >= 3.5 => 'warning',
                         default => 'danger',
                     }),
-                    
+
                 Tables\Columns\TextColumn::make('available_quantity')
                     ->label('Available')
                     ->badge()
@@ -81,7 +82,7 @@ class ServicePerformanceWidget extends BaseWidget
                         $state > 0 => 'warning',
                         default => 'danger',
                     }),
-                    
+
                 Tables\Columns\TextColumn::make('price')
                     ->label('Price')
                     ->money('USD')
@@ -91,11 +92,11 @@ class ServicePerformanceWidget extends BaseWidget
                 Tables\Actions\ViewAction::make()
                     ->url(fn (Offering $record): string => route('filament.merchant.resources.offerings.view', $record))
                     ->openUrlInNewTab(false),
-                    
+
                 Tables\Actions\EditAction::make()
                     ->url(fn (Offering $record): string => route('filament.merchant.resources.offerings.edit', $record))
                     ->openUrlInNewTab(false),
-                    
+
                 Tables\Actions\Action::make('viewPublic')
                     ->label('View Public')
                     ->icon('heroicon-o-eye')

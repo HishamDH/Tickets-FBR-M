@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +26,14 @@ class PartnerLoginController extends Controller
     {
         // Validate the user has partner role
         $credentials = $request->validated();
-        
+
         if (Auth::guard('partner')->attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::guard('partner')->user();
-            
+
             // Check if user has partner role
             if ($user->user_type !== 'partner') {
                 Auth::guard('partner')->logout();
+
                 return back()->withErrors([
                     'email' => 'هذه البيانات لا تتطابق مع سجلاتنا للشركاء.',
                 ]);
@@ -42,7 +42,7 @@ class PartnerLoginController extends Controller
             $request->session()->regenerate();
 
             // Check if partner profile exists
-            if (!$user->partner) {
+            if (! $user->partner) {
                 return redirect()->route('partner.setup')
                     ->with('info', 'يرجى إكمال إعداد ملف الشريك أولاً');
             }

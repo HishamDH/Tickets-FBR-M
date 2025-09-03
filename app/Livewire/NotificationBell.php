@@ -10,8 +10,11 @@ use Livewire\Component;
 class NotificationBell extends Component
 {
     public $unreadCount = 0;
+
     public $notifications = [];
+
     public $showDropdown = false;
+
     public $maxNotifications = 5;
 
     public function mount()
@@ -22,7 +25,7 @@ class NotificationBell extends Component
 
     public function loadNotifications()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
@@ -48,8 +51,9 @@ class NotificationBell extends Component
 
     public function updateUnreadCount()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             $this->unreadCount = 0;
+
             return;
         }
 
@@ -60,8 +64,8 @@ class NotificationBell extends Component
 
     public function toggleDropdown()
     {
-        $this->showDropdown = !$this->showDropdown;
-        
+        $this->showDropdown = ! $this->showDropdown;
+
         if ($this->showDropdown) {
             $this->loadNotifications();
         }
@@ -73,7 +77,7 @@ class NotificationBell extends Component
             ->where('user_id', Auth::id())
             ->first();
 
-        if ($notification && !$notification->is_read) {
+        if ($notification && ! $notification->is_read) {
             $notification->update(['is_read' => true]);
             $this->updateUnreadCount();
             $this->loadNotifications();
@@ -88,7 +92,7 @@ class NotificationBell extends Component
 
         $this->updateUnreadCount();
         $this->loadNotifications();
-        
+
         $this->dispatch('notifications-marked-read');
     }
 
@@ -116,7 +120,7 @@ class NotificationBell extends Component
         if (Auth::check() && Auth::id() == $data['userId']) {
             $this->updateUnreadCount();
             $this->loadNotifications();
-            
+
             // Show browser notification if supported
             $this->dispatch('show-browser-notification', [
                 'title' => $data['title'] ?? 'New Notification',
@@ -135,7 +139,7 @@ class NotificationBell extends Component
 
     private function getNotificationIcon($type)
     {
-        return match($type) {
+        return match ($type) {
             'booking' => 'heroicon-o-calendar-days',
             'payment' => 'heroicon-o-currency-dollar',
             'message' => 'heroicon-o-chat-bubble-left',
@@ -151,7 +155,7 @@ class NotificationBell extends Component
 
     private function getNotificationColor($type)
     {
-        return match($type) {
+        return match ($type) {
             'booking' => 'blue',
             'payment' => 'green',
             'message' => 'indigo',

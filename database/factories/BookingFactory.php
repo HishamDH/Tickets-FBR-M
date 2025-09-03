@@ -71,6 +71,8 @@ class BookingFactory extends Factory
         ];
 
         return [
+            'booking_number' => 'TKT-' . $this->faker->unique()->numberBetween(100000, 999999),
+            'qr_code' => $this->faker->unique()->uuid(),
             'customer_id' => $this->faker->boolean(70) ? User::factory()->customer() : null,
             'service_id' => Service::factory(),
             'merchant_id' => function (array $attributes) {

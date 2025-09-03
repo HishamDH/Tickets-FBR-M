@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperSupport
+ */
 class Support extends Model
 {
     use HasFactory;
@@ -14,7 +17,7 @@ class Support extends Model
         'answer',
         'category',
         'is_active',
-        'sort_order'
+        'sort_order',
     ];
 
     protected $casts = [

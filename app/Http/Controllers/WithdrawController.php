@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MerchantWallet;
 use App\Models\MerchantWithdraw;
 use App\Models\WithdrawLog;
-use App\Models\MerchantWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +25,7 @@ class WithdrawController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         $withdrawals = MerchantWithdraw::where('merchant_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(15);
@@ -44,7 +44,7 @@ class WithdrawController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         $wallet = MerchantWallet::firstOrCreate(
             ['merchant_id' => $user->id],
             ['balance' => 0, 'pending_balance' => 0]
@@ -79,7 +79,7 @@ class WithdrawController extends Controller
             $user = Auth::user();
             $wallet = MerchantWallet::where('merchant_id', $user->id)->first();
 
-            if (!$wallet || $wallet->balance < $request->amount) {
+            if (! $wallet || $wallet->balance < $request->amount) {
                 return back()->with('error', 'Insufficient balance for withdrawal');
             }
 
@@ -132,8 +132,8 @@ class WithdrawController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Withdrawal request error: ' . $e->getMessage());
-            
+            Log::error('Withdrawal request error: '.$e->getMessage());
+
             return back()->with('error', 'Error processing withdrawal request');
         }
     }
@@ -205,8 +205,8 @@ class WithdrawController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Withdrawal cancellation error: ' . $e->getMessage());
-            
+            Log::error('Withdrawal cancellation error: '.$e->getMessage());
+
             return back()->with('error', 'Error cancelling withdrawal request');
         }
     }

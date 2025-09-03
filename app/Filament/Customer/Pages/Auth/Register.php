@@ -2,7 +2,6 @@
 
 namespace App\Filament\Customer\Pages\Auth;
 
-use App\Models\User;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 class Register extends BaseRegister
 {
     protected static string $view = 'filament-panels::pages.auth.register';
-    
+
     public function form(Form $form): Form
     {
         return $form
@@ -55,10 +54,10 @@ class Register extends BaseRegister
     protected function getUserData(): array
     {
         $data = $this->form->getState();
-        
+
         // Auto-generate name from first and last name if not provided
         if (empty($data['name'])) {
-            $data['name'] = trim($data['f_name'] . ' ' . $data['l_name']);
+            $data['name'] = trim($data['f_name'].' '.$data['l_name']);
         }
 
         return [

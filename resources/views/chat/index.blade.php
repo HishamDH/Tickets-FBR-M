@@ -289,11 +289,17 @@
                                     @endif
                                     
                                     <!-- Type Icon -->
-                                    @if($conversation->type === 'customer_support')
-                                        <span class="text-blue-500 text-sm">🎧</span>
-                                    @elseif($conversation->type === 'merchant_customer')
-                                        <span class="text-green-500 text-sm">🏪</span>
-                                    @endif
+                                    <span @class([
+                                        'text-sm',
+                                        'text-blue-500' => $conversation->type === 'customer_support',
+                                        'text-green-500' => $conversation->type === 'merchant_customer'
+                                    ])>
+                                        @if($conversation->type === 'customer_support')
+                                            🎧
+                                        @elseif($conversation->type === 'merchant_customer')
+                                            🏪
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
                             
@@ -361,7 +367,7 @@
             </div>
 
             <!-- Active Chat (hidden by default) -->
-            <div id="active-chat" class="flex-1 flex flex-col hidden">
+            <div id="active-chat" class="flex-1 hidden">
                 
                 <!-- Chat Header -->
                 <div class="chat-header flex items-center justify-between">
@@ -446,7 +452,7 @@
 </div>
 
 <!-- New Message Modal -->
-<div id="new-message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="new-message-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
         <h3 class="text-xl font-bold text-gray-800 mb-4">محادثة جديدة</h3>
         
@@ -507,7 +513,9 @@ function selectConversation(conversationId) {
     
     // Show chat area
     document.getElementById('chat-placeholder').classList.add('hidden');
-    document.getElementById('active-chat').classList.remove('hidden');
+    const activeChat = document.getElementById('active-chat');
+    activeChat.classList.remove('hidden');
+    activeChat.classList.add('flex', 'flex-col');
     document.getElementById('current-conversation-id').value = conversationId;
     
     // Load messages
@@ -671,11 +679,15 @@ function handleKeyPress(event) {
 }
 
 function showNewMessageModal() {
-    document.getElementById('new-message-modal').classList.remove('hidden');
+    const modal = document.getElementById('new-message-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 }
 
 function hideNewMessageModal() {
-    document.getElementById('new-message-modal').classList.add('hidden');
+    const modal = document.getElementById('new-message-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
     document.getElementById('new-conversation-form').reset();
 }
 

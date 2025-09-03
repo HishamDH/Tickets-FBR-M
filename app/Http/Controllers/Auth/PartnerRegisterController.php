@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Partner;
-use App\Providers\RouteServiceProvider;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,7 +50,7 @@ class PartnerRegisterController extends Controller
         ]);
 
         // Generate unique partner code
-        $partnerCode = 'P' . str_pad($user->id, 6, '0', STR_PAD_LEFT);
+        $partnerCode = 'P'.str_pad($user->id, 6, '0', STR_PAD_LEFT);
 
         // Create partner profile
         Partner::create([

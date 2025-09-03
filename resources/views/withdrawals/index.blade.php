@@ -228,12 +228,14 @@
                         <div class="flex-1">
                             <div class="flex items-start space-x-4 space-x-reverse">
                                 <!-- Status Icon -->
-                                <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0
-                                    @if($withdrawal->status === 'pending') bg-yellow-100 
-                                    @elseif($withdrawal->status === 'approved') bg-green-100
-                                    @elseif($withdrawal->status === 'completed') bg-blue-100
-                                    @elseif($withdrawal->status === 'rejected') bg-red-100
-                                    @else bg-gray-100 @endif">
+                                <div @class([
+                                    'w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0',
+                                    'bg-yellow-100' => $withdrawal->status === 'pending',
+                                    'bg-green-100' => $withdrawal->status === 'approved',
+                                    'bg-blue-100' => $withdrawal->status === 'completed',
+                                    'bg-red-100' => $withdrawal->status === 'rejected',
+                                    'bg-gray-100' => !in_array($withdrawal->status, ['pending', 'approved', 'completed', 'rejected'])
+                                ])>
                                     <span class="text-xl">
                                         @if($withdrawal->status === 'pending') ⏳
                                         @elseif($withdrawal->status === 'approved') ✅

@@ -103,18 +103,22 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                                @if($content['type'] === 'page') bg-blue-100 text-blue-800
-                                                @elseif($content['type'] === 'article') bg-green-100 text-green-800
-                                                @elseif($content['type'] === 'faq') bg-purple-100 text-purple-800
-                                                @else bg-gray-100 text-gray-800 @endif">
+                                            <span @class([
+                                                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                                                'bg-blue-100 text-blue-800' => $content['type'] === 'page',
+                                                'bg-green-100 text-green-800' => $content['type'] === 'article',
+                                                'bg-purple-100 text-purple-800' => $content['type'] === 'faq',
+                                                'bg-gray-100 text-gray-800' => !in_array($content['type'], ['page', 'article', 'faq'])
+                                            ])>
                                                 {{ ucfirst($content['type']) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                                @if($content['status'] === 'published') bg-green-100 text-green-800
-                                                @else bg-yellow-100 text-yellow-800 @endif">
+                                            <span @class([
+                                                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                                                'bg-green-100 text-green-800' => $content['status'] === 'published',
+                                                'bg-yellow-100 text-yellow-800' => $content['status'] !== 'published'
+                                            ])>
                                                 {{ $content['status'] === 'published' ? 'منشور' : 'مسودة' }}
                                             </span>
                                         </td>

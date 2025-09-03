@@ -8,13 +8,13 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class PaymentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'payments';
 
     protected static ?string $title = 'Payments';
+
     protected static ?string $icon = 'heroicon-o-credit-card';
 
     public function form(Form $form): Form
@@ -24,7 +24,7 @@ class PaymentsRelationManager extends RelationManager
                 // Read-only form for viewing payment details
                 Forms\Components\TextInput::make('transaction_id')
                     ->disabled(),
-                
+
                 Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',
@@ -36,16 +36,16 @@ class PaymentsRelationManager extends RelationManager
                         'cancelled' => 'Cancelled',
                     ])
                     ->disabled(),
-                
+
                 Forms\Components\TextInput::make('amount')
                     ->numeric()
                     ->prefix('$')
                     ->disabled(),
-                
+
                 Forms\Components\TextInput::make('gateway_transaction_id')
                     ->label('Gateway Transaction ID')
                     ->disabled(),
-                
+
                 Forms\Components\Textarea::make('response_data')
                     ->json()
                     ->disabled(),
@@ -61,46 +61,48 @@ class PaymentsRelationManager extends RelationManager
                     ->searchable()
                     ->sortable()
                     ->copyable(),
-                
+
                 Tables\Columns\TextColumn::make('booking.reference_number')
                     ->label('Booking')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('amount')
                     ->money('USD')
                     ->sortable(),
-                
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'primary' => 'processing',
-                        'success' => 'completed',
-                        'danger' => 'failed',
-                        'gray' => 'refunded',
-                        'info' => 'partially_refunded',
-                        'secondary' => 'cancelled',
-                    ]),
-                
+
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'processing' => 'primary',
+                        'completed' => 'success',
+                        'failed' => 'danger',
+                        'refunded' => 'gray',
+                        'partially_refunded' => 'info',
+                        'cancelled' => 'secondary',
+                        default => 'gray',
+                    }),
+
                 Tables\Columns\TextColumn::make('gateway_transaction_id')
                     ->label('Gateway ID')
                     ->searchable()
                     ->copyable()
                     ->limit(20),
-                
+
                 Tables\Columns\TextColumn::make('gateway_fee')
                     ->money('USD')
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('refunded_amount')
                     ->money('USD')
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('processed_at')
                     ->dateTime()
                     ->sortable()
@@ -117,7 +119,7 @@ class PaymentsRelationManager extends RelationManager
                         'partially_refunded' => 'Partially Refunded',
                         'cancelled' => 'Cancelled',
                     ]),
-                
+
                 Tables\Filters\Filter::make('amount')
                     ->form([
                         Forms\Components\TextInput::make('amount_from')
@@ -138,7 +140,7 @@ class PaymentsRelationManager extends RelationManager
                                 fn (Builder $query, $amount): Builder => $query->where('amount', '<=', $amount),
                             );
                     }),
-                
+
                 Tables\Filters\Filter::make('date_range')
                     ->form([
                         Forms\Components\DatePicker::make('created_from'),
@@ -158,7 +160,7 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                
+
                 Tables\Actions\Action::make('view_details')
                     ->label('Gateway Details')
                     ->icon('heroicon-o-eye')
@@ -168,13 +170,12 @@ class PaymentsRelationManager extends RelationManager
                             'payment' => $record,
                         ]);
                     }),
-                
+
                 Tables\Actions\Action::make('refund')
                     ->label('Process Refund')
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->color('warning')
-                    ->visible(fn ($record): bool => 
-                        $record->status === 'completed' && 
+                    ->visible(fn ($record): bool => $record->status === 'completed' &&
                         $record->paymentGateway->supports_refund &&
                         $record->refunded_amount < $record->amount
                     )
@@ -191,12 +192,12 @@ class PaymentsRelationManager extends RelationManager
                                     return function (string $attribute, $value, \Closure $fail) use ($record) {
                                         $maxRefund = $record->amount - $record->refunded_amount;
                                         if ($value > $maxRefund) {
-                                            $fail("Refund amount cannot exceed $" . number_format($maxRefund, 2));
+                                            $fail('Refund amount cannot exceed $'.number_format($maxRefund, 2));
                                         }
                                     };
                                 },
                             ]),
-                        
+
                         Forms\Components\Textarea::make('refund_reason')
                             ->label('Refund Reason')
                             ->required(),
@@ -204,7 +205,7 @@ class PaymentsRelationManager extends RelationManager
                     ->action(function ($record, array $data) {
                         try {
                             $record->processRefund($data['refund_amount'], $data['refund_reason']);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->title('Refund Processed')
                                 ->success()
@@ -228,7 +229,7 @@ class PaymentsRelationManager extends RelationManager
                             // Export functionality
                             return response()->streamDownload(function () use ($records) {
                                 $csv = fopen('php://output', 'w');
-                                
+
                                 // Headers
                                 fputcsv($csv, [
                                     'Transaction ID',
@@ -241,7 +242,7 @@ class PaymentsRelationManager extends RelationManager
                                     'Created At',
                                     'Processed At',
                                 ]);
-                                
+
                                 // Data
                                 foreach ($records as $payment) {
                                     fputcsv($csv, [
@@ -256,9 +257,9 @@ class PaymentsRelationManager extends RelationManager
                                         $payment->processed_at,
                                     ]);
                                 }
-                                
+
                                 fclose($csv);
-                            }, 'payments-export-' . now()->format('Y-m-d-H-i-s') . '.csv');
+                            }, 'payments-export-'.now()->format('Y-m-d-H-i-s').'.csv');
                         }),
                 ]),
             ])

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Offering;
 use App\Models\Service;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -20,12 +20,12 @@ class CartController extends Controller
     {
         $userId = Auth::id();
         $sessionId = $request->session()->getId();
-        
+
         $cartData = Cart::getCartTotal($userId, $sessionId);
-        
+
         return response()->json([
             'success' => true,
-            'data' => $cartData
+            'data' => $cartData,
         ]);
     }
 
@@ -36,18 +36,18 @@ class CartController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'item_id' => 'required|integer',
-            'item_type' => 'required|string|in:' . Offering::class . ',' . Service::class,
+            'item_type' => 'required|string|in:'.Offering::class.','.Service::class,
             'quantity' => 'integer|min:1|max:50',
             'branch_id' => 'nullable|integer',
             'time_slot' => 'nullable|array',
-            'options' => 'nullable|array'
+            'options' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -60,18 +60,18 @@ class CartController extends Controller
 
             // Validate that the item exists and is available
             $item = $itemType::find($itemId);
-            if (!$item) {
+            if (! $item) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Item not found'
+                    'message' => 'Item not found',
                 ], 404);
             }
 
             // Check availability for services/offerings
-            if (method_exists($item, 'isAvailable') && !$item->isAvailable($quantity)) {
+            if (method_exists($item, 'isAvailable') && ! $item->isAvailable($quantity)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Item is not available or insufficient quantity'
+                    'message' => 'Item is not available or insufficient quantity',
                 ], 400);
             }
 
@@ -101,16 +101,16 @@ class CartController extends Controller
                 'message' => 'Item added to cart successfully',
                 'data' => [
                     'cart_item' => $cartItem,
-                    'cart_totals' => $cartData
-                ]
+                    'cart_totals' => $cartData,
+                ],
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Cart add error: ' . $e->getMessage());
-            
+            Log::error('Cart add error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add item to cart'
+                'message' => 'Failed to add item to cart',
             ], 500);
         }
     }
@@ -121,21 +121,21 @@ class CartController extends Controller
     public function update(Request $request, $cartItemId): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'quantity' => 'required|integer|min:1|max:50'
+            'quantity' => 'required|integer|min:1|max:50',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $userId = Auth::id();
             $sessionId = $request->session()->getId();
-            
+
             // Find cart item
             $cartItem = Cart::where('id', $cartItemId)
                 ->where(function ($query) use ($userId, $sessionId) {
@@ -147,20 +147,20 @@ class CartController extends Controller
                 })
                 ->first();
 
-            if (!$cartItem) {
+            if (! $cartItem) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Cart item not found'
+                    'message' => 'Cart item not found',
                 ], 404);
             }
 
             $quantity = $request->input('quantity');
 
             // Check availability
-            if ($cartItem->item && method_exists($cartItem->item, 'isAvailable') && !$cartItem->item->isAvailable($quantity)) {
+            if ($cartItem->item && method_exists($cartItem->item, 'isAvailable') && ! $cartItem->item->isAvailable($quantity)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Requested quantity is not available'
+                    'message' => 'Requested quantity is not available',
                 ], 400);
             }
 
@@ -173,15 +173,15 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Cart updated successfully',
-                'data' => $cartData
+                'data' => $cartData,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Cart update error: ' . $e->getMessage());
-            
+            Log::error('Cart update error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update cart'
+                'message' => 'Failed to update cart',
             ], 500);
         }
     }
@@ -194,7 +194,7 @@ class CartController extends Controller
         try {
             $userId = Auth::id();
             $sessionId = $request->session()->getId();
-            
+
             // Find and delete cart item
             $deleted = Cart::where('id', $cartItemId)
                 ->where(function ($query) use ($userId, $sessionId) {
@@ -206,10 +206,10 @@ class CartController extends Controller
                 })
                 ->delete();
 
-            if (!$deleted) {
+            if (! $deleted) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Cart item not found'
+                    'message' => 'Cart item not found',
                 ], 404);
             }
 
@@ -219,15 +219,15 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Item removed from cart',
-                'data' => $cartData
+                'data' => $cartData,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Cart delete error: ' . $e->getMessage());
-            
+            Log::error('Cart delete error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to remove item from cart'
+                'message' => 'Failed to remove item from cart',
             ], 500);
         }
     }
@@ -240,7 +240,7 @@ class CartController extends Controller
         try {
             $userId = Auth::id();
             $sessionId = $request->session()->getId();
-            
+
             Cart::clearCart($userId, $sessionId);
 
             return response()->json([
@@ -251,16 +251,16 @@ class CartController extends Controller
                     'subtotal' => 0,
                     'discount' => 0,
                     'total' => 0,
-                    'count' => 0
-                ]
+                    'count' => 0,
+                ],
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Cart clear error: ' . $e->getMessage());
-            
+            Log::error('Cart clear error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to clear cart'
+                'message' => 'Failed to clear cart',
             ], 500);
         }
     }
@@ -272,12 +272,12 @@ class CartController extends Controller
     {
         $userId = Auth::id();
         $sessionId = $request->session()->getId();
-        
+
         $cartData = Cart::getCartTotal($userId, $sessionId);
-        
+
         return response()->json([
             'success' => true,
-            'count' => $cartData['count']
+            'count' => $cartData['count'],
         ]);
     }
 
@@ -286,17 +286,17 @@ class CartController extends Controller
      */
     public function merge(Request $request): JsonResponse
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json([
                 'success' => false,
-                'message' => 'User must be authenticated'
+                'message' => 'User must be authenticated',
             ], 401);
         }
 
         try {
             $userId = Auth::id();
             $sessionId = $request->session()->getId();
-            
+
             Cart::mergeGuestCart($sessionId, $userId);
 
             $cartData = Cart::getCartTotal($userId, $sessionId);
@@ -304,15 +304,15 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Cart merged successfully',
-                'data' => $cartData
+                'data' => $cartData,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Cart merge error: ' . $e->getMessage());
-            
+            Log::error('Cart merge error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to merge cart'
+                'message' => 'Failed to merge cart',
             ], 500);
         }
     }
@@ -325,7 +325,7 @@ class CartController extends Controller
         try {
             $userId = Auth::id();
             $sessionId = $request->session()->getId();
-            
+
             $cartData = Cart::getCartTotal($userId, $sessionId);
             $issues = [];
 
@@ -334,7 +334,7 @@ class CartController extends Controller
             }
 
             foreach ($cartData['items'] as $cartItem) {
-                if (!$cartItem->isAvailable()) {
+                if (! $cartItem->isAvailable()) {
                     $issues[] = "Item '{$cartItem->getItemName()}' is no longer available";
                 }
             }
@@ -343,15 +343,15 @@ class CartController extends Controller
                 'success' => empty($issues),
                 'valid' => empty($issues),
                 'issues' => $issues,
-                'data' => $cartData
+                'data' => $cartData,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Cart validation error: ' . $e->getMessage());
-            
+            Log::error('Cart validation error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to validate cart'
+                'message' => 'Failed to validate cart',
             ], 500);
         }
     }

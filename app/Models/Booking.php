@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
+/**
+ * @mixin IdeHelperBooking
+ */
 class Booking extends Model
 {
     use HasFactory;
@@ -85,7 +88,7 @@ class Booking extends Model
      */
     public function merchant(): BelongsTo
     {
-        return $this->belongsTo(Merchant::class);
+        return $this->belongsTo(User::class, 'merchant_id');
     }
 
     /**

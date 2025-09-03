@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Category;
 use App\Models\Merchant;
 use App\Models\Offering;
-use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class QuickSampleDataSeeder extends Seeder
