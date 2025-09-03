@@ -1,14 +1,7 @@
 <div class="max-w-4xl mx-auto" x-data="{ 
     currentStep: @entangle('step'),
     maxSteps: {{ $maxSteps }},
-    showSuccess                        <input type="number" 
-                               wire:model="guestCount" 
-                               min="1" max="20"
-                               @class([
-                                   'flex-1 px-4 py-3 border-2 text-center focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
-                                   'border-gray-200' => !$errors->has('guestCount'),
-                                   'border-red-500' => $errors->has('guestCount')
-                               ])>ation: false
+    showSuccessAnimation: false
 }" 
 x-init="
     $watch('currentStep', value => {
@@ -132,7 +125,11 @@ x-init="
                         <input type="number" 
                                wire:model="guestCount"
                                min="1" max="1000"
-                               class="flex-1 px-4 py-3 border-2 border-gray-200 text-center focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all @error('guestCount') border-red-500 @enderror">
+                               @class([
+                                   'flex-1 px-4 py-3 border-2 text-center focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all',
+                                   'border-gray-200' => !$errors->has('guestCount'),
+                                   'border-red-500' => $errors->has('guestCount')
+                               ])>
                         <button type="button" 
                                 wire:click="$set('guestCount', {{ '$guestCount + 1' }})"
                                 class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-r-xl flex items-center justify-center transition-colors">
