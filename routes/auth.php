@@ -9,19 +9,17 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\MerchantLoginController;
+use App\Http\Controllers\Auth\MerchantRegisterController;
+use App\Http\Controllers\Auth\PartnerLoginController;
+use App\Http\Controllers\Auth\PartnerRegisterController;
+use App\Http\Controllers\Auth\CustomerLoginController;
+use App\Http\Controllers\Auth\CustomerRegisterController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
-
-    Route::post('register', [RegisteredUserController::class, 'store']);
-
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
-
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
-
+    // Removed general register/login routes - use specific role routes instead
+    
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
@@ -53,7 +51,115 @@ Route::middleware('auth')->group(function () {
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
-
+    
+    // Logout for all roles
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+});
+
+// Customer Authentication Routes
+Route::prefix('customer')->name('customer.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('register', [CustomerRegisterController::class, 'create'])
+            ->name('register');
+        
+        Route::post('register', [CustomerRegisterController::class, 'store']);
+        
+        Route::get('login', [CustomerLoginController::class, 'create'])
+            ->name('login');
+        
+        Route::post('login', [CustomerLoginController::class, 'store']);
+    });
+    
+    Route::middleware('auth:customer')->group(function () {
+        Route::post('logout', [CustomerLoginController::class, 'destroy'])
+            ->name('logout');
+    });
+});
+
+// Merchant Authentication Routes
+Route::prefix('merchant')->name('merchant.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('register', [MerchantRegisterController::class, 'create'])
+            ->name('register');
+        
+        Route::post('register', [MerchantRegisterController::class, 'store']);
+        
+        Route::get('login', [MerchantLoginController::class, 'create'])
+            ->name('login');
+        
+        Route::post('login', [MerchantLoginController::class, 'store']);
+    });
+    
+    Route::middleware('auth:merchant')->group(function () {
+        Route::post('logout', [MerchantLoginController::class, 'destroy'])
+            ->name('logout');
+    });
+    
+    // Status page for all authenticated merchants
+    Route::middleware('auth')->group(function () {
+        Route::get('status', function () {
+            return view('auth.merchant.status');
+        })->name('status');
+    });
+});
+
+// Filament Merchant Auth Routes for compatibility
+Route::prefix('merchant/auth')->name('filament.merchant.auth.')->group(function () {
+    Route::get('login', [MerchantLoginController::class, 'create'])
+        ->name('login');
+    
+    Route::post('login', [MerchantLoginController::class, 'store']);
+    
+    Route::get('register', [MerchantRegisterController::class, 'create'])
+        ->name('register');
+    
+    Route::post('register', [MerchantRegisterController::class, 'store']);
+});
+
+// Partner Authentication Routes
+Route::prefix('partner')->name('partner.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('register', [PartnerRegisterController::class, 'create'])
+            ->name('register');
+        
+        Route::post('register', [PartnerRegisterController::class, 'store']);
+        
+        Route::get('login', [PartnerLoginController::class, 'create'])
+            ->name('login');
+        
+        Route::post('login', [PartnerLoginController::class, 'store']);
+    });
+    
+    Route::middleware('auth:partner')->group(function () {
+        Route::post('logout', [PartnerLoginController::class, 'destroy'])
+            ->name('logout');
+    });
+    
+    // Status page for all authenticated partners
+    Route::middleware('auth')->group(function () {
+        Route::get('status', function () {
+            return view('auth.partner.status');
+        })->name('status');
+    });
+});
+
+// Customer Authentication Routes
+Route::prefix('customer')->name('customer.')->group(function () {
+    Route::middleware('guest:customer')->group(function () {
+        Route::get('register', [CustomerRegisterController::class, 'create'])
+            ->name('register');
+        
+        Route::post('register', [CustomerRegisterController::class, 'store']);
+        
+        Route::get('login', [CustomerLoginController::class, 'create'])
+            ->name('login');
+        
+        Route::post('login', [CustomerLoginController::class, 'store']);
+    });
+    
+    Route::middleware('auth:customer')->group(function () {
+        Route::post('logout', [CustomerLoginController::class, 'destroy'])
+            ->name('logout');
+    });
 });

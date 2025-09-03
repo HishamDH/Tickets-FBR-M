@@ -41,7 +41,29 @@ class MerchantLoginController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended('/merchant/dashboard');
+            // Check merchant status and redirect accordingly
+            if ($user->merchant_status === 'pending') {
+                return redirect()->route('merchant.status')
+                    ->with('info', 'حسابك قيد المراجعة، يرجى انتظار الموافقة من الإدارة');
+            }
+
+            if ($user->merchant_status === 'rejected') {
+                return redirect()->route('merchant.status')
+                    ->with('error', 'تم رفض طلب التسجيل، يرجى مراجعة البيانات');
+            }
+
+            if ($user->merchant_status === 'suspended') {
+                return redirect()->route('merchant.status')
+                    ->with('error', 'تم تعليق حسابك، يرجى التواصل مع الإدارة');
+            }
+
+            // If approved, redirect to dashboard
+            if ($user->merchant_status === 'approved') {
+                return redirect()->intended('/merchant/dashboard');
+            }
+
+            // For any other status, go to status page
+            return redirect()->route('merchant.status');
         }
 
         return back()->withErrors([

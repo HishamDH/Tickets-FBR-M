@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>دخول العملاء - منصة التذاكر FBR-M</title>
+    <title>دخول الشركاء - منصة التذاكر FBR-M</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
             font-family: 'Cairo', sans-serif;
         }
         .gradient-bg {
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
         .floating-shape {
             animation: float 6s ease-in-out infinite;
@@ -38,14 +38,14 @@
                 <!-- Logo and Title -->
                 <div class="text-center mb-8">
                     <div class="flex items-center justify-center mb-6">
-                        <div class="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <div class="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                         </div>
                     </div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">مرحباً بعودتك</h1>
-                    <p class="text-gray-600">سجل دخولك للوصول إلى حسابك</p>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">منطقة الشركاء</h1>
+                    <p class="text-gray-600">سجل دخولك لإدارة شراكاتك والعمولات</p>
                 </div>
 
                 <!-- Session Status -->
@@ -56,7 +56,7 @@
                 @endif
 
                 <!-- Form -->
-                <form method="POST" action="{{ route('customer.login') }}" class="space-y-6">
+                <form method="POST" action="{{ route('partner.login') }}" class="space-y-6">
                     @csrf
 
                     <!-- Email Address -->
@@ -71,7 +71,7 @@
                             value="{{ old('email') }}" 
                             required 
                             autofocus 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                             placeholder="أدخل بريدك الإلكتروني"
                         >
                         @error('email')
@@ -89,7 +89,7 @@
                             type="password" 
                             name="password" 
                             required 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                             placeholder="أدخل كلمة المرور"
                         >
                         @error('password')
@@ -104,20 +104,20 @@
                                 id="remember_me" 
                                 type="checkbox" 
                                 name="remember"
-                                class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                                class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
                             >
                             <span class="mr-2 text-sm text-gray-600">تذكرني</span>
                         </label>
 
                         @if (Route::has('password.request'))
-                            <a class="text-sm text-orange-600 hover:text-orange-700 font-semibold" href="{{ route('password.request') }}">
+                            <a class="text-sm text-green-600 hover:text-green-700 font-semibold" href="{{ route('password.request') }}">
                                 نسيت كلمة المرور؟
                             </a>
                         @endif
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
+                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
                         تسجيل الدخول
                     </button>
                 </form>
@@ -126,19 +126,19 @@
                 <div class="mt-6 text-center space-y-4">
                     <p class="text-sm text-gray-600">
                         ليس لديك حساب؟
-                        <a href="{{ route('customer.register') }}" class="text-orange-600 hover:text-orange-700 font-semibold">
-                            إنشاء حساب جديد
+                        <a href="{{ route('partner.register') }}" class="text-green-600 hover:text-green-700 font-semibold">
+                            إنشاء حساب شريك
                         </a>
                     </p>
                     
                     <div class="border-t border-gray-200 pt-4">
                         <p class="text-xs text-gray-500 mb-3">تسجيل دخول للأدوار الأخرى</p>
                         <div class="flex justify-center space-x-reverse space-x-4">
+                            <a href="{{ route('customer.login') }}" class="text-orange-600 hover:text-orange-700 text-sm font-medium">
+                                العملاء
+                            </a>
                             <a href="{{ route('merchant.login') }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
                                 التجار
-                            </a>
-                            <a href="{{ route('partner.login') }}" class="text-green-600 hover:text-green-700 text-sm font-medium">
-                                الشركاء
                             </a>
                             <a href="{{ route('filament.admin.auth.login') }}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
                                 الإدارة
@@ -171,20 +171,20 @@
                     <div class="text-center text-white px-8">
                         <div class="mb-8">
                             <svg class="w-24 h-24 mx-auto mb-6 text-white opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-4xl font-bold mb-4">أهلاً وسهلاً</h2>
-                        <p class="text-xl text-orange-100 mb-6 leading-relaxed">
-                            سجل دخولك لاستكمال رحلتك معنا واكتشاف المزيد
+                        <h2 class="text-4xl font-bold mb-4">شراكة مُربحة</h2>
+                        <p class="text-xl text-green-100 mb-6 leading-relaxed">
+                            إدارة شراكاتك وتتبع العمولات مع تقارير شاملة
                         </p>
                         <div class="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
-                            <h3 class="font-semibold mb-2">مميزات حسابك</h3>
-                            <ul class="text-sm text-orange-100 space-y-1">
-                                <li>• إدارة حجوزاتك بسهولة</li>
-                                <li>• عروض وخصومات حصرية</li>
-                                <li>• دعم فني على مدار الساعة</li>
-                                <li>• تتبع حالة طلباتك</li>
+                            <h3 class="font-semibold mb-2">مميزات الشريك</h3>
+                            <ul class="text-sm text-green-100 space-y-1">
+                                <li>• تتبع العمولات والأرباح</li>
+                                <li>• إدارة قاعدة العملاء</li>
+                                <li>• تقارير مالية تفصيلية</li>
+                                <li>• أدوات تسويق متقدمة</li>
                             </ul>
                         </div>
                     </div>
@@ -194,17 +194,6 @@
     </div>
 </body>
 </html>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-        }
-    </style>
-</head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <div class="min-h-screen flex">
         <!-- Left Side - Form -->
@@ -213,15 +202,15 @@
                 <!-- Logo -->
                 <div class="text-center mb-8">
                     <div class="flex items-center justify-center mb-4">
-                        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
                             </svg>
                         </div>
                         <span class="mr-3 text-xl font-bold text-dark">شباك التذاكر</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-dark">منطقة العملاء</h2>
-                    <p class="mt-2 text-gray">دخول لإدارة حجوزاتك وخدماتك</p>
+                    <h2 class="text-2xl font-bold text-dark">بوابة الشركاء</h2>
+                    <p class="mt-2 text-gray">دخول لإدارة شبكة التجار والعمولات</p>
                 </div>
 
                 <!-- Session Status -->
@@ -232,7 +221,7 @@
                 @endif
 
                 <!-- Form -->
-                <form method="POST" action="{{ route('customer.login') }}" class="space-y-6">
+                <form method="POST" action="{{ route('partner.login') }}" class="space-y-6">
                     @csrf
 
                     <!-- Email -->
@@ -281,7 +270,7 @@
                             id="remember_me" 
                             type="checkbox" 
                             name="remember"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                            class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
                         >
                         <label for="remember_me" class="mr-2 text-sm text-gray">
                             تذكرني
@@ -289,19 +278,19 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
-                        دخول منطقة العملاء
+                    <button type="submit" class="btn-primary w-full">
+                        دخول بوابة الشركاء
                     </button>
                 </form>
 
                 <!-- Links -->
                 <div class="mt-6 space-y-4">
                     <div class="flex flex-col items-center space-y-2">
-                        <a href="{{ route('password.request') }}" class="text-sm text-gray hover:text-blue-600">
+                        <a href="{{ route('password.request') }}" class="text-sm text-gray hover:text-primary">
                             نسيت كلمة المرور؟
                         </a>
-                        <a href="{{ route('customer.register') }}" class="text-sm text-blue-600 hover:text-blue-700">
-                            إنشاء حساب جديد
+                        <a href="{{ route('partner.register') }}" class="text-sm text-primary hover:text-primary-dark">
+                            ليس لديك حساب؟ سجل كشريك
                         </a>
                     </div>
                 </div>
@@ -317,15 +306,35 @@
 
         <!-- Right Side - Image -->
         <div class="hidden lg:block relative w-0 flex-1">
-            <div class="absolute inset-0 h-full w-full bg-blue-600 flex items-center justify-center">
+            <div class="absolute inset-0 h-full w-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
                 <div class="text-center text-white">
                     <svg class="w-32 h-32 mx-auto mb-8" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
                     </svg>
-                    <h3 class="text-3xl font-bold mb-4">أهلاً بك في شباك التذاكر</h3>
-                    <p class="text-xl text-blue-100 max-w-md">
-                        احجز الخدمات التي تحتاجها بسهولة ويسر من منصة واحدة
+                    <h3 class="text-3xl font-bold mb-4">شبكة الشركاء المتميزة</h3>
+                    <p class="text-xl text-orange-100 max-w-md">
+                        انضم لشبكة من الشركاء المتميزين واحصل على عمولات مجزية من تجارك
                     </p>
+                    <div class="mt-8 grid grid-cols-1 gap-4 text-left">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-orange-200 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-orange-100">إدارة شبكة التجار</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-orange-200 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-orange-100">تتبع العمولات</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-orange-200 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-orange-100">تقارير مفصلة</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

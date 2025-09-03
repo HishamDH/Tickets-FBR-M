@@ -44,12 +44,19 @@ export default {
                 },
                 
                 // 🌟 Creative Orange Variations
-                'orange-fire': '#ff5722',
-                'orange-sunset': '#ff7043',
-                'orange-warm': '#ff8a65',
-                'orange-soft': '#ffab91',
-                'orange-light': '#ffccbc',
-                'orange-pale': '#fbe9e7',
+                'orange': {
+                    50: '#fff7ed',
+                    100: '#ffedd5', 
+                    200: '#fed7aa',
+                    300: '#fdba74',
+                    400: '#fb923c',
+                    500: '#f97316',  // Default orange
+                    600: '#ea580c',
+                    700: '#c2410c',
+                    800: '#9a3412',
+                    900: '#7c2d12',
+                    950: '#431407',
+                },
                 
                 // Original shadcn colors
                 border: "hsl(var(--border))",
@@ -93,17 +100,28 @@ export default {
                 'gradient-radial': 'radial-gradient(circle at center, #fb923c 0%, #ea580c 100%)',
             },
             
-            borderRadius: {
-                lg: "var(--radius)",
-                md: "calc(var(--radius) - 2px)",
-                sm: "calc(var(--radius) - 4px)",
-            },
-            
             // 💫 Enhanced Shadows
             boxShadow: {
                 'glow': '0 0 30px rgba(249, 115, 22, 0.3)',
                 'fire': '0 10px 30px rgba(249, 115, 22, 0.2)',
                 '2xl': '0 25px 50px -12px rgba(249, 115, 22, 0.25)',
+                'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            },
+            
+            borderRadius: {
+                lg: "var(--radius)",
+                md: "calc(var(--radius) - 2px)",
+                sm: "calc(var(--radius) - 4px)",
+                'none': '0',
+                'xs': '0.125rem',
+                'DEFAULT': '0.25rem',
+                'xl': '0.75rem',
+                '2xl': '1rem',
+                '3xl': '1.5rem',
+                'full': '9999px',
             },
             
             keyframes: {

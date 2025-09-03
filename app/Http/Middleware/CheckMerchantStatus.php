@@ -23,53 +23,49 @@ class CheckMerchantStatus
         $user = Auth::user();
 
         // Only apply this check to merchants
-        if ($user->role !== 'merchant') {
+        if ($user->user_type !== 'merchant') {
             return $next($request);
         }
 
-        $merchant = $user->merchant;
-
-        if (! $merchant) {
+        // Check merchant verification status
+        if ($user->merchant_status === 'pending') {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'ملف التاجر غير موجود'], 404);
-            }
-
-            return redirect()->route('merchant.setup')
-                ->with('warning', 'يجب إكمال إعداد ملف التاجر أولاً');
-        }
-
-        // Check if merchant account is active
-        if ($merchant->status !== 'active') {
-            $messages = [
-                'pending' => 'حسابك قيد المراجعة، يرجى انتظار الموافقة من الإدارة',
-                'suspended' => 'تم تعليق حسابك، يرجى التواصل مع الإدارة',
-                'rejected' => 'تم رفض طلب التسجيل، يرجى مراجعة البيانات والتقديم مرة أخرى',
-                'inactive' => 'حسابك غير نشط، يرجى التواصل مع الإدارة',
-            ];
-
-            $message = $messages[$merchant->status] ?? 'حالة الحساب غير صحيحة';
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => $message,
-                    'status' => $merchant->status,
-                ], 403);
+                return response()->json(['message' => 'حسابك قيد المراجعة، يرجى انتظار الموافقة من الإدارة'], 403);
             }
 
             return redirect()->route('merchant.status')
-                ->with('warning', $message);
+                ->with('warning', 'حسابك قيد المراجعة، يرجى انتظار الموافقة من الإدارة');
         }
 
-        // Check if merchant has completed required setup
-        if (! $merchant->is_profile_complete) {
+        if ($user->merchant_status === 'rejected') {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'يجب إكمال الملف الشخصي'], 400);
+                return response()->json(['message' => 'تم رفض طلب التسجيل، يرجى مراجعة البيانات والتقديم مرة أخرى'], 403);
             }
 
-            return redirect()->route('merchant.profile.complete')
-                ->with('info', 'يرجى إكمال المعلومات المطلوبة في ملفك الشخصي');
+            return redirect()->route('merchant.status')
+                ->with('error', 'تم رفض طلب التسجيل. السبب: ' . ($user->verification_notes ?? 'لم يتم تحديد السبب'));
         }
 
-        return $next($request);
+        if ($user->merchant_status === 'suspended') {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'تم تعليق حسابك، يرجى التواصل مع الإدارة'], 403);
+            }
+
+            return redirect()->route('merchant.status')
+                ->with('error', 'تم تعليق حسابك. يرجى التواصل مع الإدارة');
+        }
+
+        // If approved, continue with the request
+        if ($user->merchant_status === 'approved') {
+            return $next($request);
+        }
+
+        // Default fallback for any other status
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'حالة الحساب غير صحيحة'], 403);
+        }
+
+        return redirect()->route('merchant.status')
+            ->with('warning', 'حالة حسابك غير واضحة، يرجى التواصل مع الإدارة');
     }
 }

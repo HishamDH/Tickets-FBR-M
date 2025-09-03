@@ -43,6 +43,13 @@ class User extends Authenticatable implements FilamentUser
         'postal_code',
         'country',
         'last_login_at',
+        'business_name', // For merchant registration
+        'commercial_registration_number', // Merchant verification
+        'tax_number', // Merchant verification
+        'business_city', // Merchant verification
+        'merchant_status', // Merchant verification
+        'verification_notes', // Merchant verification
+        'verified_at', // Merchant verification
     ];
 
     /**

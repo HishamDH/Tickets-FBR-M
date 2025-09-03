@@ -26,6 +26,7 @@ use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SupportController;
+use App\Http\Controllers\WelcomeController;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -37,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Frontend Public Routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/merchants', [HomeController::class, 'merchants'])->name('merchants.index');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/merchant/{id}', [HomeController::class, 'merchantShow'])->name('merchant.show');
