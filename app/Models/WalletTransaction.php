@@ -8,6 +8,47 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin IdeHelperWalletTransaction
+ * @property int $id
+ * @property string $transaction_reference
+ * @property int $merchant_wallet_id
+ * @property int|null $booking_id
+ * @property int|null $payment_id
+ * @property string $type
+ * @property string $category
+ * @property string $amount
+ * @property string $balance_after
+ * @property string|null $description
+ * @property array|null $metadata
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $processed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Booking|null $booking
+ * @property-read string $category_label
+ * @property-read string $formatted_amount
+ * @property-read string $status_color
+ * @property-read string $type_color
+ * @property-read \App\Models\MerchantWallet $merchantWallet
+ * @property-read \App\Models\Payment|null $payment
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereBalanceAfter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereBookingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereMerchantWalletId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereTransactionReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class WalletTransaction extends Model
 {

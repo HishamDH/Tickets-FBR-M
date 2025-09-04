@@ -9,6 +9,71 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperService
+ * @property int $id
+ * @property int|null $merchant_id
+ * @property string $name
+ * @property string $description
+ * @property string $location
+ * @property string $price
+ * @property string|null $base_price
+ * @property string $currency
+ * @property int|null $duration_hours
+ * @property int|null $capacity
+ * @property array|null $features
+ * @property string $price_type
+ * @property string $pricing_model
+ * @property string $category
+ * @property string $service_type
+ * @property string|null $image
+ * @property array|null $images
+ * @property bool $is_featured
+ * @property bool $is_available
+ * @property bool $is_active
+ * @property string $status
+ * @property bool $online_booking_enabled
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ServiceAvailability> $availability
+ * @property-read int|null $availability_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $bookings
+ * @property-read int|null $bookings_count
+ * @property-read string $category_arabic
+ * @property-read mixed $price_formatted
+ * @property-read string $pricing_model_name
+ * @property-read string $service_type_name
+ * @property-read \App\Models\User|null $merchant
+ * @method static \Illuminate\Database\Eloquent\Builder|Service active()
+ * @method static \Database\Factories\ServiceFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Service featured()
+ * @method static \Illuminate\Database\Eloquent\Builder|Service newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Service newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Service ofType($type)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereBasePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereCapacity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereDurationHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereFeatures($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereImages($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereIsAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereIsFeatured($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereOnlineBookingEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service wherePriceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service wherePricingModel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereServiceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Service whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Service extends Model
 {

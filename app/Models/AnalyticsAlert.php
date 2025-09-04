@@ -7,6 +7,37 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @mixin IdeHelperAnalyticsAlert
+ * @property int $id
+ * @property string $alert_type
+ * @property string $severity
+ * @property string $title
+ * @property string $message
+ * @property array|null $metadata
+ * @property bool $is_active
+ * @property bool $is_dismissed
+ * @property \Illuminate\Support\Carbon $triggered_at
+ * @property \Illuminate\Support\Carbon|null $dismissed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert active()
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert bySeverity($severity)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert byType($type)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereAlertType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereDismissedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereIsDismissed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereSeverity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereTriggeredAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class AnalyticsAlert extends Model
 {

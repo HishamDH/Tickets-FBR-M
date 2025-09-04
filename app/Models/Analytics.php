@@ -7,6 +7,32 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @mixin IdeHelperAnalytics
+ * @property int $id
+ * @property string $metric_name
+ * @property string $metric_type
+ * @property array $metric_data
+ * @property string $period
+ * @property \Illuminate\Support\Carbon $metric_date
+ * @property \Illuminate\Support\Carbon $recorded_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics byDateRange($startDate, $endDate)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics byMetric($metricName)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics byPeriod($period)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics byType($type)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereMetricData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereMetricDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereMetricName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereMetricType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics wherePeriod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereRecordedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Analytics extends Model
 {

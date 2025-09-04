@@ -8,6 +8,48 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin IdeHelperRefund
+ * @property int $id
+ * @property string $refund_reference
+ * @property int $payment_id
+ * @property int $booking_id
+ * @property int $user_id
+ * @property string $amount
+ * @property string $fee
+ * @property string $net_amount
+ * @property string $status
+ * @property string $type
+ * @property string|null $reason
+ * @property string|null $admin_notes
+ * @property array|null $gateway_response
+ * @property \Illuminate\Support\Carbon|null $processed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Booking $booking
+ * @property-read string $status_color
+ * @property-read string $status_label
+ * @property-read string $type_label
+ * @property-read \App\Models\Payment $payment
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereAdminNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereBookingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereGatewayResponse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereNetAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereRefundReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Refund whereUserId($value)
+ * @mixin \Eloquent
  */
 class Refund extends Model
 {

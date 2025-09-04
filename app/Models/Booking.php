@@ -11,6 +11,77 @@ use Illuminate\Support\Str;
 
 /**
  * @mixin IdeHelperBooking
+ * @property int $id
+ * @property string $booking_number
+ * @property int|null $customer_id
+ * @property int $service_id
+ * @property int $merchant_id
+ * @property \Illuminate\Support\Carbon $booking_date
+ * @property string|null $booking_time
+ * @property int|null $guest_count
+ * @property string $total_amount
+ * @property string $commission_amount
+ * @property string $commission_rate
+ * @property string $payment_status
+ * @property string|null $status
+ * @property string $booking_source
+ * @property string|null $special_requests
+ * @property string|null $cancellation_reason
+ * @property \Illuminate\Support\Carbon|null $cancelled_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $cancelled_by
+ * @property string|null $qr_code
+ * @property string|null $customer_name
+ * @property string|null $customer_phone
+ * @property string|null $customer_email
+ * @property int|null $number_of_people
+ * @property int|null $number_of_tables
+ * @property int|null $duration_hours
+ * @property string|null $notes
+ * @property-read \App\Models\User|null $cancelledBy
+ * @property-read \App\Models\User|null $customer
+ * @property-read float $merchant_amount
+ * @property-read string $payment_status_arabic
+ * @property-read string $status_arabic
+ * @property-read \App\Models\Payment|null $latestPayment
+ * @property-read \App\Models\User $merchant
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \App\Models\Service $service
+ * @method static \Database\Factories\BookingFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCancellationReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCancelledBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCommissionAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCommissionRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereDurationHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereGuestCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereNumberOfPeople($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereNumberOfTables($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking wherePaymentStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereQrCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereServiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereSpecialRequests($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Booking whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Booking extends Model
 {

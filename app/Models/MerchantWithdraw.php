@@ -9,6 +9,55 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperMerchantWithdraw
+ * @property int $id
+ * @property int $merchant_id
+ * @property string $amount
+ * @property string $status
+ * @property array $bank_details
+ * @property string|null $transaction_id
+ * @property string|null $notes
+ * @property string|null $admin_notes
+ * @property \Illuminate\Support\Carbon $requested_at
+ * @property \Illuminate\Support\Carbon|null $processed_at
+ * @property \Illuminate\Support\Carbon|null $cancelled_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string|null $account_holder_name
+ * @property-read string|null $account_number
+ * @property-read string|null $bank_name
+ * @property-read int $days_ago
+ * @property-read string $formatted_amount
+ * @property-read string|null $iban
+ * @property-read string $status_color
+ * @property-read string $status_label
+ * @property-read string|null $swift_code
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WithdrawLog> $logs
+ * @property-read int|null $logs_count
+ * @property-read \App\Models\User $merchant
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw approved()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw completed()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw forMerchant($merchantId)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw pending()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw query()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw rejected()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw thisMonth()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw thisYear()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereAdminNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereBankDetails($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereRequestedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class MerchantWithdraw extends Model
 {

@@ -9,6 +9,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperPartner
+ * @property int $id
+ * @property int $user_id
+ * @property string $partner_code
+ * @property string $business_name
+ * @property string $contact_person
+ * @property string $commission_rate
+ * @property string $status
+ * @property array|null $settings
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Merchant> $merchants
+ * @property-read int|null $merchants_count
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereBusinessName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereCommissionRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereContactPerson($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner wherePartnerCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereSettings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Partner whereUserId($value)
+ * @mixin \Eloquent
  */
 class Partner extends Model
 {

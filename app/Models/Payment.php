@@ -9,6 +9,69 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin IdeHelperPayment
+ * @property int $id
+ * @property string $payment_number
+ * @property int $booking_id
+ * @property int $merchant_id
+ * @property int $payment_gateway_id
+ * @property int|null $customer_id
+ * @property string $amount
+ * @property string $gateway_fee
+ * @property string $platform_fee
+ * @property string $total_amount
+ * @property string $currency
+ * @property string $status
+ * @property string|null $payment_method
+ * @property string|null $gateway_transaction_id
+ * @property string|null $gateway_reference
+ * @property array|null $gateway_response
+ * @property array|null $gateway_metadata
+ * @property \Illuminate\Support\Carbon|null $initiated_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property \Illuminate\Support\Carbon|null $failed_at
+ * @property string|null $failure_reason
+ * @property string|null $customer_ip
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Booking $booking
+ * @property-read \App\Models\User|null $customer
+ * @property-read string $status_arabic
+ * @property-read \App\Models\Merchant $merchant
+ * @property-read \App\Models\PaymentGateway $paymentGateway
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment completed()
+ * @method static \Database\Factories\PaymentFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment failed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment pending()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereBookingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCompletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereCustomerIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereFailedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereFailureReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereGatewayFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereGatewayMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereGatewayReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereGatewayResponse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereGatewayTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereInitiatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePaymentGatewayId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePaymentMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePaymentNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment wherePlatformFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Payment extends Model
 {

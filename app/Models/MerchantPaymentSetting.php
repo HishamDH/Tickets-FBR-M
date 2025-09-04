@@ -8,6 +8,40 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin IdeHelperMerchantPaymentSetting
+ * @property int $id
+ * @property int $merchant_id
+ * @property int $payment_gateway_id
+ * @property bool $is_enabled
+ * @property array|null $gateway_credentials
+ * @property string|null $custom_fee
+ * @property string|null $custom_fee_type
+ * @property int $display_order
+ * @property array|null $additional_settings
+ * @property \Illuminate\Support\Carbon|null $last_tested_at
+ * @property bool $test_passed
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Merchant $merchant
+ * @property-read \App\Models\PaymentGateway $paymentGateway
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting enabled()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting ordered()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereAdditionalSettings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereCustomFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereCustomFeeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereDisplayOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereGatewayCredentials($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereIsEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereLastTestedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting wherePaymentGatewayId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereTestPassed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class MerchantPaymentSetting extends Model
 {

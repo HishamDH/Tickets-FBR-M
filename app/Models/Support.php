@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @mixin IdeHelperSupport
+ * @method static \Illuminate\Database\Eloquent\Builder|Support active()
+ * @method static \Illuminate\Database\Eloquent\Builder|Support byCategory($category)
+ * @method static \Illuminate\Database\Eloquent\Builder|Support newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Support newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Support query()
+ * @mixin \Eloquent
  */
 class Support extends Model
 {

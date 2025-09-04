@@ -9,6 +9,60 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperOrder
+ * @property int $id
+ * @property int $user_id
+ * @property string $order_number
+ * @property string $status
+ * @property string $payment_status
+ * @property string $payment_method
+ * @property string $subtotal
+ * @property string $discount
+ * @property string $total
+ * @property string $currency
+ * @property array $billing_details
+ * @property array|null $shipping_details
+ * @property array|null $payment_details
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $shipped_at
+ * @property \Illuminate\Support\Carbon|null $delivered_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string $billing_address
+ * @property-read string $billing_name
+ * @property-read string $payment_method_label
+ * @property-read string $payment_status_color
+ * @property-read string $payment_status_label
+ * @property-read string $status_color
+ * @property-read string $status_label
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderItem> $items
+ * @property-read int|null $items_count
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Order confirmed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order paid()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order pending()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order unpaid()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereBillingDetails($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereDeliveredAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereDiscount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereOrderNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order wherePaymentDetails($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order wherePaymentMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order wherePaymentStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereShippedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereShippingDetails($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
+ * @mixin \Eloquent
  */
 class Order extends Model
 {

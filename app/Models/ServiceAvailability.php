@@ -8,6 +8,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin IdeHelperServiceAvailability
+ * @property int $id
+ * @property int $service_id
+ * @property string $availability_date
+ * @property mixed|null $start_time
+ * @property mixed|null $end_time
+ * @property int|null $available_slots
+ * @property int $booked_slots
+ * @property int $is_available
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Service $service
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereAvailabilityDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereAvailableSlots($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereBookedSlots($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereEndTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereIsAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereServiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereStartTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ServiceAvailability extends Model
 {

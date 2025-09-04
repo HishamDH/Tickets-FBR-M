@@ -14,9 +14,25 @@
 namespace App\Models{
 /**
  * @mixin IdeHelperAdvancedSetting
+ * @property int $id
+ * @property string $key
+ * @property array $value
+ * @property string|null $description
+ * @property string $type
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereValue($value)
  */
 	class AdvancedSetting extends \Eloquent {}
 }
@@ -149,7 +165,7 @@ namespace App\Models{
  * @property-read string $payment_status_arabic
  * @property-read string $status_arabic
  * @property-read \App\Models\Payment|null $latestPayment
- * @property-read \App\Models\Merchant $merchant
+ * @property-read \App\Models\User $merchant
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
  * @property-read int|null $payments_count
  * @property-read \App\Models\Service $service
@@ -329,6 +345,28 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * @property int $id
+ * @property int $user_id
+ * @property string $name
+ * @property array $config
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard query()
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereConfig($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereUserId($value)
+ */
+	class CustomDashboard extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * @mixin IdeHelperCustomerRating
  * @property int $id
  * @property int $service_id
@@ -380,10 +418,26 @@ namespace App\Models{
 namespace App\Models{
 /**
  * @mixin IdeHelperLog
+ * @property int $id
+ * @property string $action
+ * @property array|null $details
+ * @property int|null $user_id
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|Log newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Log newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Log query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereDetails($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereUserAgent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Log whereUserId($value)
  */
 	class Log extends \Eloquent {}
 }
@@ -1061,9 +1115,15 @@ namespace App\Models{
 namespace App\Models{
 /**
  * @mixin IdeHelperReport
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|Report newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Report newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Report query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Report whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Report whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Report whereUpdatedAt($value)
  */
 	class Report extends \Eloquent {}
 }
@@ -1121,9 +1181,15 @@ namespace App\Models{
 namespace App\Models{
 /**
  * @mixin IdeHelperScheduledTask
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask whereUpdatedAt($value)
  */
 	class ScheduledTask extends \Eloquent {}
 }
@@ -1163,7 +1229,7 @@ namespace App\Models{
  * @property-read mixed $price_formatted
  * @property-read string $pricing_model_name
  * @property-read string $service_type_name
- * @property-read \App\Models\Merchant|null $merchant
+ * @property-read \App\Models\User|null $merchant
  * @method static \Illuminate\Database\Eloquent\Builder|Service active()
  * @method static \Database\Factories\ServiceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Service featured()
@@ -1235,9 +1301,15 @@ namespace App\Models{
 namespace App\Models{
 /**
  * @mixin IdeHelperStatistics
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|Statistics newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Statistics newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Statistics query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereUpdatedAt($value)
  */
 	class Statistics extends \Eloquent {}
 }
@@ -1351,12 +1423,18 @@ namespace App\Models{
  * @property string $name
  * @property string $email
  * @property string|null $business_name
+ * @property string|null $commercial_registration_number
+ * @property string|null $tax_number
  * @property string $business_type
  * @property string|null $phone
  * @property \Illuminate\Support\Carbon|null $date_of_birth
  * @property string|null $gender
  * @property string|null $address
  * @property string|null $city
+ * @property string|null $business_city
+ * @property string $merchant_status
+ * @property string|null $verification_notes
+ * @property string|null $verified_at
  * @property string|null $state
  * @property string|null $postal_code
  * @property string|null $country
@@ -1384,6 +1462,8 @@ namespace App\Models{
  * @property-read int|null $branches_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Cart> $carts
  * @property-read int|null $carts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CustomDashboard> $customDashboards
+ * @property-read int|null $custom_dashboards_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking> $customerBookings
  * @property-read int|null $customer_bookings_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Conversation> $customerConversations
@@ -1396,6 +1476,8 @@ namespace App\Models{
  * @property-read \App\Models\Merchant|null $merchant
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Conversation> $merchantConversations
  * @property-read int|null $merchant_conversations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Service> $merchantServices
+ * @property-read int|null $merchant_services_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
@@ -1421,9 +1503,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereAdditionalData($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereBusinessCity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereBusinessName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereBusinessType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereCommercialRegistrationNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereCountry($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereDateOfBirth($value)
@@ -1437,6 +1521,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereLanguage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereLastLoginAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereLastNotificationReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereMerchantStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereNotificationPreferences($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
@@ -1448,9 +1533,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereTaxNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereTimezone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUserType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereVerificationNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereVerifiedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutPermission($permissions)
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutRole($roles, $guard = null)
  */

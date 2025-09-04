@@ -8,6 +8,44 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @mixin IdeHelperNotification
+ * @property int $id
+ * @property string $type
+ * @property string $notifiable_type
+ * @property int $notifiable_id
+ * @property string $title
+ * @property string $message
+ * @property array|null $data
+ * @property string $priority
+ * @property string $channel
+ * @property \Illuminate\Support\Carbon|null $read_at
+ * @property \Illuminate\Support\Carbon|null $sent_at
+ * @property bool $is_sent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Model|\Eloquent $notifiable
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification byPriority($priority)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification byType($type)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification read()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification recent($days = 30)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification unread()
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereChannel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereIsSent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereNotifiableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereNotifiableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereSentAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Notification whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Notification extends Model
 {

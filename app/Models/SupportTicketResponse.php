@@ -8,6 +8,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin IdeHelperSupportTicketResponse
+ * @property int $id
+ * @property int $support_ticket_id
+ * @property int $user_id
+ * @property string $message
+ * @property bool $is_internal
+ * @property array|null $attachments
+ * @property \Illuminate\Support\Carbon|null $read_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\SupportTicket $supportTicket
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse query()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereAttachments($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereIsInternal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereSupportTicketId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereUserId($value)
+ * @mixin \Eloquent
  */
 class SupportTicketResponse extends Model
 {

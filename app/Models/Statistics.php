@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @mixin IdeHelperStatistics
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Statistics extends Model
 {

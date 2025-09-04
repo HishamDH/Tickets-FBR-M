@@ -7,6 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @mixin IdeHelperBranch
+ * @property int $id
+ * @property int $user_id
+ * @property string $name
+ * @property string|null $address
+ * @property string|null $phone
+ * @property string|null $location
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch whereLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Branch whereUserId($value)
+ * @mixin \Eloquent
  */
 class Branch extends Model
 {

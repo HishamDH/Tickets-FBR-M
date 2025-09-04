@@ -8,6 +8,42 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin IdeHelperWithdrawLog
+ * @property int $id
+ * @property int $merchant_withdraw_id
+ * @property int $merchant_id
+ * @property string $action
+ * @property string $amount
+ * @property string $status
+ * @property int $performed_by
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon $action_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string $action_color
+ * @property-read string $action_label
+ * @property-read string $formatted_amount
+ * @property-read \App\Models\User $merchant
+ * @property-read \App\Models\User $performedBy
+ * @property-read \App\Models\MerchantWithdraw $withdrawal
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog byAction($action)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog forMerchant($merchantId)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog forWithdrawal($withdrawalId)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog thisMonth()
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereActionDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereMerchantWithdrawId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog wherePerformedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class WithdrawLog extends Model
 {

@@ -9,6 +9,41 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @mixin IdeHelperCart
+ * @property int $id
+ * @property int|null $user_id
+ * @property string|null $session_id
+ * @property int $item_id
+ * @property string $item_type
+ * @property int $quantity
+ * @property string $price
+ * @property string $discount
+ * @property array|null $additional_data
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read float $original_total
+ * @property-read float $subtotal
+ * @property-read float $total_discount
+ * @property-read Model|\Eloquent $item
+ * @property-read \App\Models\Offering|null $offering
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart forGuest($sessionId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart forSession($sessionId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart forUser($userId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereAdditionalData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereDiscount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereItemType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereSessionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUserId($value)
+ * @mixin \Eloquent
  */
 class Cart extends Model
 {

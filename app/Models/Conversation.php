@@ -9,6 +9,46 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperConversation
+ * @property int $id
+ * @property string|null $title
+ * @property string $type
+ * @property string $status
+ * @property int $customer_id
+ * @property int|null $merchant_id
+ * @property int|null $support_agent_id
+ * @property int|null $booking_id
+ * @property \Illuminate\Support\Carbon|null $last_message_at
+ * @property array|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\PaidReservation|null $booking
+ * @property-read \App\Models\User $customer
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Message> $latestMessage
+ * @property-read int|null $latest_message_count
+ * @property-read \App\Models\User|null $merchant
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Message> $messages
+ * @property-read int|null $messages_count
+ * @property-read \App\Models\User|null $supportAgent
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation active()
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation forUser($userId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation merchantCustomer()
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation support()
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereBookingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereLastMessageAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereSupportAgentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Conversation extends Model
 {

@@ -9,6 +9,58 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperSupportTicket
+ * @property int $id
+ * @property string $ticket_number
+ * @property int $user_id
+ * @property int|null $assigned_to
+ * @property int|null $booking_id
+ * @property string $subject
+ * @property string $description
+ * @property string $priority
+ * @property string $status
+ * @property string $category
+ * @property string $source
+ * @property \Illuminate\Support\Carbon|null $first_response_at
+ * @property \Illuminate\Support\Carbon|null $resolved_at
+ * @property \Illuminate\Support\Carbon|null $closed_at
+ * @property string|null $resolution_notes
+ * @property array|null $tags
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $assignedTo
+ * @property-read \App\Models\Booking|null $booking
+ * @property-read string $category_label
+ * @property-read string $priority_color
+ * @property-read string $priority_label
+ * @property-read int|null $resolution_time
+ * @property-read int|null $response_time
+ * @property-read string $status_color
+ * @property-read string $status_label
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SupportTicketResponse> $responses
+ * @property-read int|null $responses_count
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket query()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereAssignedTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereBookingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereClosedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereFirstResponseAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereResolutionNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereResolvedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereSubject($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereTags($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereTicketNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereUserId($value)
+ * @mixin \Eloquent
  */
 class SupportTicket extends Model
 {

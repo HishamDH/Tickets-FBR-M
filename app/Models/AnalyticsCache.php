@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @mixin IdeHelperAnalyticsCache
+ * @property int $id
+ * @property string $cache_key
+ * @property string $cache_data
+ * @property \Illuminate\Support\Carbon $expires_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereCacheData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereCacheKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class AnalyticsCache extends Model
 {

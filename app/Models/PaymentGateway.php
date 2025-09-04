@@ -8,6 +8,50 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin IdeHelperPaymentGateway
+ * @property int $id
+ * @property string $name
+ * @property string $code
+ * @property string $display_name_ar
+ * @property string $display_name_en
+ * @property string|null $description
+ * @property string|null $icon
+ * @property string|null $provider
+ * @property array|null $settings
+ * @property string $transaction_fee
+ * @property string $fee_type
+ * @property bool $is_active
+ * @property bool $supports_refund
+ * @property int $sort_order
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string $localized_name
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MerchantPaymentSetting> $merchantSettings
+ * @property-read int|null $merchant_settings_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway active()
+ * @method static \Database\Factories\PaymentGatewayFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway ordered()
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway query()
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereDisplayNameAr($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereDisplayNameEn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereFeeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereProvider($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereSettings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereSupportsRefund($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereTransactionFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class PaymentGateway extends Model
 {
