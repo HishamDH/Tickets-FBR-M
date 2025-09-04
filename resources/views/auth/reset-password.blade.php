@@ -139,7 +139,7 @@
 
                 <!-- Links -->
                 <div class="mt-6 text-center">
-                    <a href="{{ route('welcome') }}" class="text-red-600 hover:text-red-700 text-sm font-semibold">
+                    <a href="{{ route('home') }}" class="text-red-600 hover:text-red-700 text-sm font-semibold">
                         العودة لتسجيل الدخول
                     </a>
                 </div>

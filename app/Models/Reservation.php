@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperReservation
  * @property int $id
  * @property int $offering_id
  * @property int $user_id
@@ -25,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Reservation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Reservation whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperReservation
  */
 class Reservation extends Model
 {

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @mixin IdeHelperRefund
  * @property int $id
  * @property string $refund_reference
  * @property int $payment_id
@@ -50,6 +49,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Refund whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Refund whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperRefund
  */
 class Refund extends Model
 {

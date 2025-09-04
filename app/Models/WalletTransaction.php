@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @mixin IdeHelperWalletTransaction
  * @property int $id
  * @property string $transaction_reference
  * @property int $merchant_wallet_id
@@ -49,6 +48,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperWalletTransaction
  */
 class WalletTransaction extends Model
 {

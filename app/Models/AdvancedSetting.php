@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperAdvancedSetting
  * @property int $id
  * @property string $key
  * @property array $value
@@ -27,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereValue($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperAdvancedSetting
  */
 class AdvancedSetting extends Model
 {

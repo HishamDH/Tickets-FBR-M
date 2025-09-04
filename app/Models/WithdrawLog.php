@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @mixin IdeHelperWithdrawLog
  * @property int $id
  * @property int $merchant_withdraw_id
  * @property int $merchant_id
@@ -44,6 +43,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperWithdrawLog
  */
 class WithdrawLog extends Model
 {

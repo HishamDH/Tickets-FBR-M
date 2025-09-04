@@ -282,7 +282,7 @@
                             <a href="{{ route('partner.register') }}" class="text-green-600 hover:text-green-700 text-sm font-medium">
                                 الشركاء
                             </a>
-                            <a href="{{ route('welcome') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
+                            <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
                                 الرئيسية
                             </a>
                         </div>

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @mixin IdeHelperPartner
  * @property int $id
  * @property int $user_id
  * @property string $partner_code
@@ -36,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Partner whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Partner whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperPartner
  */
 class Partner extends Model
 {

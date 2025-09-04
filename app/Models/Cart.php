@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @mixin IdeHelperCart
  * @property int $id
  * @property int|null $user_id
  * @property string|null $session_id
@@ -44,6 +43,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperCart
  */
 class Cart extends Model
 {

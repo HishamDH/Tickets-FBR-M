@@ -13,7 +13,6 @@
 
 namespace App\Models{
 /**
- * @mixin IdeHelperAdvancedSetting
  * @property int $id
  * @property string $key
  * @property array $value
@@ -33,13 +32,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AdvancedSetting whereValue($value)
+ * @mixin \Eloquent
  */
-	class AdvancedSetting extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperAdvancedSetting {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperAnalytics
  * @property int $id
  * @property string $metric_name
  * @property string $metric_type
@@ -65,13 +65,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Analytics wherePeriod($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereRecordedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Analytics extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperAnalytics {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperAnalyticsAlert
  * @property int $id
  * @property string $alert_type
  * @property string $severity
@@ -102,13 +103,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereTriggeredAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class AnalyticsAlert extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperAnalyticsAlert {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperAnalyticsCache
  * @property int $id
  * @property string $cache_key
  * @property string $cache_data
@@ -124,13 +126,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereExpiresAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class AnalyticsCache extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperAnalyticsCache {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperBooking
  * @property int $id
  * @property string $booking_number
  * @property int|null $customer_id
@@ -201,13 +204,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Booking extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperBooking {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperBranch
  * @property int $id
  * @property int $user_id
  * @property string $name
@@ -228,13 +232,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Branch wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Branch whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Branch whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Branch extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperBranch {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperCart
  * @property int $id
  * @property int|null $user_id
  * @property string|null $session_id
@@ -249,7 +254,7 @@ namespace App\Models{
  * @property-read float $original_total
  * @property-read float $subtotal
  * @property-read float $total_discount
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $item
+ * @property-read Model|\Eloquent $item
  * @property-read \App\Models\Offering|null $offering
  * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|Cart forGuest($sessionId)
@@ -269,13 +274,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Cart whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Cart extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperCart {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperCategory
  * @property int $id
  * @property string $name
  * @property string $slug
@@ -293,13 +299,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Category whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Category whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Category whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Category extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperCategory {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperConversation
  * @property int $id
  * @property string|null $title
  * @property string $type
@@ -339,8 +346,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Conversation extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperConversation {}
 }
 
 namespace App\Models{
@@ -361,13 +370,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereUserId($value)
+ * @mixin \Eloquent
  */
-	class CustomDashboard extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperCustomDashboard {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperCustomerRating
  * @property int $id
  * @property int $service_id
  * @property int $user_id
@@ -389,13 +399,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|CustomerRating whereServiceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomerRating whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomerRating whereUserId($value)
+ * @mixin \Eloquent
  */
-	class CustomerRating extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperCustomerRating {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperDynamicSetting
  * @property int $id
  * @property string $key
  * @property string $value
@@ -411,13 +422,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|DynamicSetting whereKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DynamicSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DynamicSetting whereValue($value)
+ * @mixin \Eloquent
  */
-	class DynamicSetting extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperDynamicSetting {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperLog
  * @property int $id
  * @property string $action
  * @property array|null $details
@@ -438,13 +450,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Log whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Log whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Log whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Log extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperLog {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperMerchant
  * @property int $id
  * @property int $user_id
  * @property string $business_name
@@ -492,13 +505,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereVerificationStatus($value)
+ * @mixin \Eloquent
  */
-	class Merchant extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperMerchant {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperMerchantPaymentSetting
  * @property int $id
  * @property int $merchant_id
  * @property int $payment_gateway_id
@@ -532,13 +546,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting wherePaymentGatewayId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereTestPassed($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class MerchantPaymentSetting extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperMerchantPaymentSetting {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperMerchantWallet
  * @property int $id
  * @property int $user_id
  * @property string $balance
@@ -553,13 +568,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWallet whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWallet whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWallet whereUserId($value)
+ * @mixin \Eloquent
  */
-	class MerchantWallet extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperMerchantWallet {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperMerchantWithdraw
  * @property int $id
  * @property int $merchant_id
  * @property string $amount
@@ -608,13 +624,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereTransactionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class MerchantWithdraw extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperMerchantWithdraw {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperMessage
  * @property int $id
  * @property int $conversation_id
  * @property int $sender_id
@@ -643,13 +660,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Message whereSenderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Message whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Message whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Message extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperMessage {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperNotification
  * @property int $id
  * @property string $type
  * @property string $notifiable_type
@@ -664,7 +682,7 @@ namespace App\Models{
  * @property bool $is_sent
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $notifiable
+ * @property-read Model|\Eloquent $notifiable
  * @method static \Illuminate\Database\Eloquent\Builder|Notification byPriority($priority)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification byType($type)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification newModelQuery()
@@ -687,13 +705,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Notification whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Notification extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperNotification {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperOffering
  * @property int $id
  * @property string|null $name
  * @property string|null $location
@@ -758,13 +777,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Offering whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Offering whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Offering whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Offering extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperOffering {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperOrder
  * @property int $id
  * @property int $user_id
  * @property string $order_number
@@ -818,13 +838,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Order extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperOrder {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperOrderItem
  * @property int $id
  * @property int $order_id
  * @property int $item_id
@@ -844,7 +865,7 @@ namespace App\Models{
  * @property-read float $subtotal
  * @property-read array|null $time_slot
  * @property-read float $total_discount
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $item
+ * @property-read Model|\Eloquent $item
  * @property-read \App\Models\Order $order
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItem newQuery()
@@ -860,13 +881,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItem whereQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItem whereTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderItem whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class OrderItem extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperOrderItem {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperPaidReservation
  * @property int $id
  * @property int $item_id
  * @property string $item_type
@@ -885,7 +907,7 @@ namespace App\Models{
  * @property string|null $qr_code
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $item
+ * @property-read Model|\Eloquent $item
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|PaidReservation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PaidReservation newQuery()
@@ -908,13 +930,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|PaidReservation whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaidReservation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaidReservation whereUserId($value)
+ * @mixin \Eloquent
  */
-	class PaidReservation extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperPaidReservation {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperPartner
  * @property int $id
  * @property int $user_id
  * @property string $partner_code
@@ -941,13 +964,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Partner whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Partner whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Partner whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Partner extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperPartner {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperPayment
  * @property int $id
  * @property string $payment_number
  * @property int $booking_id
@@ -1010,13 +1034,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payment whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Payment extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperPayment {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperPaymentGateway
  * @property int $id
  * @property string $name
  * @property string $code
@@ -1060,13 +1085,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereSupportsRefund($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereTransactionFee($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class PaymentGateway extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperPaymentGateway {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperRefund
  * @property int $id
  * @property string $refund_reference
  * @property int $payment_id
@@ -1108,13 +1134,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Refund whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Refund whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Refund whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Refund extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperRefund {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperReport
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1124,13 +1151,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Report whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Report whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Report whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Report extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperReport {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperReservation
  * @property int $id
  * @property int $offering_id
  * @property int $user_id
@@ -1148,13 +1176,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Reservation whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Reservation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Reservation whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Reservation extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperReservation {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperReview
  * @property int $id
  * @property int $offering_id
  * @property int $user_id
@@ -1174,13 +1203,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereReviewedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Review whereUserId($value)
+ * @mixin \Eloquent
  */
-	class Review extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperReview {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperScheduledTask
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1190,13 +1220,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ScheduledTask whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class ScheduledTask extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperScheduledTask {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperService
  * @property int $id
  * @property int|null $merchant_id
  * @property string $name
@@ -1261,13 +1292,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Service whereServiceType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Service whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Service whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Service extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperService {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperServiceAvailability
  * @property int $id
  * @property int $service_id
  * @property string $availability_date
@@ -1294,13 +1326,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereServiceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereStartTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class ServiceAvailability extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperServiceAvailability {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperStatistics
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1310,25 +1343,27 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Statistics whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class Statistics extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperStatistics {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperSupport
  * @method static \Illuminate\Database\Eloquent\Builder|Support active()
  * @method static \Illuminate\Database\Eloquent\Builder|Support byCategory($category)
  * @method static \Illuminate\Database\Eloquent\Builder|Support newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Support newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Support query()
+ * @mixin \Eloquent
  */
-	class Support extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperSupport {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperSupportTicket
  * @property int $id
  * @property string $ticket_number
  * @property int $user_id
@@ -1380,13 +1415,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereTicketNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereUserId($value)
+ * @mixin \Eloquent
  */
-	class SupportTicket extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperSupportTicket {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperSupportTicketResponse
  * @property int $id
  * @property int $support_ticket_id
  * @property int $user_id
@@ -1410,13 +1446,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereSupportTicketId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicketResponse whereUserId($value)
+ * @mixin \Eloquent
  */
-	class SupportTicketResponse extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperSupportTicketResponse {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperUser
  * @property int $id
  * @property string $f_name
  * @property string $l_name
@@ -1541,13 +1578,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereVerifiedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutPermission($permissions)
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutRole($roles, $guard = null)
+ * @mixin \Eloquent
  */
-	class User extends \Eloquent implements \Filament\Models\Contracts\FilamentUser {}
+	#[\AllowDynamicProperties]
+	class IdeHelperUser {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperWalletTransaction
  * @property int $id
  * @property string $transaction_reference
  * @property int $merchant_wallet_id
@@ -1588,13 +1626,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereTransactionReference($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WalletTransaction whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class WalletTransaction extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperWalletTransaction {}
 }
 
 namespace App\Models{
 /**
- * @mixin IdeHelperWithdrawLog
  * @property int $id
  * @property int $merchant_withdraw_id
  * @property int $merchant_id
@@ -1630,7 +1669,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog wherePerformedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WithdrawLog whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
-	class WithdrawLog extends \Eloquent {}
+	#[\AllowDynamicProperties]
+	class IdeHelperWithdrawLog {}
 }
 

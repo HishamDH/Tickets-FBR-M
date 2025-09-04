@@ -15,7 +15,6 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @mixin IdeHelperUser
  * @property int $id
  * @property string $f_name
  * @property string $l_name
@@ -141,6 +140,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutPermission($permissions)
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutRole($roles, $guard = null)
  * @mixin \Eloquent
+ * @mixin IdeHelperUser
  */
 class User extends Authenticatable implements FilamentUser
 {
@@ -171,13 +171,21 @@ class User extends Authenticatable implements FilamentUser
         'postal_code',
         'country',
         'last_login_at',
-        'business_name', // For merchant registration
-        'commercial_registration_number', // Merchant verification
-        'tax_number', // Merchant verification
-        'business_city', // Merchant verification
-        'merchant_status', // Merchant verification
-        'verification_notes', // Merchant verification
-        'verified_at', // Merchant verification
+        'business_name',
+        'commercial_registration_number',
+        'tax_number',
+        'business_type',
+        'business_city',
+        'merchant_status',
+        'verification_notes',
+        'verified_at',
+        'is_accepted',
+        'role',
+        'additional_data',
+        'notification_preferences',
+        'push_notifications_enabled',
+        'push_token',
+        'last_notification_read_at',
     ];
 
     /**
@@ -204,6 +212,8 @@ class User extends Authenticatable implements FilamentUser
         'last_notification_read_at' => 'datetime',
         'date_of_birth' => 'date',
         'last_login_at' => 'datetime',
+        'verified_at' => 'datetime',
+        'is_accepted' => 'boolean',
     ];
 
     /**
@@ -211,7 +221,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function getRoleAttribute(): string
     {
-        return $this->user_type;
+        return $this->user_type ?? 'customer';
     }
 
     /**
@@ -247,7 +257,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function merchant(): HasOne
     {
-        return $this->hasOne(Merchant::class);
+        return $this->hasOne(\App\Models\Merchant::class);
     }
 
     /**
@@ -255,7 +265,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function partner(): HasOne
     {
-        return $this->hasOne(Partner::class);
+        return $this->hasOne(\App\Models\Partner::class);
     }
 
     /**
@@ -263,7 +273,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function bookings(): HasMany
     {
-        return $this->hasMany(Booking::class, 'customer_id');
+        return $this->hasMany(\App\Models\Booking::class, 'customer_id');
     }
 
     /**
@@ -279,7 +289,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function favoriteServices(): BelongsToMany
     {
-        return $this->belongsToMany(Service::class, 'user_favorite_services')
+        return $this->belongsToMany(\App\Models\Service::class, 'user_favorite_services')
             ->withTimestamps();
     }
 
@@ -312,7 +322,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function syncRoleWithUserType(): void
     {
-        if ($this->user_type && ! $this->roles->isNotEmpty()) {
+        if ($this->user_type && $this->roles->isEmpty()) {
             $roleMapping = [
                 'admin' => 'Admin',
                 'merchant' => 'Merchant',
@@ -348,7 +358,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function branches(): HasMany
     {
-        return $this->hasMany(Branch::class);
+        return $this->hasMany(\App\Models\Branch::class);
     }
 
     /**
@@ -356,7 +366,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function wallet(): HasOne
     {
-        return $this->hasOne(MerchantWallet::class);
+        return $this->hasOne(\App\Models\MerchantWallet::class);
     }
 
     /**
@@ -364,7 +374,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function carts(): HasMany
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasMany(\App\Models\Cart::class);
     }
 
     /**
@@ -372,7 +382,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(\App\Models\Order::class);
     }
 
     /**
@@ -380,7 +390,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function customerConversations(): HasMany
     {
-        return $this->hasMany(Conversation::class, 'customer_id');
+        return $this->hasMany(\App\Models\Conversation::class, 'customer_id');
     }
 
     /**
@@ -388,7 +398,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function merchantConversations(): HasMany
     {
-        return $this->hasMany(Conversation::class, 'merchant_id');
+        return $this->hasMany(\App\Models\Conversation::class, 'merchant_id');
     }
 
     /**
@@ -396,7 +406,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function supportConversations(): HasMany
     {
-        return $this->hasMany(Conversation::class, 'support_agent_id');
+        return $this->hasMany(\App\Models\Conversation::class, 'support_agent_id');
     }
 
     /**
@@ -404,7 +414,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function allConversations()
     {
-        return Conversation::where('customer_id', $this->id)
+        return \App\Models\Conversation::where('customer_id', $this->id)
             ->orWhere('merchant_id', $this->id)
             ->orWhere('support_agent_id', $this->id);
     }
@@ -414,7 +424,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function sentMessages(): HasMany
     {
-        return $this->hasMany(Message::class, 'sender_id');
+        return $this->hasMany(\App\Models\Message::class, 'sender_id');
     }
 
     /**
@@ -422,7 +432,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function customDashboards(): HasMany
     {
-        return $this->hasMany(CustomDashboard::class);
+        return $this->hasMany(\App\Models\CustomDashboard::class);
     }
 
     /**
@@ -430,7 +440,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function merchantServices(): HasMany
     {
-        return $this->hasMany(Service::class, 'merchant_id');
+        return $this->hasMany(\App\Models\Service::class, 'merchant_id');
     }
 
     // Accessor and Mutator methods for compatibility with checkout forms
@@ -456,9 +466,12 @@ class User extends Authenticatable implements FilamentUser
         $this->updateFullName();
     }
 
+    /**
+     * Update full name when first or last name changes
+     */
     private function updateFullName(): void
     {
-        $this->attributes['name'] = trim(($this->f_name ?? '').' '.($this->l_name ?? ''));
+        $this->attributes['name'] = trim(($this->f_name ?? '') . ' ' . ($this->l_name ?? ''));
     }
 
     public function getFullAddressAttribute(): string
@@ -472,5 +485,25 @@ class User extends Authenticatable implements FilamentUser
         ]);
 
         return implode(', ', $parts);
+    }
+
+    /**
+     * Boot method to handle model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            // Ensure name is updated when f_name or l_name changes
+            if ($user->isDirty(['f_name', 'l_name'])) {
+                $user->name = trim(($user->f_name ?? '') . ' ' . ($user->l_name ?? ''));
+            }
+        });
+
+        static::created(function ($user) {
+            // Sync role with user_type after creation
+            $user->syncRoleWithUserType();
+        });
     }
 }

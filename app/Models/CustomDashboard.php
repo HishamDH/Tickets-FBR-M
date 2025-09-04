@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomDashboard whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperCustomDashboard
  */
 class CustomDashboard extends Model
 {
@@ -54,6 +55,6 @@ class CustomDashboard extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\Models\User::class);
     }
 }

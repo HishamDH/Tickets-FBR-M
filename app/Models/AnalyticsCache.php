@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperAnalyticsCache
  * @property int $id
  * @property string $cache_key
  * @property string $cache_data
@@ -23,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsCache whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperAnalyticsCache
  */
 class AnalyticsCache extends Model
 {

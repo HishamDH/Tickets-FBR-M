@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @mixin IdeHelperServiceAvailability
  * @property int $id
  * @property int $service_id
  * @property string $availability_date
@@ -35,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereStartTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ServiceAvailability whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperServiceAvailability
  */
 class ServiceAvailability extends Model
 {

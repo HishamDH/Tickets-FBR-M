@@ -107,13 +107,13 @@
                 <div class="mt-6 text-center space-y-4">
                     <p class="text-sm text-gray-600">
                         تذكرت كلمة المرور؟
-                        <a href="{{ route('welcome') }}" class="text-purple-600 hover:text-purple-700 font-semibold">
+                        <a href="{{ route('home') }}" class="text-purple-600 hover:text-purple-700 font-semibold">
                             العودة لتسجيل الدخول
                         </a>
                     </p>
                     
                     <div class="border-t border-gray-200 pt-4">
-                        <a href="{{ route('welcome') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
+                        <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
                             العودة للصفحة الرئيسية
                         </a>
                     </div>

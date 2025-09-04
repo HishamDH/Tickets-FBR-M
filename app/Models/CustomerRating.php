@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperCustomerRating
  * @property int $id
  * @property int $service_id
  * @property int $user_id
@@ -29,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|CustomerRating whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CustomerRating whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperCustomerRating
  */
 class CustomerRating extends Model
 {

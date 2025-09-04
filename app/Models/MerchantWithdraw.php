@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @mixin IdeHelperMerchantWithdraw
  * @property int $id
  * @property int $merchant_id
  * @property string $amount
@@ -58,6 +57,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereTransactionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWithdraw whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperMerchantWithdraw
  */
 class MerchantWithdraw extends Model
 {

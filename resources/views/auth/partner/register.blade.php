@@ -249,7 +249,7 @@
                             <a href="{{ route('merchant.register') }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
                                 التجار
                             </a>
-                            <a href="{{ route('welcome') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
+                            <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
                                 الرئيسية
                             </a>
                         </div>

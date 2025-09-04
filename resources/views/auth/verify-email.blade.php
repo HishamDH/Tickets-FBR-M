@@ -114,7 +114,7 @@
 
                 <!-- Back to Home -->
                 <div class="mt-6 text-center">
-                    <a href="{{ route('welcome') }}" class="text-cyan-600 hover:text-cyan-700 text-sm font-semibold">
+                    <a href="{{ route('home') }}" class="text-cyan-600 hover:text-cyan-700 text-sm font-semibold">
                         العودة للصفحة الرئيسية
                     </a>
                 </div>

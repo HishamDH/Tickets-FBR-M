@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperAnalytics
  * @property int $id
  * @property string $metric_name
  * @property string $metric_type
@@ -33,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereRecordedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Analytics whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperAnalytics
  */
 class Analytics extends Model
 {

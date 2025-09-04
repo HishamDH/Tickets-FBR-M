@@ -35,7 +35,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/GlobalFunctions.php"
+            "app/Helpers/GlobalFunctions.php",
+            "bootstrap/eloquent_alias.php"
         ]
     },
     "autoload-dev": {

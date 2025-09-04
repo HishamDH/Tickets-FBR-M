@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperBranch
  * @property int $id
  * @property int $user_id
  * @property string $name
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Branch whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Branch whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperBranch
  */
 class Branch extends Model
 {

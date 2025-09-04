@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @mixin IdeHelperMerchant
  * @property int $id
  * @property int $user_id
  * @property string $business_name
@@ -57,6 +56,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Merchant whereVerificationStatus($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperMerchant
  */
 class Merchant extends Model
 {

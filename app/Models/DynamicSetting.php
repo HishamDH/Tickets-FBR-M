@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperDynamicSetting
  * @property int $id
  * @property string $key
  * @property string $value
@@ -23,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|DynamicSetting whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|DynamicSetting whereValue($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperDynamicSetting
  */
 class DynamicSetting extends Model
 {

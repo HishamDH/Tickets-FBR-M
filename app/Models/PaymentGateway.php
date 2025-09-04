@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @mixin IdeHelperPaymentGateway
  * @property int $id
  * @property string $name
  * @property string $code
@@ -52,6 +51,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereTransactionFee($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaymentGateway whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperPaymentGateway
  */
 class PaymentGateway extends Model
 {

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @mixin IdeHelperConversation
  * @property int $id
  * @property string|null $title
  * @property string $type
@@ -49,6 +48,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Conversation whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperConversation
  */
 class Conversation extends Model
 {

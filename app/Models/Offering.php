@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperOffering
  * @property int $id
  * @property string|null $name
  * @property string|null $location
@@ -72,6 +71,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Offering whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Offering whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperOffering
  */
 class Offering extends Model
 {

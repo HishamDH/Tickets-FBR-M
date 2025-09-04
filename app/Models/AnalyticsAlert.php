@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperAnalyticsAlert
  * @property int $id
  * @property string $alert_type
  * @property string $severity
@@ -38,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereTriggeredAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AnalyticsAlert whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperAnalyticsAlert
  */
 class AnalyticsAlert extends Model
 {

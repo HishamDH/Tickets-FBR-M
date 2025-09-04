@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 /**
- * @mixin IdeHelperBooking
  * @property int $id
  * @property string $booking_number
  * @property int|null $customer_id
@@ -82,6 +81,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Booking whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperBooking
  */
 class Booking extends Model
 {

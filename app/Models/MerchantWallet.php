@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin IdeHelperMerchantWallet
  * @property int $id
  * @property int $user_id
  * @property string $balance
@@ -22,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWallet whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantWallet whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperMerchantWallet
  */
 class MerchantWallet extends Model
 {

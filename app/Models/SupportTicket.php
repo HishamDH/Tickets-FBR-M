@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @mixin IdeHelperSupportTicket
  * @property int $id
  * @property string $ticket_number
  * @property int $user_id
@@ -61,6 +60,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperSupportTicket
  */
 class SupportTicket extends Model
 {

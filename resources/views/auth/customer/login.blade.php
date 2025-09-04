@@ -140,10 +140,10 @@
                             <a href="{{ route('partner.login') }}" class="text-green-600 hover:text-green-700 text-sm font-medium">
                                 الشركاء
                             </a>
-                            <a href="{{ route('filament.admin.auth.login') }}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                            <a href="{{ route('admin.login') }}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
                                 الإدارة
                             </a>
-                            <a href="{{ route('welcome') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
+                            <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-700 text-sm font-medium">
                                 الرئيسية
                             </a>
                         </div>
@@ -188,144 +188,6 @@
                             </ul>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-    <div class="min-h-screen flex">
-        <!-- Left Side - Form -->
-        <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24">
-            <div class="mx-auto w-full max-w-sm lg:w-96">
-                <!-- Logo -->
-                <div class="text-center mb-8">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-                            </svg>
-                        </div>
-                        <span class="mr-3 text-xl font-bold text-dark">شباك التذاكر</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-dark">منطقة العملاء</h2>
-                    <p class="mt-2 text-gray">دخول لإدارة حجوزاتك وخدماتك</p>
-                </div>
-
-                <!-- Session Status -->
-                @if (session('status'))
-                    <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
-                        {{ session('status') }}
-                    </div>
-                @endif
-
-                <!-- Form -->
-                <form method="POST" action="{{ route('customer.login') }}" class="space-y-6">
-                    @csrf
-
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-dark mb-2">
-                            البريد الإلكتروني
-                        </label>
-                        <input 
-                            id="email" 
-                            type="email" 
-                            name="email" 
-                            value="{{ old('email') }}" 
-                            required 
-                            autofocus 
-                            autocomplete="username"
-                            class="input-field w-full"
-                            placeholder="ادخل بريدك الإلكتروني"
-                        >
-                        @error('email')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-dark mb-2">
-                            كلمة المرور
-                        </label>
-                        <input 
-                            id="password" 
-                            type="password" 
-                            name="password" 
-                            required 
-                            autocomplete="current-password"
-                            class="input-field w-full"
-                            placeholder="ادخل كلمة المرور"
-                        >
-                        @error('password')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Remember Me -->
-                    <div class="flex items-center">
-                        <input 
-                            id="remember_me" 
-                            type="checkbox" 
-                            name="remember"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                        >
-                        <label for="remember_me" class="mr-2 text-sm text-gray">
-                            تذكرني
-                        </label>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
-                        دخول منطقة العملاء
-                    </button>
-                </form>
-
-                <!-- Links -->
-                <div class="mt-6 space-y-4">
-                    <div class="flex flex-col items-center space-y-2">
-                        <a href="{{ route('password.request') }}" class="text-sm text-gray hover:text-blue-600">
-                            نسيت كلمة المرور؟
-                        </a>
-                        <a href="{{ route('customer.register') }}" class="text-sm text-blue-600 hover:text-blue-700">
-                            إنشاء حساب جديد
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Back to Home -->
-                <div class="mt-8 text-center">
-                    <a href="{{ route('home') }}" class="text-sm text-gray hover:text-dark">
-                        ← العودة للرئيسية
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Side - Image -->
-        <div class="hidden lg:block relative w-0 flex-1">
-            <div class="absolute inset-0 h-full w-full bg-blue-600 flex items-center justify-center">
-                <div class="text-center text-white">
-                    <svg class="w-32 h-32 mx-auto mb-8" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-                    </svg>
-                    <h3 class="text-3xl font-bold mb-4">أهلاً بك في شباك التذاكر</h3>
-                    <p class="text-xl text-blue-100 max-w-md">
-                        احجز الخدمات التي تحتاجها بسهولة ويسر من منصة واحدة
-                    </p>
                 </div>
             </div>
         </div>

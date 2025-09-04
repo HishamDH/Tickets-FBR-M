@@ -37,7 +37,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Frontend Public Routes
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/', [WelcomeController::class, 'index'])->name('home'); // Changed from 'welcome' to 'home'
+Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome'); // Keep welcome as alias
 Route::get('/merchants', [HomeController::class, 'merchants'])->name('merchants.index');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/merchant/{id}', [HomeController::class, 'merchantShow'])->name('merchant.show');

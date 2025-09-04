@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @mixin IdeHelperPaidReservation
  * @property int $id
  * @property int $item_id
  * @property string $item_type
@@ -51,6 +50,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @method static \Illuminate\Database\Eloquent\Builder|PaidReservation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PaidReservation whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperPaidReservation
  */
 class PaidReservation extends Model
 {

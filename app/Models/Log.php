@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @mixin IdeHelperLog
  * @property int $id
  * @property string $action
  * @property array|null $details
@@ -29,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Log whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Log whereUserId($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperLog
  */
 class Log extends Model
 {

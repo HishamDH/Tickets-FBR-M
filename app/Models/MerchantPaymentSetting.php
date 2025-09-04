@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @mixin IdeHelperMerchantPaymentSetting
  * @property int $id
  * @property int $merchant_id
  * @property int $payment_gateway_id
@@ -42,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereTestPassed($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MerchantPaymentSetting whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @mixin IdeHelperMerchantPaymentSetting
  */
 class MerchantPaymentSetting extends Model
 {
