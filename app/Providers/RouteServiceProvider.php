@@ -47,6 +47,11 @@ class RouteServiceProvider extends ServiceProvider
             // Customer Routes
             Route::middleware('web')
                 ->group(base_path('routes/customer.php'));
+
+            // Subdomain Routes
+            if (file_exists(base_path('routes/subdomain.php'))) {
+                require base_path('routes/subdomain.php');
+            }
         });
     }
 }

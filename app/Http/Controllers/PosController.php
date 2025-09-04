@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Offering;
 use App\Models\PaidReservation;
 use App\Models\User;
+use App\Services\ThermalPrinterService;
+use App\Services\OfflinePosService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -758,5 +760,579 @@ class PosController extends Controller
             'analytics' => $analytics,
             'period' => $period,
         ]);
+    }
+
+    /**
+     * Print ticket receipt
+     */
+    public function printTicket(Request $request, PaidReservation $reservation)
+    {
+        // Check if reservation belongs to current merchant
+        if (!$reservation->offering || $reservation->offering->user_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access to reservation'
+            ], 403);
+        }
+
+        try {
+            $printerService = app(ThermalPrinterService::class);
+            $printed = $printerService->printTicket($reservation);
+
+            if ($printed) {
+                // Log print activity
+                Log::info('Ticket printed', [
+                    'reservation_id' => $reservation->id,
+                    'merchant_id' => Auth::id(),
+                    'printed_at' => now(),
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Ticket printed successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to print ticket'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Print ticket error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Print error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Print sales receipt
+     */
+    public function printReceipt(Request $request, PaidReservation $reservation)
+    {
+        // Check if reservation belongs to current merchant
+        if (!$reservation->offering || $reservation->offering->user_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access to reservation'
+            ], 403);
+        }
+
+        try {
+            $printerService = app(ThermalPrinterService::class);
+            $printed = $printerService->printSalesReceipt($reservation);
+
+            if ($printed) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Receipt printed successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to print receipt'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Print receipt error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Print error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Batch print multiple tickets
+     */
+    public function batchPrint(Request $request)
+    {
+        $request->validate([
+            'reservation_ids' => 'required|array|min:1|max:50',
+            'reservation_ids.*' => 'exists:paid_reservations,id',
+            'print_type' => 'required|in:ticket,receipt',
+        ]);
+
+        try {
+            $reservations = PaidReservation::whereIn('id', $request->reservation_ids)
+                ->whereHas('offering', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })
+                ->get();
+
+            if ($reservations->count() !== count($request->reservation_ids)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Some reservations not found or unauthorized'
+                ], 403);
+            }
+
+            $printerService = app(ThermalPrinterService::class);
+            $results = [];
+
+            foreach ($reservations as $reservation) {
+                if ($request->print_type === 'ticket') {
+                    $printed = $printerService->printTicket($reservation);
+                } else {
+                    $printed = $printerService->printSalesReceipt($reservation);
+                }
+
+                $results[] = [
+                    'reservation_id' => $reservation->id,
+                    'printed' => $printed,
+                ];
+            }
+
+            $successCount = collect($results)->where('printed', true)->count();
+            $failedCount = collect($results)->where('printed', false)->count();
+
+            return response()->json([
+                'success' => true,
+                'message' => sprintf('Batch print completed: %d successful, %d failed', $successCount, $failedCount),
+                'results' => $results,
+                'stats' => [
+                    'total' => count($results),
+                    'successful' => $successCount,
+                    'failed' => $failedCount,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Batch print error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Batch print error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Print daily report
+     */
+    public function printDailyReport(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $date = $request->input('date', now()->toDateString());
+
+            // Get sales data for the day
+            $sales = PaidReservation::whereHas('offering', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+                ->whereJsonContains('additional_data->source', 'pos')
+                ->whereDate('created_at', $date)
+                ->get();
+
+            $salesData = [
+                'date' => $date,
+                'total_transactions' => $sales->count(),
+                'total_sales' => $sales->sum('total_amount'),
+                'cash_sales' => $sales->filter(function ($sale) {
+                    $paymentMethod = $sale->additional_data['payment']['method'] ?? 'unknown';
+                    return $paymentMethod === 'cash';
+                })->sum('total_amount'),
+                'card_sales' => $sales->filter(function ($sale) {
+                    $paymentMethod = $sale->additional_data['payment']['method'] ?? 'unknown';
+                    return in_array($paymentMethod, ['card', 'credit', 'debit']);
+                })->sum('total_amount'),
+                'payment_methods' => $sales->groupBy(function ($sale) {
+                    return $sale->additional_data['payment']['method'] ?? 'unknown';
+                })->map(function ($group) {
+                    return $group->sum('total_amount');
+                })->toArray(),
+            ];
+
+            $printerService = app(ThermalPrinterService::class);
+            $printed = $printerService->printDailyReport($user, $salesData);
+
+            if ($printed) {
+                Log::info('Daily report printed', [
+                    'merchant_id' => $user->id,
+                    'date' => $date,
+                    'total_sales' => $salesData['total_sales'],
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Daily report printed successfully',
+                    'sales_data' => $salesData,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to print daily report'
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Print daily report error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Print error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Test thermal printer
+     */
+    public function testPrinter()
+    {
+        try {
+            $printerService = app(ThermalPrinterService::class);
+            $tested = $printerService->testPrinter();
+
+            if ($tested) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Printer test successful'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Printer test failed'
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Printer test error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Printer test error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Open cash drawer
+     */
+    public function openCashDrawer()
+    {
+        try {
+            $printerService = app(ThermalPrinterService::class);
+            
+            // Send cash drawer open command using print method
+            $drawerCommand = "\x1B\x70\x00\x32\xC8"; // ESC p 0 50 200
+            $opened = $printerService->printRaw($drawerCommand);
+            
+            if ($opened) {
+                Log::info('Cash drawer opened', [
+                    'merchant_id' => Auth::id(),
+                    'opened_at' => now(),
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Cash drawer opened'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to open cash drawer'
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Cash drawer error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Cash drawer error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Store transaction offline
+     */
+    public function storeOfflineTransaction(Request $request)
+    {
+        $request->validate([
+            'offering_id' => 'required|exists:offerings,id',
+            'customer.name' => 'required|string|max:255',
+            'customer.email' => 'nullable|email',
+            'customer.phone' => 'nullable|string|max:20',
+            'num_people' => 'required|integer|min:1',
+            'total_amount' => 'required|numeric|min:0',
+            'payment.method' => 'required|string',
+            'payment.amount_paid' => 'required|numeric|min:0',
+            'seats' => 'nullable|array',
+        ]);
+
+        try {
+            $offlineService = app(OfflinePosService::class);
+
+            // Check if offline mode is enabled
+            if (!$offlineService->isOfflineModeEnabled()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Offline mode is not enabled'
+                ], 400);
+            }
+
+            // Verify offering belongs to current merchant
+            $offering = Offering::where('id', $request->offering_id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if (!$offering) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Offering not found or unauthorized'
+                ], 404);
+            }
+
+            // Prepare transaction data
+            $transactionData = [
+                'offering_id' => $request->offering_id,
+                'customer' => $request->customer,
+                'num_people' => $request->num_people,
+                'total_amount' => $request->total_amount,
+                'seats' => $request->seats ?? [],
+                'additional_data' => [
+                    'source' => 'pos',
+                    'payment' => $request->payment,
+                    'pos_terminal' => gethostname(),
+                    'offline_mode' => true,
+                ],
+            ];
+
+            $result = $offlineService->storeOfflineTransaction($transactionData);
+
+            if ($result['success']) {
+                // Try to print ticket if printer is available
+                try {
+                    if (config('pos.ticket.auto_print', true)) {
+                        $printerService = app(ThermalPrinterService::class);
+                        
+                        // Create a temporary reservation-like object for printing
+                        $tempReservation = (object) [
+                            'id' => $result['offline_id'],
+                            'offering' => $offering,
+                            'user_name' => $request->customer['name'],
+                            'user_phone' => $request->customer['phone'] ?? '',
+                            'num_people' => $request->num_people,
+                            'total_amount' => $request->total_amount,
+                            'created_at' => now(),
+                            'additional_data' => $transactionData['additional_data'],
+                        ];
+                        
+                        $printerService->printTicket($tempReservation);
+                    }
+                } catch (\Exception $printError) {
+                    Log::warning('Offline print failed: ' . $printError->getMessage());
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'offline_id' => $result['offline_id'],
+                    'message' => 'Transaction stored offline successfully',
+                    'data' => [
+                        'transaction_id' => $result['offline_id'],
+                        'status' => 'offline',
+                        'will_sync_when_online' => true,
+                    ]
+                ]);
+            } else {
+                return response()->json($result, 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Store offline transaction error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to store offline transaction: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Sync offline transactions
+     */
+    public function syncOfflineTransactions()
+    {
+        try {
+            $offlineService = app(OfflinePosService::class);
+            $result = $offlineService->syncOfflineTransactions();
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            Log::error('Sync offline transactions error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Sync failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get offline statistics
+     */
+    public function getOfflineStats()
+    {
+        try {
+            $offlineService = app(OfflinePosService::class);
+            $stats = $offlineService->getOfflineStats();
+
+            return response()->json([
+                'success' => true,
+                'stats' => $stats,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Get offline stats error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get stats: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get offline transactions
+     */
+    public function getOfflineTransactions(Request $request)
+    {
+        try {
+            $offlineService = app(OfflinePosService::class);
+            $status = $request->query('status');
+            $transactions = $offlineService->getOfflineTransactions($status);
+
+            return response()->json([
+                'success' => true,
+                'transactions' => $transactions,
+                'count' => count($transactions),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Get offline transactions error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get transactions: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Clear synced offline transactions
+     */
+    public function clearSyncedTransactions()
+    {
+        try {
+            $offlineService = app(OfflinePosService::class);
+            $result = $offlineService->clearSyncedTransactions();
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            Log::error('Clear synced transactions error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Cleanup failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Export offline data
+     */
+    public function exportOfflineData()
+    {
+        try {
+            $offlineService = app(OfflinePosService::class);
+            $result = $offlineService->exportOfflineData();
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'download_url' => route('merchant.pos.download-offline-export', [
+                        'filename' => $result['file_name']
+                    ]),
+                    'file_info' => [
+                        'name' => $result['file_name'],
+                        'size' => $result['file_size'],
+                        'transactions_count' => $result['transactions_count'],
+                    ]
+                ]);
+            } else {
+                return response()->json($result, 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Export offline data error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Export failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Download offline data export
+     */
+    public function downloadOfflineExport($filename)
+    {
+        try {
+            $merchantId = Auth::id();
+            $filePath = "offline/pos/{$merchantId}/exports/{$filename}";
+
+            if (!Storage::exists($filePath)) {
+                abort(404, 'Export file not found');
+            }
+
+            return Storage::download($filePath);
+
+        } catch (\Exception $e) {
+            Log::error('Download offline export error: ' . $e->getMessage());
+            abort(500, 'Download failed');
+        }
+    }
+
+    /**
+     * Check connection status
+     */
+    public function checkConnectionStatus()
+    {
+        try {
+            // Simple connectivity check
+            $onlineStatus = $this->isOnline();
+            $offlineService = app(OfflinePosService::class);
+            
+            return response()->json([
+                'success' => true,
+                'status' => [
+                    'online' => $onlineStatus,
+                    'offline_mode_enabled' => $offlineService->isOfflineModeEnabled(),
+                    'pending_sync_count' => count($offlineService->getOfflineTransactions('pending')),
+                    'last_check' => now()->toISOString(),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Check connection status error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Check if system is online
+     */
+    private function isOnline()
+    {
+        try {
+            // Try to connect to a reliable server
+            $connection = @fsockopen('www.google.com', 80, $errno, $errstr, 5);
+            if ($connection) {
+                fclose($connection);
+                return true;
+            }
+            return false;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

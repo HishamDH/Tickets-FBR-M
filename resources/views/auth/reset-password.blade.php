@@ -540,7 +540,7 @@
             <div class="mt-8 space-y-4">
                 <div class="border-t border-red-300 pt-4">
                     <div class="flex justify-center text-sm">
-                        <a href="{{ route('login') }}" 
+                        <a href="{{ route('customer.login') }}" 
                            class="text-red-200 hover:text-white transition-colors duration-300 flex items-center">
                             ← العودة لتسجيل الدخول
                         </a>

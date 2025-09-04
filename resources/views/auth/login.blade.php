@@ -47,7 +47,7 @@
                 @endif
 
                 <!-- Form -->
-                <form method="POST" action="{{ route('login') }}" class="space-y-6">
+                <form method="POST" action="{{ route('customer.login') }}" class="space-y-6">
                     @csrf
 
                     <!-- Email -->
@@ -121,7 +121,7 @@
                 <div class="mt-6 text-center">
                     <p class="text-sm text-gray">
                         ليس لديك حساب؟
-                        <a href="{{ route('register') }}" class="text-primary font-medium hover:text-primary-hover">
+                        <a href="{{ route('customer.register') }}" class="text-primary font-medium hover:text-primary-hover">
                             إنشاء حساب جديد
                         </a>
                     </p>

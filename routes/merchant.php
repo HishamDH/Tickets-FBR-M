@@ -88,5 +88,38 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
         Route::get('/settings', function () {
             return view('merchant.settings.index');
         })->name('settings.index');
+
+        // Venue Layout Management
+        Route::prefix('venue-layout')->name('venue-layout.')->group(function () {
+            Route::get('/{venueLayout}/designer', [App\Http\Controllers\Merchant\VenueLayoutController::class, 'designer'])->name('designer');
+            Route::post('/{venueLayout}/update', [App\Http\Controllers\Merchant\VenueLayoutController::class, 'updateLayout'])->name('update');
+            Route::get('/{venueLayout}/data', [App\Http\Controllers\Merchant\VenueLayoutController::class, 'getLayoutData'])->name('data');
+            Route::get('/{venueLayout}/preview', [App\Http\Controllers\Merchant\VenueLayoutController::class, 'preview'])->name('preview');
+        });
+
+        // POS System
+        Route::prefix('pos')->name('pos.')->group(function () {
+            Route::get('/', [App\Http\Controllers\PosController::class, 'index'])->name('index');
+            Route::post('/process-payment', [App\Http\Controllers\PosController::class, 'processPayment'])->name('process-payment');
+            Route::get('/analytics', [App\Http\Controllers\PosController::class, 'analytics'])->name('analytics');
+            
+            // Printing routes
+            Route::post('/print/ticket/{reservation}', [App\Http\Controllers\PosController::class, 'printTicket'])->name('print.ticket');
+            Route::post('/print/receipt/{reservation}', [App\Http\Controllers\PosController::class, 'printReceipt'])->name('print.receipt');
+            Route::post('/print/batch', [App\Http\Controllers\PosController::class, 'batchPrint'])->name('print.batch');
+            Route::post('/print/daily-report', [App\Http\Controllers\PosController::class, 'printDailyReport'])->name('print.daily-report');
+            Route::post('/print/test', [App\Http\Controllers\PosController::class, 'testPrinter'])->name('print.test');
+            Route::post('/cash-drawer/open', [App\Http\Controllers\PosController::class, 'openCashDrawer'])->name('cash-drawer.open');
+            
+            // Offline mode routes
+            Route::post('/offline/store', [App\Http\Controllers\PosController::class, 'storeOfflineTransaction'])->name('offline.store');
+            Route::post('/offline/sync', [App\Http\Controllers\PosController::class, 'syncOfflineTransactions'])->name('offline.sync');
+            Route::get('/offline/stats', [App\Http\Controllers\PosController::class, 'getOfflineStats'])->name('offline.stats');
+            Route::get('/offline/transactions', [App\Http\Controllers\PosController::class, 'getOfflineTransactions'])->name('offline.transactions');
+            Route::delete('/offline/clear-synced', [App\Http\Controllers\PosController::class, 'clearSyncedTransactions'])->name('offline.clear-synced');
+            Route::post('/offline/export', [App\Http\Controllers\PosController::class, 'exportOfflineData'])->name('offline.export');
+            Route::get('/offline/download/{filename}', [App\Http\Controllers\PosController::class, 'downloadOfflineExport'])->name('download-offline-export');
+            Route::get('/connection/status', [App\Http\Controllers\PosController::class, 'checkConnectionStatus'])->name('connection.status');
+        });
     });
 });

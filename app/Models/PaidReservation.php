@@ -71,6 +71,21 @@ class PaidReservation extends Model
         'code',
         'status',
         'additional_data',
+        'booking_date',
+        'booking_time',
+        'guest_count',
+        'total_amount',
+        'payment_status',
+        'reservation_status',
+        'special_requests',
+        'qr_code',
+        'pos_terminal_id',
+        'pos_data',
+        'printed_at',
+        'print_count',
+        'is_offline_transaction',
+        'offline_transaction_id',
+        'synced_at',
     ];
 
     /**
@@ -81,7 +96,15 @@ class PaidReservation extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'discount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
         'additional_data' => 'array',
+        'pos_data' => 'array',
+        'booking_date' => 'date',
+        'printed_at' => 'datetime',
+        'synced_at' => 'datetime',
+        'is_offline_transaction' => 'boolean',
+        'print_count' => 'integer',
+        'guest_count' => 'integer',
     ];
 
     /**

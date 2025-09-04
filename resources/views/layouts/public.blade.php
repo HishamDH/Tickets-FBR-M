@@ -182,8 +182,8 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="nav-link">تسجيل الدخول</a>
-                        <a href="{{ route('register') }}" class="btn-primary">
+                        <a href="{{ route('customer.login') }}" class="nav-link">تسجيل الدخول</a>
+                        <a href="{{ route('customer.register') }}" class="btn-primary">
                             إنشاء حساب
                         </a>
                     @endauth
@@ -222,8 +222,8 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="block py-3 text-gray-700 hover:text-orange-500 transition-colors">تسجيل الدخول</a>
-                        <a href="{{ route('register') }}" class="block w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-lg text-center hover:from-orange-600 hover:to-orange-700 transition-all">
+                        <a href="{{ route('customer.login') }}" class="block py-3 text-gray-700 hover:text-orange-500 transition-colors">تسجيل الدخول</a>
+                        <a href="{{ route('customer.register') }}" class="block w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-lg text-center hover:from-orange-600 hover:to-orange-700 transition-all">
                             إنشاء حساب
                         </a>
                     @endauth

@@ -157,12 +157,12 @@
                         </div>
                         @else
                         <div class="flex items-center space-x-4 space-x-reverse">
-                            <a href="{{ route('login') }}" 
+                            <a href="{{ route('customer.login') }}" 
                                class="btn btn-outline px-6 py-2 text-sm">
                                 <i class="fas fa-sign-in-alt ml-2"></i>
                                 تسجيل الدخول
                             </a>
-                            <a href="{{ route('register') }}" 
+                            <a href="{{ route('customer.register') }}" 
                                class="btn btn-primary px-6 py-2 text-sm">
                                 <i class="fas fa-user-plus ml-2"></i>
                                 إنشاء حساب
@@ -222,12 +222,12 @@
                     </form>
                     @else
                     <div class="space-y-3">
-                        <a href="{{ route('login') }}" 
+                        <a href="{{ route('customer.login') }}" 
                            class="btn btn-outline w-full justify-center">
                             <i class="fas fa-sign-in-alt ml-2"></i>
                             تسجيل الدخول
                         </a>
-                        <a href="{{ route('register') }}" 
+                        <a href="{{ route('customer.register') }}" 
                            class="btn btn-primary w-full justify-center">
                             <i class="fas fa-user-plus ml-2"></i>
                             إنشاء حساب

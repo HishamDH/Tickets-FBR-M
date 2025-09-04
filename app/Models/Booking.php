@@ -187,6 +187,22 @@ class Booking extends Model
     }
 
     /**
+     * Seat reservations relationship
+     */
+    public function seatReservations(): HasMany
+    {
+        return $this->hasMany(SeatReservation::class);
+    }
+
+    /**
+     * Get offering relationship (compatibility with both service and offering)
+     */
+    public function offering(): BelongsTo
+    {
+        return $this->belongsTo(Offering::class, 'service_id');
+    }
+
+    /**
      * Check if booking is confirmed
      */
     public function isConfirmed(): bool

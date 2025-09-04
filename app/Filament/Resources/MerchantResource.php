@@ -57,7 +57,62 @@ class MerchantResource extends Resource
                     ->relationship('partner', 'id'),
                 Forms\Components\Select::make('account_manager_id')
                     ->relationship('accountManager', 'name'),
-                Forms\Components\TextInput::make('settings'),
+
+                // Branding Section
+                Forms\Components\Section::make('Merchant Branding')
+                    ->description('Customize the merchant\'s storefront appearance')
+                    ->schema([
+                        Forms\Components\TextInput::make('subdomain')
+                            ->label('Subdomain')
+                            ->placeholder('merchant-name')
+                            ->helperText('Will be accessible at: subdomain.domain.com')
+                            ->unique(ignoreRecord: true)
+                            ->regex('/^[a-z0-9-]+$/')
+                            ->validationMessages([
+                                'regex' => 'Subdomain can only contain lowercase letters, numbers, and hyphens.',
+                                'unique' => 'This subdomain is already taken.',
+                            ]),
+
+                        Forms\Components\FileUpload::make('logo_path')
+                            ->label('Merchant Logo')
+                            ->image()
+                            ->directory('merchant-logos')
+                            ->maxSize(2048)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\ColorPicker::make('primary_color')
+                                    ->label('Primary Color')
+                                    ->default('#3B82F6'),
+
+                                Forms\Components\ColorPicker::make('secondary_color')
+                                    ->label('Secondary Color')
+                                    ->default('#1E40AF'),
+
+                                Forms\Components\ColorPicker::make('accent_color')
+                                    ->label('Accent Color')
+                                    ->default('#EF4444'),
+                            ]),
+
+                        Forms\Components\Textarea::make('custom_css')
+                            ->label('Custom CSS')
+                            ->helperText('Additional CSS to customize the storefront appearance')
+                            ->rows(10),
+
+                        Forms\Components\TextInput::make('custom_domain')
+                            ->label('Custom Domain')
+                            ->placeholder('merchant.com')
+                            ->helperText('Optional: Use your own domain instead of subdomain'),
+
+                        Forms\Components\Toggle::make('subdomain_enabled')
+                            ->label('Enable Subdomain Storefront')
+                            ->default(true)
+                            ->helperText('Allow customers to access storefront via subdomain'),
+                    ]),
+
+                Forms\Components\KeyValue::make('settings')
+                    ->label('Additional Settings'),
             ]);
     }
 
@@ -76,6 +131,16 @@ class MerchantResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('city')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('subdomain')
+                    ->searchable()
+                    ->copyable()
+                    ->url(fn (Merchant $record) => $record->subdomain_url)
+                    ->openUrlInNewTab(),
+                Tables\Columns\ImageColumn::make('logo_path')
+                    ->label('Logo')
+                    ->size(40),
+                Tables\Columns\ToggleColumn::make('subdomain_enabled')
+                    ->label('Storefront Active'),
                 Tables\Columns\TextColumn::make('verification_status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

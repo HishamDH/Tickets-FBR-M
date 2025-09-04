@@ -50,7 +50,7 @@
                 <div class="flex items-center space-x-reverse space-x-4">
                     <livewire:cart-icon />
                     @guest
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-merchant-primary">تسجيل الدخول</a>
+                        <a href="{{ route('customer.login') }}" class="text-gray-700 hover:text-merchant-primary">تسجيل الدخول</a>
                     @else
                         <div class="relative">
                             <button class="flex items-center text-gray-700 hover:text-merchant-primary">

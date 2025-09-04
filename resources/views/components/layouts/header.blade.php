@@ -1,4 +1,3 @@
-
 <header class="bg-white shadow-md" x-data="{ open: false }">
     <nav class="container mx-auto px-6 py-4">
         <div class="flex items-center justify-between">
@@ -16,7 +15,7 @@
                            class="text-gray-600 hover:text-orange-500">Logout</a>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600">Login</a>
+                    <a href="{{ route('customer.login') }}" class="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600">Login</a>
                 @endauth
             </div>
             <div class="md:hidden flex items-center">
@@ -39,7 +38,7 @@
                        class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Logout</a>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="block py-2 px-4 text-sm text-white bg-orange-500 rounded-md hover:bg-orange-600">Login</a>
+                <a href="{{ route('customer.login') }}" class="block py-2 px-4 text-sm text-white bg-orange-500 rounded-md hover:bg-orange-600">Login</a>
             @endauth
         </div>
     </nav>

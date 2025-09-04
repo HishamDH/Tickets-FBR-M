@@ -31,8 +31,8 @@ class AdminDashboardController extends Controller
             'pending_bookings' => Booking::where('status', 'pending')->count(),
         ];
 
-        // إحصائيات شهرية للحجوزات
-        $monthlyBookings = Booking::select(
+        // إحصائيات شهرية للإيرادات
+        $monthlyRevenue = Booking::select(
             DB::raw('MONTH(created_at) as month'),
             DB::raw('COUNT(*) as count'),
             DB::raw('SUM(total_amount) as revenue')
@@ -100,7 +100,7 @@ class AdminDashboardController extends Controller
 
         return view('dashboard.admin.index', compact(
             'stats',
-            'monthlyBookings',
+            'monthlyRevenue',
             'topServices',
             'recentBookings',
             'activeMerchants',

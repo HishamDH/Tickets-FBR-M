@@ -40,7 +40,7 @@
                 </div>
 
                 <!-- Form -->
-                <form method="POST" action="{{ route('register') }}" class="space-y-6">
+                <form method="POST" action="{{ route('customer.register') }}" class="space-y-6">
                     @csrf
 
                     <!-- Name -->
@@ -80,7 +80,7 @@
                             placeholder="ادخل بريدك الإلكتروني"
                         >
                         @error('email')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p
                         @enderror
                     </div>
 
@@ -148,7 +148,7 @@
                 <div class="mt-6 text-center">
                     <p class="text-sm text-gray">
                         لديك حساب بالفعل؟
-                        <a href="{{ route('login') }}" class="text-primary font-medium hover:text-primary-hover">
+                        <a href="{{ route('customer.login') }}" class="text-primary font-medium hover:text-primary-hover">
                             تسجيل الدخول
                         </a>
                     </p>

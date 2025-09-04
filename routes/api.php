@@ -83,4 +83,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('tickets', [SupportController::class, 'store']);
         Route::delete('tickets/{ticket}', [SupportController::class, 'destroy']);
     });
+
+    // Seat Booking System
+    Route::prefix('seats')->group(function () {
+        Route::get('venue-layout/{offeringId}', [App\Http\Controllers\Api\SeatBookingController::class, 'getVenueLayout']);
+        Route::post('reserve', [App\Http\Controllers\Api\SeatBookingController::class, 'reserveSeats']);
+        Route::delete('reservation/{bookingId}', [App\Http\Controllers\Api\SeatBookingController::class, 'cancelReservation']);
+        Route::get('booking/{bookingId}', [App\Http\Controllers\Api\SeatBookingController::class, 'getBookingDetails']);
+    });
 });

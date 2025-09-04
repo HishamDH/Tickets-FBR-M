@@ -74,11 +74,22 @@ class Merchant extends Model
         'partner_id',
         'account_manager_id',
         'settings',
+        'subdomain',
+        'logo_path',
+        'brand_colors',
+        'primary_color',
+        'secondary_color',
+        'accent_color',
+        'custom_css',
+        'custom_domain',
+        'subdomain_enabled',
     ];
 
     protected $casts = [
         'settings' => 'array',
         'commission_rate' => 'decimal:2',
+        'brand_colors' => 'array',
+        'subdomain_enabled' => 'boolean',
     ];
 
     /**
@@ -177,5 +188,77 @@ class Merchant extends Model
         return $this->bookings()
             ->where('payment_status', 'paid')
             ->sum('total_amount');
+    }
+
+    /**
+     * Get the full subdomain URL
+     */
+    public function getSubdomainUrlAttribute(): ?string
+    {
+        if (!$this->subdomain || !$this->subdomain_enabled) {
+            return null;
+        }
+
+        $protocol = config('app.env') === 'production' ? 'https' : 'http';
+        $domain = config('app.main_domain', 'localhost');
+        
+        return $protocol . '://' . $this->subdomain . '.' . $domain;
+    }
+
+    /**
+     * Get logo URL with fallback
+     */
+    public function getLogoUrlAttribute(): string
+    {
+        if ($this->logo_path && file_exists(public_path('storage/' . $this->logo_path))) {
+            return asset('storage/' . $this->logo_path);
+        }
+
+        return asset('images/default-merchant-logo.svg');
+    }
+
+    /**
+     * Check if subdomain is available
+     */
+    public static function isSubdomainAvailable(string $subdomain): bool
+    {
+        $reserved = ['www', 'api', 'admin', 'mail', 'ftp', 'localhost', 'staging', 'test'];
+        
+        if (in_array(strtolower($subdomain), $reserved)) {
+            return false;
+        }
+
+        return !static::where('subdomain', $subdomain)->exists();
+    }
+
+    /**
+     * Generate available subdomain from business name
+     */
+    public function generateSubdomain(): string
+    {
+        $base = str()->slug($this->business_name);
+        $subdomain = $base;
+        $counter = 1;
+
+        while (!static::isSubdomainAvailable($subdomain)) {
+            $subdomain = $base . '-' . $counter;
+            $counter++;
+        }
+
+        return $subdomain;
+    }
+
+    /**
+     * Get CSS variables for branding
+     */
+    public function getBrandCssVariables(): string
+    {
+        return "
+            :root {
+                --primary-color: {$this->primary_color};
+                --secondary-color: {$this->secondary_color};
+                --accent-color: {$this->accent_color};
+            }
+        ";
     }
 }
