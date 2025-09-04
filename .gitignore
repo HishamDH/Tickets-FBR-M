@@ -19,3 +19,9 @@ yarn-error.log
 /.vscode
 /_frontend_reference/
 _reference/TICKETS/
+
+# IDE Helper files - تجاهل ملفات مساعدة IDE
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+/.vscode/blade-intellisense.blade.php

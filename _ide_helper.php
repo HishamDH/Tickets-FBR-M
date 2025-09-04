@@ -7915,6 +7915,97 @@ namespace Illuminate\Support\Facades {
      * @see \Illuminate\Log\LogManager
      */        class Log {
                     /**
+         * Detailed debug information.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function debug($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->debug($message, $context);
+        }
+                    /**
+         * Interesting events.
+         * 
+         * Example: User logs in, SQL logs.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function info($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->info($message, $context);
+        }
+                    /**
+         * Normal but significant events.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function notice($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->notice($message, $context);
+        }
+                    /**
+         * Exceptional occurrences that are not errors.
+         * 
+         * Example: Use of deprecated APIs, poor use of an API, undesirable things
+         * that are not necessarily wrong.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function warning($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->warning($message, $context);
+        }
+                    /**
+         * Runtime errors that do not require immediate action but should typically
+         * be logged and monitored.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function error($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->error($message, $context);
+        }
+                    /**
+         * Critical conditions.
+         * 
+         * Example: Application component unavailable, unexpected exception.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function critical($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->critical($message, $context);
+        }
+                    /**
+         * Action must be taken immediately.
+         * 
+         * Example: Entire website down, database unavailable, etc. This should
+         * trigger the SMS alerts and wake you up.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function alert($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->alert($message, $context);
+        }
+                    /**
+         * System is unusable.
+         *
+         * @param mixed[] $context
+         * @static
+         */        public static function emergency($message, $context = [])
+        {
+                        /** @var \Psr\Log\LoggerInterface $instance */
+                        return $instance->emergency($message, $context);
+        }
+                    /**
          * Build an on-demand log channel.
          *
          * @param array $config
@@ -8053,113 +8144,6 @@ namespace Illuminate\Support\Facades {
         {
                         /** @var \Illuminate\Log\LogManager $instance */
                         return $instance->getChannels();
-        }
-                    /**
-         * System is unusable.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function emergency($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->emergency($message, $context);
-        }
-                    /**
-         * Action must be taken immediately.
-         * 
-         * Example: Entire website down, database unavailable, etc. This should
-         * trigger the SMS alerts and wake you up.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function alert($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->alert($message, $context);
-        }
-                    /**
-         * Critical conditions.
-         * 
-         * Example: Application component unavailable, unexpected exception.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function critical($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->critical($message, $context);
-        }
-                    /**
-         * Runtime errors that do not require immediate action but should typically
-         * be logged and monitored.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function error($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->error($message, $context);
-        }
-                    /**
-         * Exceptional occurrences that are not errors.
-         * 
-         * Example: Use of deprecated APIs, poor use of an API, undesirable things
-         * that are not necessarily wrong.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function warning($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->warning($message, $context);
-        }
-                    /**
-         * Normal but significant events.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function notice($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->notice($message, $context);
-        }
-                    /**
-         * Interesting events.
-         * 
-         * Example: User logs in, SQL logs.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function info($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->info($message, $context);
-        }
-                    /**
-         * Detailed debug information.
-         *
-         * @param string|\Stringable $message
-         * @param array $context
-         * @return void
-         * @static
-         */        public static function debug($message, $context = [])
-        {
-                        /** @var \Illuminate\Log\LogManager $instance */
-                        $instance->debug($message, $context);
         }
                     /**
          * Logs with an arbitrary level.

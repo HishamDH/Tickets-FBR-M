@@ -89,6 +89,45 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
             return view('merchant.settings.index');
         })->name('settings.index');
 
+        // Branding & Subdomain Management
+        Route::prefix('branding')->name('branding.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Merchant\BrandingController::class, 'index'])->name('index');
+            Route::post('/subdomain', [App\Http\Controllers\Merchant\BrandingController::class, 'updateSubdomain'])->name('subdomain.update');
+            Route::post('/branding', [App\Http\Controllers\Merchant\BrandingController::class, 'updateBranding'])->name('update');
+            Route::post('/social-links', [App\Http\Controllers\Merchant\BrandingController::class, 'updateSocialLinks'])->name('social-links.update');
+            Route::post('/business-hours', [App\Http\Controllers\Merchant\BrandingController::class, 'updateBusinessHours'])->name('business-hours.update');
+            Route::post('/seo', [App\Http\Controllers\Merchant\BrandingController::class, 'updateSeo'])->name('seo.update');
+            Route::post('/toggle-store', [App\Http\Controllers\Merchant\BrandingController::class, 'toggleStore'])->name('toggle-store');
+            Route::get('/preview', [App\Http\Controllers\Merchant\BrandingController::class, 'preview'])->name('preview');
+            Route::get('/check-subdomain', [App\Http\Controllers\Merchant\BrandingController::class, 'checkSubdomain'])->name('check-subdomain');
+        });
+
+        // Staff Management System
+        Route::prefix('staff')->name('staff.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Merchant\StaffController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\Merchant\StaffController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Merchant\StaffController::class, 'store'])->name('store');
+            Route::get('/{staff}', [App\Http\Controllers\Merchant\StaffController::class, 'show'])->name('show');
+            Route::get('/{staff}/edit', [App\Http\Controllers\Merchant\StaffController::class, 'edit'])->name('edit');
+            Route::put('/{staff}', [App\Http\Controllers\Merchant\StaffController::class, 'update'])->name('update');
+            Route::delete('/{staff}', [App\Http\Controllers\Merchant\StaffController::class, 'destroy'])->name('destroy');
+            
+            // Scheduling
+            Route::get('/schedules/manage', [App\Http\Controllers\Merchant\StaffController::class, 'schedules'])->name('schedules');
+            Route::post('/shifts', [App\Http\Controllers\Merchant\StaffController::class, 'storeShift'])->name('shifts.store');
+            
+            // Clock in/out
+            Route::post('/{staff}/clock-in', [App\Http\Controllers\Merchant\StaffController::class, 'clockIn'])->name('clock-in');
+            Route::post('/{staff}/clock-out', [App\Http\Controllers\Merchant\StaffController::class, 'clockOut'])->name('clock-out');
+            
+            // Reports and analytics
+            Route::get('/reports/performance', [App\Http\Controllers\Merchant\StaffController::class, 'reports'])->name('reports');
+            Route::post('/reports/export', [App\Http\Controllers\Merchant\StaffController::class, 'exportReport'])->name('reports.export');
+            
+            // Search
+            Route::get('/search/employees', [App\Http\Controllers\Merchant\StaffController::class, 'search'])->name('search');
+        });
+
         // Venue Layout Management
         Route::prefix('venue-layout')->name('venue-layout.')->group(function () {
             Route::get('/{venueLayout}/designer', [App\Http\Controllers\Merchant\VenueLayoutController::class, 'designer'])->name('designer');

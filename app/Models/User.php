@@ -186,6 +186,19 @@ class User extends Authenticatable implements FilamentUser
         'push_notifications_enabled',
         'push_token',
         'last_notification_read_at',
+        // Branding and subdomain fields
+        'subdomain',
+        'branding',
+        'logo_url',
+        'custom_domain',
+        'custom_domain_verified',
+        'store_description',
+        'social_links',
+        'business_hours',
+        'store_active',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
     ];
 
     /**
@@ -214,6 +227,12 @@ class User extends Authenticatable implements FilamentUser
         'last_login_at' => 'datetime',
         'verified_at' => 'datetime',
         'is_accepted' => 'boolean',
+        // Branding and subdomain casts
+        'branding' => 'array',
+        'social_links' => 'array',
+        'business_hours' => 'array',
+        'custom_domain_verified' => 'boolean',
+        'store_active' => 'boolean',
     ];
 
     /**
@@ -505,5 +524,60 @@ class User extends Authenticatable implements FilamentUser
             // Sync role with user_type after creation
             $user->syncRoleWithUserType();
         });
+    }
+
+    /**
+     * Get merchant's employees
+     */
+    public function employees(): HasMany
+    {
+        return $this->hasMany(MerchantEmployee::class, 'merchant_id');
+    }
+
+    /**
+     * Get employee record if user is an employee
+     */
+    public function employeeRecord(): HasOne
+    {
+        return $this->hasOne(MerchantEmployee::class, 'employee_id');
+    }
+
+    /**
+     * Get CSS variables for branding
+     */
+    public function getBrandCssVariables(): string
+    {
+        $branding = $this->branding ?? [];
+        
+        $css = ':root {';
+        $css .= '--primary-color: ' . ($branding['primary_color'] ?? '#007bff') . ';';
+        $css .= '--secondary-color: ' . ($branding['secondary_color'] ?? '#6c757d') . ';';
+        $css .= '--accent-color: ' . ($branding['accent_color'] ?? '#28a745') . ';';
+        $css .= '--font-family: ' . ($branding['font_family'] ?? 'Arial') . ', sans-serif;';
+        $css .= '}';
+        
+        return $css;
+    }
+
+    /**
+     * Check if merchant has a complete branding setup
+     */
+    public function hasCompleteBranding(): bool
+    {
+        return !empty($this->subdomain) && 
+               !empty($this->branding) && 
+               !empty($this->store_description);
+    }
+
+    /**
+     * Get merchant's store URL
+     */
+    public function getStoreUrlAttribute(): ?string
+    {
+        if (!$this->subdomain) {
+            return null;
+        }
+        
+        return 'http://' . $this->subdomain . '.' . config('app.main_domain');
     }
 }
