@@ -38,6 +38,9 @@ class DatabaseSeeder extends Seeder
 
         echo "✅ تم إنشاء مدير النظام\n";
 
+        $this->call(RolesAndPermissionsSeeder::class);
+        echo "✅ تم إنشاء الأدوار والصلاحيات\n";
+
         $this->call(CategorySeeder::class);
         echo "✅ تم إنشاء الفئات\n";
 
@@ -271,6 +274,9 @@ class DatabaseSeeder extends Seeder
         }
 
         echo "✅ تم إنشاء المدفوعات\n";
+
+        $this->call(TestUsersSeeder::class);
+        echo "✅ تم إنشاء مستخدمي الاختبار\n";
 
         echo "\n🎉 تم إكمال إعداد قاعدة البيانات بنجاح!\n";
         echo "📧 بيانات تسجيل الدخول للمدير:\n";
