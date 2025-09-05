@@ -60,7 +60,7 @@ class NotificationService
         try {
             // إشعار العميل
             if ($booking->customer) {
-                $booking->customer->notify(new BookingConfirmed($booking));
+                $booking->customer->notify(new BookingConfirmedNotification($booking));
             } elseif ($booking->customer_email) {
                 $this->sendEmailToGuest($booking->customer_email, 'تأكيد الحجز', $booking);
             }

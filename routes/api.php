@@ -6,6 +6,8 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\WithdrawController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\BookingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -90,5 +92,49 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('reserve', [App\Http\Controllers\Api\SeatBookingController::class, 'reserveSeats']);
         Route::delete('reservation/{bookingId}', [App\Http\Controllers\Api\SeatBookingController::class, 'cancelReservation']);
         Route::get('booking/{bookingId}', [App\Http\Controllers\Api\SeatBookingController::class, 'getBookingDetails']);
+    });
+
+    // Services API
+    Route::prefix('services')->group(function () {
+        Route::get('/', [ServiceController::class, 'index']); // List services with filters
+        Route::get('categories', [ServiceController::class, 'categories']); // Get service categories
+        Route::get('featured', [ServiceController::class, 'featured']); // Get featured services
+        Route::get('search', [ServiceController::class, 'search']); // Search services
+        Route::get('{service}', [ServiceController::class, 'show']); // Get single service
+        
+        // Merchant-only routes
+        Route::middleware('role:Merchant')->group(function () {
+            Route::post('/', [ServiceController::class, 'store']); // Create service
+            Route::put('{service}', [ServiceController::class, 'update']); // Update service
+            Route::delete('{service}', [ServiceController::class, 'destroy']); // Delete service
+        });
+    });
+
+    // Bookings API
+    Route::prefix('bookings')->group(function () {
+        Route::get('/', [BookingController::class, 'index']); // List bookings
+        Route::post('/', [BookingController::class, 'store']); // Create booking
+        Route::get('statistics', [BookingController::class, 'statistics']); // Get booking statistics
+        Route::get('{booking}', [BookingController::class, 'show']); // Get single booking
+        Route::put('{booking}', [BookingController::class, 'update']); // Update booking
+        Route::post('{booking}/cancel', [BookingController::class, 'cancel']); // Cancel booking
+        
+        // Merchant-only routes
+        Route::middleware('role:Merchant')->group(function () {
+            Route::post('{booking}/confirm', [BookingController::class, 'confirm']); // Confirm booking
+            Route::post('{booking}/complete', [BookingController::class, 'complete']); // Complete booking
+        });
+    });
+});
+
+// Public API routes (no authentication required)
+Route::prefix('public')->group(function () {
+    // Public services
+    Route::prefix('services')->group(function () {
+        Route::get('/', [ServiceController::class, 'index']); // List public services
+        Route::get('categories', [ServiceController::class, 'categories']); // Get service categories
+        Route::get('featured', [ServiceController::class, 'featured']); // Get featured services
+        Route::get('search', [ServiceController::class, 'search']); // Search services
+        Route::get('{service}', [ServiceController::class, 'show']); // Get single service
     });
 });

@@ -125,7 +125,7 @@ class CheckoutController extends Controller
             Cart::clearCart($userId, $sessionId);
 
             // Send order confirmation email
-            Mail::send(new OrderConfirmation($order));
+            $order->user->notify(new \App\Notifications\OrderConfirmedNotification($order));
 
             DB::commit();
 

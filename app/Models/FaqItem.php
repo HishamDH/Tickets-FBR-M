@@ -6,15 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder|Support active()
- * @method static \Illuminate\Database\Eloquent\Builder|Support byCategory($category)
- * @method static \Illuminate\Database\Eloquent\Builder|Support newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Support newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Support query()
- * @mixin \Eloquent
- * @mixin IdeHelperSupport
+ * @method static \Illuminate\Database\Eloquent\Builder|FaqItem active()
+ * @method static \Illuminate\Database\Eloquent\Builder|FaqItem byCategory($category)
+ * @method static \Illuminate\Database\Eloquent\Builder|FaqItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|FaqItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|FaqItem query()
  */
-class Support extends Model
+class FaqItem extends Model
 {
     use HasFactory;
 

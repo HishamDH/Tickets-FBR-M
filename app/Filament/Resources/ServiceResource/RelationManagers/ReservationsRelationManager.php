@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\OfferingResource\RelationManagers;
+namespace App\Filament\Resources\ServiceResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -10,7 +10,7 @@ use Filament\Tables\Table;
 
 class ReservationsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'reservations';
+    protected static string $relationship = 'bookings';
 
     protected static ?string $title = 'الحجوزات';
 
@@ -24,7 +24,7 @@ class ReservationsRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Grid::make(2)
                     ->schema([
-                        Forms\Components\Select::make('user_id')
+                        Forms\Components\Select::make('customer_id')
                             ->label('العميل')
                             ->relationship('customer', 'name')
                             ->searchable()
@@ -65,7 +65,7 @@ class ReservationsRelationManager extends RelationManager
                             ])
                             ->default('pending'),
 
-                        Forms\Components\Select::make('reservation_status')
+                        Forms\Components\Select::make('status') // Changed from reservation_status to status
                             ->label('حالة الحجز')
                             ->options([
                                 'pending' => 'في الانتظار',
@@ -129,7 +129,7 @@ class ReservationsRelationManager extends RelationManager
                         default => $state,
                     }),
 
-                Tables\Columns\TextColumn::make('reservation_status')
+                Tables\Columns\TextColumn::make('status') // Changed from reservation_status to status
                     ->label('حالة الحجز')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -157,7 +157,7 @@ class ReservationsRelationManager extends RelationManager
                         'refunded' => 'مسترد',
                     ]),
 
-                Tables\Filters\SelectFilter::make('reservation_status')
+                Tables\Filters\SelectFilter::make('status') // Changed from reservation_status to status
                     ->label('حالة الحجز')
                     ->options([
                         'pending' => 'في الانتظار',

@@ -100,6 +100,19 @@ class Service extends Model
         'is_featured',
         'is_active',
         'is_available',
+        // Merged from Offering
+        'start_time',
+        'end_time',
+        'additional_data',
+        'translations',
+        'has_chairs',
+        'chairs_count',
+        'max_capacity',
+        'min_capacity',
+        'allow_overbooking',
+        'overbooking_percentage',
+        'capacity_type',
+        'buffer_capacity',
     ];
 
     protected $casts = [
@@ -111,6 +124,14 @@ class Service extends Model
         'is_active' => 'boolean',
         'is_available' => 'boolean',
         'online_booking_enabled' => 'boolean',
+        // Merged from Offering
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'additional_data' => 'array',
+        'translations' => 'array',
+        'has_chairs' => 'boolean',
+        'allow_overbooking' => 'boolean',
+        'overbooking_percentage' => 'decimal:2',
     ];
 
     /**

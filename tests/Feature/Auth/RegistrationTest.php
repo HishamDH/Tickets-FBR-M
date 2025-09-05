@@ -12,14 +12,14 @@ class RegistrationTest extends TestCase
 
     public function test_registration_screen_can_be_rendered(): void
     {
-        $response = $this->get('/register');
+        $response = $this->get('/customer/register');
 
         $response->assertStatus(200);
     }
 
     public function test_new_users_can_register(): void
     {
-        $response = $this->post('/register', [
+        $response = $this->post('/customer/register', [
             'f_name' => 'Test',
             'l_name' => 'User',
             'name' => 'Test User',
@@ -28,7 +28,7 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        $this->assertAuthenticated('customer');
+        $response->assertRedirect('/customer/dashboard');
     }
 }

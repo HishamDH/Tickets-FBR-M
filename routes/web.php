@@ -145,15 +145,7 @@ Route::middleware(['auth'])->prefix('checkout')->name('checkout.')->group(functi
     Route::post('/payment/paypal/{order}', [CheckoutController::class, 'processPaypalPayment'])->name('payment.paypal.process');
 });
 
-// User Dashboard Routes
-Route::middleware(['auth'])->prefix('dashboard/user')->name('dashboard.user.')->group(function () {
-    Route::get('/', [UserDashboardController::class, 'index'])->name('index');
-    Route::get('/orders', [UserDashboardController::class, 'orders'])->name('orders');
-    Route::get('/orders/{order}', [UserDashboardController::class, 'orderShow'])->name('orders.show');
-    Route::post('/orders/{order}/cancel', [UserDashboardController::class, 'cancelOrder'])->name('orders.cancel');
-    Route::get('/profile', [UserDashboardController::class, 'profile'])->name('profile');
-    Route::put('/profile', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
-});
+
 
 // Legacy booking routes
 Route::middleware(['auth'])->group(function () {
@@ -175,7 +167,7 @@ Route::get('/dashboard', function () {
             return redirect()->route('merchant.dashboard');
         case 'customer':
         case 'user':
-            return redirect()->route('dashboard.user.index');
+            return redirect()->route('customer.dashboard');
         case 'partner':
             return redirect()->route('partner.dashboard');
         default:
