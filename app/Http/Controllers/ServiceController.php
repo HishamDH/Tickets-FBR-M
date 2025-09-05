@@ -35,10 +35,43 @@ class ServiceController extends Controller
         if ($request->filled('max_price')) {
             $query->where('price', '<=', $request->max_price);
         }
+        
+        // Rating filter - filter by minimum rating
+        if ($request->filled('min_rating')) {
+            $query->whereHas('reviews', function ($q) use ($request) {
+                $q->where('is_approved', true)
+                  ->groupBy('service_id')
+                  ->havingRaw('AVG(rating) >= ?', [$request->min_rating]);
+            });
+        }
+        
+        // Sort by highest rated
+        if ($request->sort === 'highest_rated') {
+            $query->withAvg('reviews', 'rating')
+                ->orderByDesc('reviews_avg_rating');
+        }
+        // Sort by most reviewed
+        elseif ($request->sort === 'most_reviewed') {
+            $query->withCount(['reviews' => function ($q) {
+                $q->where('is_approved', true);
+            }])
+            ->orderByDesc('reviews_count');
+        }
+        // Sort by price (low to high)
+        elseif ($request->sort === 'price_low') {
+            $query->orderBy('price', 'asc');
+        }
+        // Sort by price (high to low)
+        elseif ($request->sort === 'price_high') {
+            $query->orderBy('price', 'desc');
+        }
+        // Default sort
+        else {
+            $query->orderBy('is_featured', 'desc')
+                  ->orderBy('created_at', 'desc');
+        }
 
-        $services = $query->orderBy('is_featured', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(12);
+        $services = $query->paginate(12);
 
         $categories = Service::select('category')
             ->distinct()

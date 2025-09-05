@@ -55,4 +55,39 @@ class Review extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    
+    /**
+     * The images associated with this review.
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(ReviewImage::class);
+    }
+    
+    /**
+     * Get average rating for a service.
+     */
+    public static function getAverageRating(int $serviceId): float
+    {
+        return self::where('service_id', $serviceId)
+            ->where('is_approved', true)
+            ->avg('rating') ?: 0;
+    }
+    
+    /**
+     * Get the count of ratings by star level for a service.
+     */
+    public static function getRatingDistribution(int $serviceId): array
+    {
+        $distribution = [];
+        
+        for ($i = 5; $i >= 1; $i--) {
+            $distribution[$i] = self::where('service_id', $serviceId)
+                ->where('is_approved', true)
+                ->where('rating', $i)
+                ->count();
+        }
+        
+        return $distribution;
+    }
 }

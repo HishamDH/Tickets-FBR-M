@@ -108,6 +108,38 @@
                                    class="px-4 py-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-300 bg-white hover:border-orange-300 shadow-sm focus:shadow-lg">
                         </div>
                     </div>
+                    
+                    <!-- Rating Filter -->
+                    <div class="lg:col-span-2">
+                        <label class="text-sm font-bold text-gray-700 mb-4 flex items-center">
+                            <span class="text-xl mr-2">⭐</span>
+                            التقييم
+                        </label>
+                        <select name="min_rating" 
+                                class="w-full px-6 py-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 text-lg transition-all duration-300 bg-white hover:border-orange-300 shadow-sm focus:shadow-lg">
+                            <option value="">جميع التقييمات</option>
+                            <option value="5" {{ request('min_rating') == 5 ? 'selected' : '' }}>⭐⭐⭐⭐⭐ (5 نجوم)</option>
+                            <option value="4" {{ request('min_rating') == 4 ? 'selected' : '' }}>⭐⭐⭐⭐ (4 نجوم وأعلى)</option>
+                            <option value="3" {{ request('min_rating') == 3 ? 'selected' : '' }}>⭐⭐⭐ (3 نجوم وأعلى)</option>
+                            <option value="2" {{ request('min_rating') == 2 ? 'selected' : '' }}>⭐⭐ (2 نجوم وأعلى)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Sort Options -->
+                    <div class="lg:col-span-1">
+                        <label class="text-sm font-bold text-gray-700 mb-4 flex items-center">
+                            <span class="text-xl mr-2">🔄</span>
+                            الترتيب
+                        </label>
+                        <select name="sort" 
+                                class="w-full px-6 py-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 text-lg transition-all duration-300 bg-white hover:border-orange-300 shadow-sm focus:shadow-lg">
+                            <option value="">الأحدث أولاً</option>
+                            <option value="highest_rated" {{ request('sort') == 'highest_rated' ? 'selected' : '' }}>الأعلى تقييماً</option>
+                            <option value="most_reviewed" {{ request('sort') == 'most_reviewed' ? 'selected' : '' }}>الأكثر تقييماً</option>
+                            <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>السعر: من الأقل للأعلى</option>
+                            <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>السعر: من الأعلى للأقل</option>
+                        </select>
+                    </div>
 
                     <!-- Action Buttons -->
                     <div class="lg:col-span-2 flex flex-col justify-end">

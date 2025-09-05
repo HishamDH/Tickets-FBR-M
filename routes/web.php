@@ -23,6 +23,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\WelcomeController;
@@ -72,6 +73,17 @@ Route::prefix('cart')->name('cart.')->group(function () {
 // Public Services Routes
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 Route::get('/services/{id}', [ServiceController::class, 'show'])->name('services.show');
+
+// Review Routes
+Route::middleware(['auth', 'role:Customer'])->prefix('reviews')->name('reviews.')->group(function () {
+    Route::get('/service/{service}/create', [ReviewController::class, 'create'])->name('create');
+    Route::post('/service/{service}', [ReviewController::class, 'store'])->name('store');
+    Route::get('/service/{service}', [ReviewController::class, 'index'])->name('index');
+    Route::get('/my-reviews', [ReviewController::class, 'userReviews'])->name('user');
+    Route::get('/{review}/edit', [ReviewController::class, 'edit'])->name('edit');
+    Route::put('/{review}', [ReviewController::class, 'update'])->name('update');
+    Route::delete('/{review}', [ReviewController::class, 'destroy'])->name('delete');
+});
 
 // Sitemap
 Route::get('/sitemap', function () {

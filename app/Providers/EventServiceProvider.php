@@ -26,6 +26,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         BookingStatusChanged::class => [
             'App\Listeners\SendBookingNotifications@handleBookingStatusChanged',
+            'App\Listeners\SendReviewRequest',
         ],
         PaymentReceived::class => [
             'App\Listeners\SendBookingNotifications@handlePaymentReceived',
