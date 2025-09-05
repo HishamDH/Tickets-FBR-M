@@ -7,82 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 
-/**
- * @property int $id
- * @property string $booking_number
- * @property int|null $customer_id
- * @property int $service_id
- * @property int $merchant_id
- * @property \Illuminate\Support\Carbon $booking_date
- * @property string|null $booking_time
- * @property int|null $guest_count
- * @property string $total_amount
- * @property string $commission_amount
- * @property string $commission_rate
- * @property string $payment_status
- * @property string|null $status
- * @property string $booking_source
- * @property string|null $special_requests
- * @property string|null $cancellation_reason
- * @property \Illuminate\Support\Carbon|null $cancelled_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property int|null $cancelled_by
- * @property string|null $qr_code
- * @property string|null $customer_name
- * @property string|null $customer_phone
- * @property string|null $customer_email
- * @property int|null $number_of_people
- * @property int|null $number_of_tables
- * @property int|null $duration_hours
- * @property string|null $notes
- * @property-read \App\Models\User|null $cancelledBy
- * @property-read \App\Models\User|null $customer
- * @property-read float $merchant_amount
- * @property-read string $payment_status_arabic
- * @property-read string $status_arabic
- * @property-read \App\Models\Payment|null $latestPayment
- * @property-read \App\Models\User $merchant
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
- * @property-read int|null $payments_count
- * @property-read \App\Models\Service $service
- * @method static \Database\Factories\BookingFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder|Booking newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Booking newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Booking query()
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingSource($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereBookingTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCancellationReason($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCancelledAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCancelledBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCommissionAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCommissionRate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereCustomerPhone($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereDurationHours($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereGuestCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereMerchantId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereNumberOfPeople($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereNumberOfTables($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking wherePaymentStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereQrCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereServiceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereSpecialRequests($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereTotalAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Booking whereUpdatedAt($value)
- * @mixin \Eloquent
- * @mixin IdeHelperBooking
- */
 class Booking extends Model
 {
     use HasFactory;
@@ -90,7 +17,8 @@ class Booking extends Model
     protected $fillable = [
         'booking_number',
         'customer_id',
-        'service_id',
+        'bookable_id', // Polymorphic
+        'bookable_type', // Polymorphic
         'merchant_id',
         'booking_date',
         'booking_time',
@@ -100,13 +28,13 @@ class Booking extends Model
         'commission_rate',
         'payment_status',
         'status',
+        'reservation_status',
         'booking_source',
         'special_requests',
         'cancellation_reason',
         'cancelled_at',
         'cancelled_by',
         'qr_code',
-        // Additional fields for non-registered customers
         'customer_name',
         'customer_phone',
         'customer_email',
@@ -114,121 +42,94 @@ class Booking extends Model
         'number_of_tables',
         'duration_hours',
         'notes',
+        'discount',
+        'code',
+        'pos_terminal_id',
+        'pos_data',
+        'printed_at',
+        'print_count',
+        'is_offline_transaction',
+        'offline_transaction_id',
+        'synced_at',
     ];
 
     protected $casts = [
         'booking_date' => 'date',
-        'booking_time' => 'string', // سنحفظه كـ string بصيغة H:i
         'total_amount' => 'decimal:2',
         'commission_amount' => 'decimal:2',
         'commission_rate' => 'decimal:2',
         'cancelled_at' => 'datetime',
+        'discount' => 'decimal:2',
+        'pos_data' => 'array',
+        'printed_at' => 'datetime',
+        'synced_at' => 'datetime',
+        'is_offline_transaction' => 'boolean',
     ];
 
-    /**
-     * Boot the model
-     */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($booking) {
-            $booking->booking_number = 'TKT-'.date('Y').'-'.str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
-            $booking->qr_code = Str::uuid()->toString();
+            if (empty($booking->booking_number)) {
+                $booking->booking_number = 'TKT-'.date('Y').'-'.str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+            }
+            if (empty($booking->qr_code)) {
+                $booking->qr_code = Str::uuid()->toString();
+            }
         });
     }
 
-    /**
-     * Customer relationship
-     */
+    public function bookable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'customer_id');
     }
 
-    /**
-     * Service relationship
-     */
-    public function service(): BelongsTo
-    {
-        return $this->belongsTo(Service::class);
-    }
-
-    /**
-     * Merchant relationship
-     */
     public function merchant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'merchant_id');
     }
 
-    /**
-     * Cancelled by user relationship
-     */
     public function cancelledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'cancelled_by');
     }
 
-    /**
-     * Payments relationship
-     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    /**
-     * Latest payment relationship
-     */
     public function latestPayment(): HasOne
     {
         return $this->hasOne(Payment::class)->latest();
     }
 
-    /**
-     * Seat reservations relationship
-     */
     public function seatReservations(): HasMany
     {
         return $this->hasMany(SeatReservation::class);
     }
 
-    /**
-     * Get offering relationship (compatibility with both service and offering)
-     */
-    public function offering(): BelongsTo
-    {
-        return $this->belongsTo(Offering::class, 'service_id');
-    }
-
-    /**
-     * Check if booking is confirmed
-     */
     public function isConfirmed(): bool
     {
         return $this->status === 'confirmed';
     }
 
-    /**
-     * Check if booking is paid
-     */
     public function isPaid(): bool
     {
         return $this->payment_status === 'paid';
     }
 
-    /**
-     * Check if booking is cancelled
-     */
     public function isCancelled(): bool
     {
         return $this->status === 'cancelled';
     }
 
-    /**
-     * Get status in Arabic
-     */
     public function getStatusArabicAttribute(): string
     {
         $statuses = [
@@ -242,9 +143,6 @@ class Booking extends Model
         return $statuses[$this->status] ?? $this->status;
     }
 
-    /**
-     * Get payment status in Arabic
-     */
     public function getPaymentStatusArabicAttribute(): string
     {
         $statuses = [
@@ -257,32 +155,20 @@ class Booking extends Model
         return $statuses[$this->payment_status] ?? $this->payment_status;
     }
 
-    /**
-     * Generate QR code for booking verification
-     */
     public function generateQrCode(): string
     {
-        // Create a simple base64 encoded QR code data
-        // In production, you would use a QR code library like SimpleSoftwareIO/simple-qrcode
         $data = json_encode([
             'booking_number' => $this->booking_number,
             'customer_name' => $this->customer_name ?? $this->customer?->name,
-            'service_name' => $this->service->name,
+            'service_name' => $this->bookable->name, // Changed from service to bookable
             'booking_date' => $this->booking_date?->format('Y-m-d'),
-            'booking_time' => $this->booking_time, // احفظه كما هو (string)
+            'booking_time' => $this->booking_time,
             'verification_code' => $this->qr_code,
         ]);
 
-        // For demonstration purposes, return a placeholder QR code
-        // In production, replace this with actual QR code generation
-        $qrCodeContent = base64_encode('QR Code Data: '.$data);
-
-        return $qrCodeContent;
+        return base64_encode('QR Code Data: '.$data);
     }
 
-    /**
-     * Get merchant amount after commission
-     */
     public function getMerchantAmountAttribute(): float
     {
         return $this->total_amount - $this->commission_amount;

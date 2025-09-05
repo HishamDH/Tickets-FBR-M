@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Auth\MerchantLoginController;
-use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Merchant\BookingController;
 use App\Http\Controllers\Dashboard\MerchantDashboardController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\Merchant\PaymentController;
+use App\Http\Controllers\Merchant\ServiceController;
 use App\Http\Controllers\SupportController;
 use Illuminate\Support\Facades\Route;
 
