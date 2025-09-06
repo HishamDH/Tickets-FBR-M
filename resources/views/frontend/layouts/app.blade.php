@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ getLanguageDirection() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,8 +47,10 @@
         }
     </style>
 
+    <!-- RTL Support -->
+    @vite(['resources/css/rtl.css', 'resources/css/app.css', 'resources/js/app.js'])
+    
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 <body class="font-sans antialiased bg-gray-50">
@@ -92,6 +94,10 @@
                 
                 <!-- Right Side -->
                 <div class="flex items-center space-x-4">
+                    <!-- Language Switcher -->
+                    <div class="mr-4">
+                        @include('components.language-switcher')
+                    </div>
                     @auth
                         <!-- Authenticated User -->
                         <div class="relative">
@@ -121,10 +127,10 @@
                     @else
                         <!-- Guest User -->
                         <a href="/customer/login" class="text-gray-600 hover:text-brand px-3 py-2 rounded-md text-sm font-medium transition">
-                            👤 Customer Login
+                            👤 {{ __('app.login') }}
                         </a>
                         <a href="/merchant/login" class="btn-brand px-4 py-2 rounded-md text-sm font-medium">
-                            🏪 Merchant Login
+                            🏪 {{ __('app.merchant') }}
                         </a>
                     @endauth
                 </div>

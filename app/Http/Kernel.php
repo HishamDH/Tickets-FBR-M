@@ -36,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\LanguageSwitcher::class,
         ],
 
         'api' => [
@@ -72,5 +73,6 @@ class Kernel extends HttpKernel
         'merchant' => \App\Http\Middleware\MerchantMiddleware::class,
         'customer' => \App\Http\Middleware\CustomerMiddleware::class,
         'subdomain' => \App\Http\Middleware\SubdomainMiddleware::class,
+        'language' => \App\Http\Middleware\LanguageSwitcher::class,
     ];
 }

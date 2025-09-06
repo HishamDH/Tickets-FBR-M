@@ -126,6 +126,9 @@ Route::get('/old-home', function () {
     return view('home', compact('services'));
 });
 
+// Language Switcher Route
+Route::get('/language/{lang}', [App\Http\Controllers\LanguageController::class, 'switchLang'])->name('language.switch');
+
 // Public Booking Routes - صفحات الحجز العامة للتجار
 Route::prefix('merchant/{merchant}')->group(function () {
     Route::get('/', [PublicBookingController::class, 'show'])->name('merchant.booking');

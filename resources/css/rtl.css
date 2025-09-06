@@ -1,0 +1,150 @@
+/*
+|--------------------------------------------------------------------------
+| RTL Support Styles
+|--------------------------------------------------------------------------
+|
+| These styles add Right-to-Left (RTL) support for the application.
+| They will be applied when the language is set to Arabic.
+|
+*/
+
+[dir="rtl"] {
+    /* Text alignment */
+    text-align: right;
+}
+
+[dir="rtl"] .text-left {
+    text-align: right !important;
+}
+
+[dir="rtl"] .text-right {
+    text-align: left !important;
+}
+
+/* Adjust margins and padding */
+[dir="rtl"] .ml-1, [dir="rtl"] .ml-2, [dir="rtl"] .ml-3, [dir="rtl"] .ml-4, [dir="rtl"] .ml-5 {
+    margin-left: 0 !important;
+}
+
+[dir="rtl"] .mr-1, [dir="rtl"] .mr-2, [dir="rtl"] .mr-3, [dir="rtl"] .mr-4, [dir="rtl"] .mr-5 {
+    margin-right: 0 !important;
+}
+
+[dir="rtl"] .ml-1 { margin-right: 0.25rem !important; }
+[dir="rtl"] .ml-2 { margin-right: 0.5rem !important; }
+[dir="rtl"] .ml-3 { margin-right: 1rem !important; }
+[dir="rtl"] .ml-4 { margin-right: 1.5rem !important; }
+[dir="rtl"] .ml-5 { margin-right: 3rem !important; }
+
+[dir="rtl"] .mr-1 { margin-left: 0.25rem !important; }
+[dir="rtl"] .mr-2 { margin-left: 0.5rem !important; }
+[dir="rtl"] .mr-3 { margin-left: 1rem !important; }
+[dir="rtl"] .mr-4 { margin-left: 1.5rem !important; }
+[dir="rtl"] .mr-5 { margin-left: 3rem !important; }
+
+/* Adjust padding */
+[dir="rtl"] .pl-1, [dir="rtl"] .pl-2, [dir="rtl"] .pl-3, [dir="rtl"] .pl-4, [dir="rtl"] .pl-5 {
+    padding-left: 0 !important;
+}
+
+[dir="rtl"] .pr-1, [dir="rtl"] .pr-2, [dir="rtl"] .pr-3, [dir="rtl"] .pr-4, [dir="rtl"] .pr-5 {
+    padding-right: 0 !important;
+}
+
+[dir="rtl"] .pl-1 { padding-right: 0.25rem !important; }
+[dir="rtl"] .pl-2 { padding-right: 0.5rem !important; }
+[dir="rtl"] .pl-3 { padding-right: 1rem !important; }
+[dir="rtl"] .pl-4 { padding-right: 1.5rem !important; }
+[dir="rtl"] .pl-5 { padding-right: 3rem !important; }
+
+[dir="rtl"] .pr-1 { padding-left: 0.25rem !important; }
+[dir="rtl"] .pr-2 { padding-left: 0.5rem !important; }
+[dir="rtl"] .pr-3 { padding-left: 1rem !important; }
+[dir="rtl"] .pr-4 { padding-left: 1.5rem !important; }
+[dir="rtl"] .pr-5 { padding-left: 3rem !important; }
+
+/* Reverse flex direction */
+[dir="rtl"] .flex-row {
+    flex-direction: row-reverse !important;
+}
+
+/* Adjust float */
+[dir="rtl"] .float-left {
+    float: right !important;
+}
+
+[dir="rtl"] .float-right {
+    float: left !important;
+}
+
+/* Border adjustments */
+[dir="rtl"] .border-right {
+    border-right: none !important;
+    border-left: 1px solid #dee2e6 !important;
+}
+
+[dir="rtl"] .border-left {
+    border-left: none !important;
+    border-right: 1px solid #dee2e6 !important;
+}
+
+/* Navigation adjustments */
+[dir="rtl"] .dropdown-menu {
+    text-align: right;
+    left: auto;
+    right: 0;
+}
+
+[dir="rtl"] .dropdown-toggle::after {
+    margin-left: 0;
+    margin-right: 0.255em;
+}
+
+/* Form control adjustments */
+[dir="rtl"] .form-control {
+    text-align: right;
+}
+
+[dir="rtl"] .input-group > .input-group-prepend > .input-group-text {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+[dir="rtl"] .input-group > .input-group-append > .input-group-text {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* List adjustments */
+[dir="rtl"] .list-group {
+    padding-right: 0;
+}
+
+/* Table adjustments */
+[dir="rtl"] .table th,
+[dir="rtl"] .table td {
+    text-align: right;
+}
+
+/* Text direction */
+[dir="rtl"] {
+    direction: rtl;
+}
+
+/* Fix for icons */
+[dir="rtl"] .fa-angle-right:before {
+    content: "\f104"; /* fa-angle-left */
+}
+
+[dir="rtl"] .fa-angle-left:before {
+    content: "\f105"; /* fa-angle-right */
+}
+
+/* Font family for Arabic */
+[dir="rtl"] body {
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+}

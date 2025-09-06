@@ -173,6 +173,7 @@ return [
         App\Providers\Filament\MerchantPanelProvider::class,
         App\Providers\Filament\CustomerPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\LanguageServiceProvider::class,
     ])->toArray(),
 
     /*

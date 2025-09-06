@@ -760,3 +760,61 @@ if (! function_exists('notifcate')) {
         }
     }
 }
+
+// ===========================================
+// LANGUAGE AND LOCALIZATION FUNCTIONS
+// ===========================================
+
+if (! function_exists('getCurrentLanguage')) {
+    /**
+     * Get current application language
+     */
+    function getCurrentLanguage()
+    {
+        return app()->getLocale();
+    }
+}
+
+if (! function_exists('isRtl')) {
+    /**
+     * Check if current language is RTL (Right-to-Left)
+     */
+    function isRtl()
+    {
+        // Arabic is RTL language
+        return app()->getLocale() === 'ar';
+    }
+}
+
+if (! function_exists('getLanguageDirection')) {
+    /**
+     * Get HTML direction attribute for current language
+     */
+    function getLanguageDirection()
+    {
+        return isRtl() ? 'rtl' : 'ltr';
+    }
+}
+
+if (! function_exists('getAvailableLanguages')) {
+    /**
+     * Get list of available languages in the application
+     */
+    function getAvailableLanguages()
+    {
+        return [
+            'en' => [
+                'name' => 'English',
+                'native' => 'English',
+                'flag' => '🇬🇧',
+                'dir' => 'ltr',
+            ],
+            'ar' => [
+                'name' => 'Arabic',
+                'native' => 'العربية',
+                'flag' => '🇸🇦',
+                'dir' => 'rtl',
+            ],
+        ];
+    }
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="rtl">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ getLanguageDirection() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,7 +28,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming"></script>
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/rtl.css', 'resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     
     <!-- Additional Styles -->
@@ -108,6 +108,11 @@
                                 </button>
                             </div>
                             
+                            <!-- Language Switcher -->
+                            <div class="mx-2">
+                                @include('components.language-switcher')
+                            </div>
+                            
                             <!-- User Menu -->
                             <div class="relative group">
                                 <button class="flex items-center space-x-3 space-x-reverse bg-gradient-soft 
@@ -119,7 +124,7 @@
                                     </div>
                                     <div class="text-right">
                                         <div class="text-sm font-semibold text-gray-800">{{ auth()->user()->name }}</div>
-                                        <div class="text-xs text-gray-600">المدير</div>
+                                        <div class="text-xs text-gray-600">{{ __('app.' . (auth()->user()->role ?? 'user')) }}</div>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 group-hover:text-gray-600"></i>
                                 </button>

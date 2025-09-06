@@ -19,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Set default locale from config
+        $locale = config('app.locale', 'en');
+        app()->setLocale($locale);
     }
 }
