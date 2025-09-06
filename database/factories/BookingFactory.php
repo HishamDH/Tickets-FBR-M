@@ -75,6 +75,14 @@ class BookingFactory extends Factory
             'qr_code' => $this->faker->unique()->uuid(),
             'customer_id' => $this->faker->boolean(70) ? User::factory()->customer() : null,
             'service_id' => Service::factory(),
+            'bookable_type' => $this->faker->randomElement(['App\\Models\\Service', 'App\\Models\\Offering']),
+            'bookable_id' => function (array $attributes) {
+                if ($attributes['bookable_type'] === 'App\\Models\\Service') {
+                    return $attributes['service_id'] ?? Service::factory()->create()->id;
+                } else {
+                    return \App\Models\Offering::factory()->create()->id;
+                }
+            },
             'merchant_id' => function (array $attributes) {
                 // Get merchant from service if service is created, otherwise create new merchant
                 if (isset($attributes['service_id']) && is_numeric($attributes['service_id'])) {

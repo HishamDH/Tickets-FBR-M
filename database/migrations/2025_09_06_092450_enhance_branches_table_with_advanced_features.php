@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('branches', function (Blueprint $table) {
-            // إضافة الحقول المفقودة فقط
+            // إضافة الحقول المفقودة
             if (!Schema::hasColumn('branches', 'is_active')) {
                 $table->boolean('is_active')->default(true)->after('location');
+            }
+            if (!Schema::hasColumn('branches', 'city')) {
+                $table->string('city')->nullable()->after('address');
+            }
+            if (!Schema::hasColumn('branches', 'rating')) {
+                $table->decimal('rating', 3, 2)->default(0)->after('city');
             }
         });
         
@@ -64,9 +70,15 @@ return new class extends Migration
         });
         
         Schema::table('branches', function (Blueprint $table) {
-            // إزالة العمود المضاف فقط
+            // إزالة الأعمدة المضافة
             if (Schema::hasColumn('branches', 'is_active')) {
                 $table->dropColumn('is_active');
+            }
+            if (Schema::hasColumn('branches', 'city')) {
+                $table->dropColumn('city');
+            }
+            if (Schema::hasColumn('branches', 'rating')) {
+                $table->dropColumn('rating');
             }
         });
     }

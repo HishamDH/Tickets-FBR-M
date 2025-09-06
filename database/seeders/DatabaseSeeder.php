@@ -165,7 +165,7 @@ class DatabaseSeeder extends Seeder
         // Create offerings for merchants
         $merchantUsers = User::where('user_type', 'merchant')->get();
         $merchantUsers->each(function ($merchantUser) {
-            Offering::factory()->count(rand(2, 5))->create([
+            \App\Models\Offering::factory()->count(rand(2, 5))->create([
                 'user_id' => $merchantUser->id,
             ]);
         });

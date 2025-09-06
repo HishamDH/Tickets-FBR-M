@@ -58,9 +58,25 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            return response()->json(['message' => 'Login successful', 'user' => Auth::user()]);
+            $user = Auth::user();
+            
+            // Check if this is an API request or web request
+            if ($request->expectsJson() || $request->is('api/*')) {
+                // For API requests, create and return a token
+                $token = $user->createToken('auth-token')->plainTextToken;
+                
+                return response()->json([
+                    'message' => 'Login successful',
+                    'user' => $user,
+                    'token' => $token,
+                    'token_type' => 'Bearer'
+                ]);
+            } else {
+                // For web requests, use session
+                $request->session()->regenerate();
+                
+                return response()->json(['message' => 'Login successful', 'user' => $user]);
+            }
         }
 
         return response()->json(['message' => 'Invalid credentials'], 401);
@@ -71,11 +87,22 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return response()->json(['message' => 'Logout successful']);
+        // Check if this is an API request or web request
+        if ($request->expectsJson() || $request->is('api/*')) {
+            // For API requests, revoke the current token
+            if ($request->user()) {
+                $request->user()->currentAccessToken()->delete();
+            }
+            
+            return response()->json(['message' => 'Logout successful']);
+        } else {
+            // For web requests, use session
+            Auth::logout();
+            
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return response()->json(['message' => 'Logout successful']);
+        }
     }
 }
