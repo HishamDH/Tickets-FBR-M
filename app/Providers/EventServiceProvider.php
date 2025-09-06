@@ -23,6 +23,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         BookingCreated::class => [
             'App\Listeners\SendBookingNotifications@handleBookingCreated',
+            'App\Listeners\ProcessPartnerCommission',
         ],
         BookingStatusChanged::class => [
             'App\Listeners\SendBookingNotifications@handleBookingStatusChanged',
@@ -30,6 +31,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         PaymentReceived::class => [
             'App\Listeners\SendBookingNotifications@handlePaymentReceived',
+            'App\Listeners\ProcessPartnerCommission',
         ],
     ];
 

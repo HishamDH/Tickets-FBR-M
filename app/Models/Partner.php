@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -73,6 +74,54 @@ class Partner extends Model
     }
 
     /**
+     * Partner wallet
+     */
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(PartnerWallet::class);
+    }
+
+    /**
+     * Partner referral invitations
+     */
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(PartnerInvitation::class);
+    }
+
+    /**
+     * Partner performance metrics
+     */
+    public function metrics(): HasMany
+    {
+        return $this->hasMany(PartnerPerformanceMetric::class);
+    }
+
+    /**
+     * Partner goals
+     */
+    public function goals(): HasMany
+    {
+        return $this->hasMany(PartnerGoal::class);
+    }
+
+    /**
+     * Partner achievements
+     */
+    public function achievements(): HasMany
+    {
+        return $this->hasMany(PartnerAchievement::class);
+    }
+
+    /**
+     * Scheduled reports
+     */
+    public function scheduledReports(): HasMany
+    {
+        return $this->hasMany(ScheduledReport::class);
+    }
+
+    /**
      * Check if partner is active
      */
     public function isActive(): bool
@@ -85,9 +134,57 @@ class Partner extends Model
      */
     public function getTotalCommission(): float
     {
-        return $this->merchants()
-            ->join('bookings', 'merchants.id', '=', 'bookings.merchant_id')
-            ->where('bookings.payment_status', 'paid')
-            ->sum('bookings.commission_amount');
+        return $this->wallet ? $this->wallet->total_earned : 0;
+    }
+
+    /**
+     * Get available balance
+     */
+    public function getAvailableBalance(): float
+    {
+        return $this->wallet ? $this->wallet->available_balance : 0;
+    }
+
+    /**
+     * Create wallet if not exists
+     */
+    public function getOrCreateWallet(): PartnerWallet
+    {
+        if (!$this->wallet) {
+            $this->wallet()->create([
+                'commission_rate' => $this->commission_rate,
+            ]);
+            $this->load('wallet');
+        }
+        
+        return $this->wallet;
+    }
+
+    /**
+     * Generate unique referral code
+     */
+    public static function generateReferralCode(): string
+    {
+        do {
+            $code = 'REF_' . strtoupper(substr(uniqid(), -8));
+        } while (self::where('partner_code', $code)->exists());
+        
+        return $code;
+    }
+
+    /**
+     * Get referral link
+     */
+    public function getReferralLink(): string
+    {
+        return url('/register/merchant?ref=' . $this->partner_code);
+    }
+
+    /**
+     * Calculate commission for a booking
+     */
+    public function calculateCommission(float $bookingAmount): float
+    {
+        return ($bookingAmount * $this->commission_rate) / 100;
     }
 }

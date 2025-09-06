@@ -12,7 +12,18 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // معالجة السحوبات التلقائية يومياً في الساعة 2:00 صباحاً
+        $schedule->command('partners:process-auto-withdrawals')
+                 ->dailyAt('02:00')
+                 ->withoutOverlapping()
+                 ->runInBackground();
+
+        // تحديث حالة الدعوات المنتهية الصلاحية كل ساعة
+        $schedule->call(function () {
+            \App\Models\PartnerInvitation::where('status', 'pending')
+                ->where('expires_at', '<', now())
+                ->update(['status' => 'expired']);
+        })->hourly();
     }
 
     /**

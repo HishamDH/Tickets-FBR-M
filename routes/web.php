@@ -255,6 +255,16 @@ Route::middleware(['auth', 'verified', 'role:partner'])->prefix('partner')->name
     Route::get('/merchants/{merchant}', [PartnerDashboardController::class, 'merchantDetails'])->name('merchant-details');
     Route::get('/commission-report', [PartnerDashboardController::class, 'commissionReport'])->name('commission-report');
     Route::get('/analytics', [PartnerDashboardController::class, 'analytics'])->name('analytics');
+    
+    // Partner Invitation API Routes
+    Route::post('/invitations', [\App\Http\Controllers\PartnerInvitationController::class, 'createInvitation'])->name('invitations.create');
+});
+
+// Public Partner Invitation Routes (no auth required)
+Route::prefix('invitation')->name('partner.invitation.')->group(function () {
+    Route::get('/{token}', [\App\Http\Controllers\PartnerInvitationController::class, 'show'])->name('show');
+    Route::post('/{token}/accept', [\App\Http\Controllers\PartnerInvitationController::class, 'accept'])->name('accept');
+    Route::get('/success', [\App\Http\Controllers\PartnerInvitationController::class, 'success'])->name('success');
 });
 
 // Reports Routes
