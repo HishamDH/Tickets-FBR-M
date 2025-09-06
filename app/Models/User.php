@@ -186,6 +186,13 @@ class User extends Authenticatable implements FilamentUser
         'push_notifications_enabled',
         'push_token',
         'last_notification_read_at',
+        // Password security fields
+        'password_changed_at',
+        'force_password_reset',
+        'failed_login_attempts',
+        'locked_until',
+        'last_login_ip',
+        'last_login_user_agent',
         // Branding and subdomain fields
         'subdomain',
         'branding',
@@ -209,6 +216,9 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+        'password_history',
+        'failed_login_attempts',
+        'locked_until',
     ];
 
     /**
@@ -227,6 +237,12 @@ class User extends Authenticatable implements FilamentUser
         'last_login_at' => 'datetime',
         'verified_at' => 'datetime',
         'is_accepted' => 'boolean',
+        // Password security casts
+        'password_changed_at' => 'datetime',
+        'password_history' => 'array',
+        'force_password_reset' => 'boolean',
+        'failed_login_attempts' => 'integer',
+        'locked_until' => 'datetime',
         // Branding and subdomain casts
         'branding' => 'array',
         'social_links' => 'array',
@@ -579,5 +595,118 @@ class User extends Authenticatable implements FilamentUser
         }
         
         return 'http://' . $this->subdomain . '.' . config('app.main_domain');
+    }
+
+    // Password Security Methods
+
+    /**
+     * Check if password has expired
+     */
+    public function isPasswordExpired(): bool
+    {
+        if (!$this->password_changed_at) {
+            return true; // Force password change if never set
+        }
+
+        $expiryDays = config('auth.password_expiry_days', 90);
+        return $this->password_changed_at->diffInDays(now()) >= $expiryDays;
+    }
+
+    /**
+     * Check if user account is locked
+     */
+    public function isLocked(): bool
+    {
+        return $this->locked_until && $this->locked_until->isFuture();
+    }
+
+    /**
+     * Increment failed login attempts
+     */
+    public function incrementFailedLoginAttempts(): void
+    {
+        $this->increment('failed_login_attempts');
+        
+        $maxAttempts = config('auth.max_login_attempts', 5);
+        if ($this->failed_login_attempts >= $maxAttempts) {
+            $lockoutDuration = config('auth.lockout_duration', 300); // 5 minutes
+            $this->locked_until = now()->addSeconds($lockoutDuration);
+            $this->save();
+        }
+    }
+
+    /**
+     * Reset failed login attempts
+     */
+    public function resetFailedLoginAttempts(): void
+    {
+        $this->failed_login_attempts = 0;
+        $this->locked_until = null;
+        $this->save();
+    }
+
+    /**
+     * Add password to history
+     */
+    public function addPasswordToHistory(string $password): void
+    {
+        $history = $this->password_history ?? [];
+        $history[] = $password;
+        
+        // Keep only the last N passwords based on config
+        $maxHistory = config('auth.password_history_count', 5);
+        if (count($history) > $maxHistory) {
+            $history = array_slice($history, -$maxHistory);
+        }
+        
+        $this->password_history = $history;
+    }
+
+    /**
+     * Check if password was used before
+     */
+    public function wasPasswordUsedBefore(string $password): bool
+    {
+        if (!$this->password_history) {
+            return false;
+        }
+
+        foreach ($this->password_history as $oldHash) {
+            if (password_verify($password, $oldHash)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Update login information
+     */
+    public function updateLoginInfo(string $ip, string $userAgent): void
+    {
+        $this->last_login_at = now();
+        $this->last_login_ip = $ip;
+        $this->last_login_user_agent = $userAgent;
+        $this->resetFailedLoginAttempts();
+    }
+
+    /**
+     * Force password reset
+     */
+    public function forcePasswordReset(): void
+    {
+        $this->force_password_reset = true;
+        $this->save();
+    }
+
+    /**
+     * Mark password as changed
+     */
+    public function markPasswordAsChanged(): void
+    {
+        $this->password_changed_at = now();
+        $this->force_password_reset = false;
+        $this->save();
     }
 }

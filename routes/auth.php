@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PartnerLoginController;
 use App\Http\Controllers\Auth\PartnerRegisterController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\PasswordForceChangeController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -61,9 +62,22 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
+    // Password force change routes (excluded from password expiry middleware)
+    Route::get('password/force-change', [PasswordForceChangeController::class, 'show'])
+        ->name('password.force-change');
+    
+    Route::post('password/force-change', [PasswordForceChangeController::class, 'update'])
+        ->name('password.force-change.update');
+
     // Logout for all roles
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+});
+
+// Password expiry routes - must check password expiry for authenticated users
+Route::middleware(['auth', 'password.expiry'])->group(function () {
+    // All authenticated routes that require password expiry check will be handled by middleware
+    // The middleware will redirect to password change if needed
 });
 
 // Customer Authentication Routes

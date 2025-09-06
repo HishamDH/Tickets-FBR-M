@@ -76,5 +76,7 @@ class Kernel extends HttpKernel
         'language' => \App\Http\Middleware\LanguageSwitcher::class,
         'permission' => \App\Http\Middleware\CheckPermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
+        // Security Middleware
+        'password.expiry' => \App\Http\Middleware\CheckPasswordExpiry::class,
     ];
 }

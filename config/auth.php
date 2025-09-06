@@ -153,4 +153,20 @@ return [
 
     'password_timeout' => 10800,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Password Security Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configure password security policies including expiry, complexity,
+    | and lockout settings for enhanced security.
+    |
+    */
+
+    'password_expiry_days' => env('PASSWORD_EXPIRY_DAYS', 90),
+    'max_login_attempts' => env('MAX_LOGIN_ATTEMPTS', 5),
+    'lockout_duration' => env('LOCKOUT_DURATION', 300), // 5 minutes
+    'password_history_count' => env('PASSWORD_HISTORY_COUNT', 5),
+    'force_password_reset_on_first_login' => env('FORCE_PASSWORD_RESET_FIRST_LOGIN', false),
+
 ];
