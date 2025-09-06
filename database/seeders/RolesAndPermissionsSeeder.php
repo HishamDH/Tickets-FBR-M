@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Enums\PermissionEnum;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -18,25 +19,29 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // create permissions
-        Permission::create(['name' => 'edit articles']);
-        Permission::create(['name' => 'delete articles']);
-        Permission::create(['name' => 'publish articles']);
-        Permission::create(['name' => 'unpublish articles']);
-
-        // create roles and assign created permissions
-
-        // this can be done as separate statements
-        $role = Role::create(['name' => 'customer']);
-        $role->givePermissionTo('edit articles');
-
-        // or may be done by chaining
-        $role = Role::create(['name' => 'merchant'])
-            ->givePermissionTo(['publish articles', 'unpublish articles']);
-
-        $role = Role::create(['name' => 'partner']);
+        // إنشاء جميع الصلاحيات
+        $permissions = PermissionEnum::getAllPermissions();
         
-        $role = Role::create(['name' => 'admin']);
-        $role->givePermissionTo(Permission::all());
+        foreach ($permissions as $permission => $description) {
+            Permission::firstOrCreate(
+                ['name' => $permission],
+                ['description' => $description]
+            );
+        }
+
+        // إنشاء الأدوار وتعيين الصلاحيات
+        $rolePermissions = PermissionEnum::getRolePermissions();
+
+        foreach ($rolePermissions as $roleName => $permissionNames) {
+            $role = Role::firstOrCreate(['name' => $roleName]);
+            
+            // تنظيف الصلاحيات الحالية وإعادة تعيينها
+            $role->permissions()->detach();
+            $role->givePermissionTo($permissionNames);
+            
+            $this->command->info("تم إنشاء دور '{$roleName}' مع " . count($permissionNames) . " صلاحية");
+        }
+
+        $this->command->info('تم إنشاء ' . count($permissions) . ' صلاحية و ' . count($rolePermissions) . ' أدوار بنجاح!');
     }
 }

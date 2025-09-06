@@ -74,5 +74,7 @@ class Kernel extends HttpKernel
         'customer' => \App\Http\Middleware\CustomerMiddleware::class,
         'subdomain' => \App\Http\Middleware\SubdomainMiddleware::class,
         'language' => \App\Http\Middleware\LanguageSwitcher::class,
+        'permission' => \App\Http\Middleware\CheckPermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
     ];
 }

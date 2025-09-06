@@ -184,4 +184,19 @@ return [
     'address' => 'Address',
     'city' => 'City',
     'country' => 'Country',
+    
+    // Permissions and roles
+    'permissions' => 'Permissions',
+    'roles' => 'Roles',
+    'role' => 'Role',
+    'permission' => 'Permission',
+    'access_denied' => 'Access Denied',
+    'insufficient_permissions' => 'Insufficient Permissions',
+    'role_assigned' => 'Role Assigned Successfully',
+    'permission_granted' => 'Permission Granted Successfully',
+    'approve' => 'Approve',
+    'reject' => 'Reject',
+    'approved' => 'Approved',
+    'rejected' => 'Rejected',
+    'pending_approval' => 'Pending Approval',
 ];

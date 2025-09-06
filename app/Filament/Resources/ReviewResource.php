@@ -40,6 +40,12 @@ class ReviewResource extends Resource
                 Forms\Components\DateTimePicker::make('reviewed_at')
                     ->required()
                     ->label('تاريخ المراجعة'),
+                Forms\Components\Toggle::make('is_approved')
+                    ->label('معتمد')
+                    ->default(false),
+                Forms\Components\Textarea::make('admin_notes')
+                    ->label('ملاحظات الإدارة')
+                    ->rows(2),
             ]);
     }
 
@@ -51,6 +57,13 @@ class ReviewResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')->label('المستخدم'),
                 Tables\Columns\TextColumn::make('rating')->label('التقييم')->sortable(),
                 Tables\Columns\TextColumn::make('review_text')->label('نص المراجعة')->limit(50),
+                Tables\Columns\IconColumn::make('is_approved')
+                    ->label('الحالة')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
                 Tables\Columns\TextColumn::make('reviewed_at')->label('تاريخ المراجعة')->dateTime(),
             ])
             ->filters([
@@ -63,12 +76,57 @@ class ReviewResource extends Resource
                         '4' => '4 نجوم',
                         '5' => '5 نجوم',
                     ]),
+                Tables\Filters\TernaryFilter::make('is_approved')
+                    ->label('حالة الموافقة')
+                    ->boolean()
+                    ->trueLabel('معتمد')
+                    ->falseLabel('غير معتمد')
+                    ->placeholder('جميع المراجعات'),
             ])
             ->actions([
+                Tables\Actions\Action::make('approve')
+                    ->label('موافقة')
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->action(fn (Review $record) => $record->update(['is_approved' => true]))
+                    ->visible(fn (Review $record) => !$record->is_approved)
+                    ->requiresConfirmation()
+                    ->modalHeading('موافقة على المراجعة')
+                    ->modalDescription('هل أنت متأكد من الموافقة على هذه المراجعة؟'),
+                
+                Tables\Actions\Action::make('reject')
+                    ->label('رفض')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->action(fn (Review $record) => $record->update(['is_approved' => false]))
+                    ->visible(fn (Review $record) => $record->is_approved)
+                    ->requiresConfirmation()
+                    ->modalHeading('رفض المراجعة')
+                    ->modalDescription('هل أنت متأكد من رفض هذه المراجعة؟'),
+                
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('approve_all')
+                        ->label('الموافقة على المحدد')
+                        ->icon('heroicon-o-check')
+                        ->color('success')
+                        ->action(fn ($records) => $records->each->update(['is_approved' => true]))
+                        ->requiresConfirmation()
+                        ->modalHeading('الموافقة على المراجعات المحددة')
+                        ->modalDescription('هل أنت متأكد من الموافقة على جميع المراجعات المحددة؟'),
+                    
+                    Tables\Actions\BulkAction::make('reject_all')
+                        ->label('رفض المحدد')
+                        ->icon('heroicon-o-x-mark')
+                        ->color('danger')
+                        ->action(fn ($records) => $records->each->update(['is_approved' => false]))
+                        ->requiresConfirmation()
+                        ->modalHeading('رفض المراجعات المحددة')
+                        ->modalDescription('هل أنت متأكد من رفض جميع المراجعات المحددة؟'),
+                        
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

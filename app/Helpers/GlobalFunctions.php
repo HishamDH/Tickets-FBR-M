@@ -133,7 +133,7 @@ if (! function_exists('calculateNet')) {
 
 if (! function_exists('has_Permetion')) {
     /**
-     * Check if user has specific permission
+     * Check if user has specific permission using Spatie Permission
      */
     function has_Permetion($permission, $userId = null, $merchantId = null)
     {
@@ -150,6 +150,70 @@ if (! function_exists('has_Permetion')) {
 
         // Fallback for basic role checking
         return $user->role === 'admin' || $user->role === 'merchant';
+    }
+}
+
+if (! function_exists('can_perform')) {
+    /**
+     * Check if current user can perform a specific action
+     */
+    function can_perform($permission)
+    {
+        return has_Permetion($permission);
+    }
+}
+
+if (! function_exists('authorize_permission')) {
+    /**
+     * Authorize permission or throw exception
+     */
+    function authorize_permission($permission, $message = null)
+    {
+        if (!can_perform($permission)) {
+            $message = $message ?: __('app.access_denied');
+            abort(403, $message);
+        }
+        return true;
+    }
+}
+
+if (! function_exists('user_has_role')) {
+    /**
+     * Check if user has specific role
+     */
+    function user_has_role($role, $userId = null)
+    {
+        $user = $userId ? User::find($userId) : Auth::user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if (method_exists($user, 'hasRole')) {
+            return $user->hasRole($role);
+        }
+
+        return $user->role === $role;
+    }
+}
+
+if (! function_exists('user_has_any_role')) {
+    /**
+     * Check if user has any of the specified roles
+     */
+    function user_has_any_role($roles, $userId = null)
+    {
+        if (is_string($roles)) {
+            $roles = [$roles];
+        }
+
+        foreach ($roles as $role) {
+            if (user_has_role($role, $userId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

@@ -184,4 +184,19 @@ return [
     'address' => 'العنوان',
     'city' => 'المدينة',
     'country' => 'الدولة',
+    
+    // Permissions and roles
+    'permissions' => 'الصلاحيات',
+    'roles' => 'الأدوار',
+    'role' => 'الدور',
+    'permission' => 'الصلاحية',
+    'access_denied' => 'تم رفض الوصول',
+    'insufficient_permissions' => 'صلاحيات غير كافية',
+    'role_assigned' => 'تم تعيين الدور بنجاح',
+    'permission_granted' => 'تم منح الصلاحية بنجاح',
+    'approve' => 'موافقة',
+    'reject' => 'رفض',
+    'approved' => 'معتمد',
+    'rejected' => 'مرفوض',
+    'pending_approval' => 'في انتظار الموافقة',
 ];
