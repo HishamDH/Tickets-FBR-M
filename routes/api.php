@@ -125,6 +125,38 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('{booking}/complete', [BookingController::class, 'complete']); // Complete booking
         });
     });
+
+    // Marketing System
+    Route::prefix('marketing')->group(function () {
+        // Coupon Management
+        Route::prefix('coupons')->group(function () {
+            Route::post('validate', [App\Http\Controllers\MarketingController::class, 'validateCoupon']);
+            Route::post('apply', [App\Http\Controllers\MarketingController::class, 'applyCoupon']);
+            Route::get('user', [App\Http\Controllers\MarketingController::class, 'getUserCoupons']);
+        });
+
+        // Loyalty Program
+        Route::prefix('loyalty')->group(function () {
+            Route::get('status', [App\Http\Controllers\MarketingController::class, 'getUserLoyaltyStatus']);
+            Route::post('redeem', [App\Http\Controllers\MarketingController::class, 'redeemLoyaltyPoints']);
+            Route::post('award', [App\Http\Controllers\MarketingController::class, 'awardLoyaltyPoints'])
+                ->middleware('permission:marketing_manage');
+        });
+
+        // Referral Program
+        Route::prefix('referrals')->group(function () {
+            Route::post('generate', [App\Http\Controllers\MarketingController::class, 'generateReferralCode']);
+            Route::post('process', [App\Http\Controllers\MarketingController::class, 'processReferral']);
+            Route::get('user', [App\Http\Controllers\MarketingController::class, 'getUserReferrals']);
+        });
+
+        // Analytics (Admin/Merchant only)
+        Route::middleware('permission:marketing_analytics')->group(function () {
+            Route::get('analytics', [App\Http\Controllers\MarketingController::class, 'getMarketingAnalytics']);
+            Route::get('top-coupons', [App\Http\Controllers\MarketingController::class, 'getTopPerformingCoupons']);
+            Route::get('trends', [App\Http\Controllers\MarketingController::class, 'getMarketingTrends']);
+        });
+    });
 });
 
 // Public API routes (no authentication required)
