@@ -35,16 +35,44 @@ class AuthController extends Controller
             'l_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,merchant,user',
+            'role' => 'required|in:admin,merchant,user,Customer,Merchant',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+        $validated['name'] = $validated['f_name'] . ' ' . $validated['l_name'];
+        
+        // Map role to user_type
+        $roleMapping = [
+            'user' => 'customer',
+            'Customer' => 'customer', 
+            'merchant' => 'merchant',
+            'Merchant' => 'merchant',
+            'admin' => 'admin'
+        ];
+        
+        $validated['user_type'] = $roleMapping[$validated['role']] ?? 'customer';
+        unset($validated['role']); // Remove role from array since we're using user_type
 
         $user = User::create($validated);
 
-        Auth::login($user);
+        // Assign role based on user_type
+        $spatie_role = ucfirst($validated['user_type'] === 'customer' ? 'Customer' : $validated['user_type']);
+        $user->assignRole($spatie_role);
 
-        return response()->json(['message' => 'Registration successful', 'user' => $user]);
+        // Check if this is an API request
+        if ($request->expectsJson() || $request->is('api/*')) {
+            $token = $user->createToken('auth-token')->plainTextToken;
+            
+            return response()->json([
+                'message' => 'Registration successful',
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'Bearer'
+            ], 201);
+        } else {
+            Auth::login($user);
+            return response()->json(['message' => 'Registration successful', 'user' => $user]);
+        }
     }
 
     /**
@@ -104,5 +132,38 @@ class AuthController extends Controller
             
             return response()->json(['message' => 'Logout successful']);
         }
+    }
+
+    /**
+     * Show user profile.
+     */
+    public function showProfile(Request $request)
+    {
+        $user = $request->user();
+        
+        return response()->json([
+            'data' => $user
+        ]);
+    }
+
+    /**
+     * Update user profile.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string|max:20',
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'data' => $user->fresh()
+        ]);
     }
 }

@@ -59,7 +59,7 @@ class ServiceResource extends JsonResource
             
             // Merchant information
             'merchant_id' => $this->merchant_id,
-            'merchant' => $this->when($this->relationLoaded('merchant'), [
+            'merchant' => $this->when($this->relationLoaded('merchant') && $this->merchant, [
                 'id' => $this->merchant->id,
                 'name' => $this->merchant->name,
                 'business_name' => $this->merchant->business_name,

@@ -3,9 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\Event;
+use App\Models\Offering;
 use App\Models\Ticket;
 use App\Models\Booking;
+use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -18,42 +19,42 @@ class TicketSystemTest extends TestCase
     {
         parent::setUp();
         
-        // Create test events
-        $this->event = Event::factory()->create([
-            'title' => 'Test Event',
-            'description' => 'Test event description',
-            'date' => now()->addDays(30),
+        // Create test offerings
+        $this->offering = Offering::factory()->create([
+            'name' => 'Test Offering',
+            'description' => 'Test offering description',
+            'start_date' => now()->addDays(30),
             'location' => 'Test Location',
-            'status' => 'active'
+            'is_active' => true
         ]);
 
         $this->tickets = Ticket::factory()->count(3)->create([
-            'event_id' => $this->event->id,
+            'offering_id' => $this->offering->id,
             'price' => 100,
             'quantity' => 50
         ]);
     }
 
-    public function test_customer_can_view_available_events()
+    public function test_customer_can_view_available_offerings()
     {
         $customer = User::factory()->create(['role' => 'customer']);
 
-        $response = $this->actingAs($customer)->get('/events');
+        $response = $this->actingAs($customer)->get('/offerings');
 
         $response->assertStatus(200);
-        $response->assertSee($this->event->title);
-        $response->assertSee($this->event->location);
+        $response->assertSee($this->offering->name);
+        $response->assertSee($this->offering->location);
     }
 
-    public function test_customer_can_view_event_details()
+    public function test_customer_can_view_offering_details()
     {
         $customer = User::factory()->create(['role' => 'customer']);
 
-        $response = $this->actingAs($customer)->get("/events/{$this->event->id}");
+        $response = $this->actingAs($customer)->get("/offerings/{$this->offering->id}");
 
         $response->assertStatus(200);
-        $response->assertSee($this->event->title);
-        $response->assertSee($this->event->description);
+        $response->assertSee($this->offering->name);
+        $response->assertSee($this->offering->description);
     }
 
     public function test_customer_can_book_available_tickets()
@@ -153,35 +154,34 @@ class TicketSystemTest extends TestCase
         ]);
     }
 
-    public function test_merchant_can_create_event()
+    public function test_merchant_can_create_offering()
     {
         $merchant = User::factory()->create(['role' => 'merchant']);
 
-        $eventData = [
-            'title' => 'New Event',
-            'description' => 'Event description',
-            'date' => now()->addDays(30)->format('Y-m-d H:i:s'),
-            'location' => 'Event Location',
-            'category' => 'music',
-            'status' => 'active'
+        $offeringData = [
+            'name' => 'New Offering',
+            'description' => 'Offering description',
+            'start_date' => now()->addDays(30)->format('Y-m-d H:i:s'),
+            'location' => 'Offering Location',
+            'is_active' => true
         ];
 
-        $response = $this->actingAs($merchant)->post('/merchant/events', $eventData);
+        $response = $this->actingAs($merchant)->post('/merchant/offerings', $offeringData);
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('events', [
-            'title' => 'New Event',
-            'merchant_id' => $merchant->id
+        $this->assertDatabaseHas('offerings', [
+            'name' => 'New Offering',
+            'user_id' => $merchant->id
         ]);
     }
 
-    public function test_merchant_can_create_tickets_for_their_event()
+    public function test_merchant_can_create_tickets_for_their_offering()
     {
         $merchant = User::factory()->create(['role' => 'merchant']);
-        $event = Event::factory()->create(['merchant_id' => $merchant->id]);
+        $offering = Offering::factory()->create(['user_id' => $merchant->id]);
 
         $ticketData = [
-            'event_id' => $event->id,
+            'offering_id' => $offering->id,
             'name' => 'VIP Ticket',
             'description' => 'VIP access',
             'price' => 500,
@@ -192,48 +192,50 @@ class TicketSystemTest extends TestCase
 
         $response->assertRedirect();
         $this->assertDatabaseHas('tickets', [
-            'event_id' => $event->id,
+            'offering_id' => $offering->id,
             'name' => 'VIP Ticket',
             'price' => 500
         ]);
     }
 
-    public function test_merchant_cannot_modify_other_merchant_events()
+    public function test_merchant_cannot_modify_other_merchant_offerings()
     {
         $merchant1 = User::factory()->create(['role' => 'merchant']);
         $merchant2 = User::factory()->create(['role' => 'merchant']);
         
-        $event = Event::factory()->create(['merchant_id' => $merchant1->id]);
+        $offering = Offering::factory()->create(['user_id' => $merchant1->id]);
 
-        $response = $this->actingAs($merchant2)->patch("/merchant/events/{$event->id}", [
-            'title' => 'Modified Title'
+        $response = $this->actingAs($merchant2)->patch("/merchant/offerings/{$offering->id}", [
+            'name' => 'Modified Title'
         ]);
 
         $response->assertStatus(403);
     }
 
-    public function test_event_search_functionality()
+    public function test_offering_search_functionality()
     {
-        $searchEvent = Event::factory()->create([
-            'title' => 'Concert in Dubai',
+        $searchOffering = Offering::factory()->create([
+            'name' => 'Concert in Dubai',
             'location' => 'Dubai Opera House'
         ]);
 
-        $response = $this->get('/events?search=Dubai');
+        $response = $this->get('/offerings?search=Dubai');
 
         $response->assertStatus(200);
         $response->assertSee('Concert in Dubai');
     }
 
-    public function test_event_filtering_by_category()
+    public function test_offering_filtering_by_category()
     {
-        $musicEvent = Event::factory()->create(['category' => 'music']);
-        $sportsEvent = Event::factory()->create(['category' => 'sports']);
+        $category1 = Category::factory()->create(['name' => 'music']);
+        $category2 = Category::factory()->create(['name' => 'sports']);
+        $musicOffering = Offering::factory()->create(['category_id' => $category1->id]);
+        $sportsOffering = Offering::factory()->create(['category_id' => $category2->id]);
 
-        $response = $this->get('/events?category=music');
+        $response = $this->get('/offerings?category=music');
 
         $response->assertStatus(200);
-        $response->assertSee($musicEvent->title);
-        $response->assertDontSee($sportsEvent->title);
+        $response->assertSee($musicOffering->name);
+        $response->assertDontSee($sportsOffering->name);
     }
 }

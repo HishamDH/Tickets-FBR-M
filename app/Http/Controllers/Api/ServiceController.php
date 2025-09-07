@@ -109,7 +109,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => ServiceResource::collection($services->items()),
+            'data' => $services->items(),
             'meta' => [
                 'current_page' => $services->currentPage(),
                 'last_page' => $services->lastPage(),
@@ -145,7 +145,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => new ServiceResource($service),
+            'data' => $service,
         ]);
     }
 

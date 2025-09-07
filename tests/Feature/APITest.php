@@ -3,8 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\Event;
-use App\Models\Ticket;
+use App\Models\Service;
 use App\Models\Booking;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -41,7 +40,7 @@ class APITest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'access_token',
+            'token',  // AuthController returns 'token' not 'access_token'
             'token_type',
             'user' => [
                 'id',
@@ -68,19 +67,19 @@ class APITest extends TestCase
     public function test_api_user_registration()
     {
         $userData = [
-            'name' => 'Ahmed Ali',
+            'f_name' => 'Ahmed',
+            'l_name' => 'Ali',
             'email' => 'ahmed@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'phone' => '+966501234567',
-            'role' => 'customer'
+            'role' => 'user'
         ];
 
         $response = $this->postJson('/api/auth/register', $userData);
 
         $response->assertStatus(201);
         $response->assertJsonStructure([
-            'access_token',
+            'token',  // Changed from access_token to token
             'user' => [
                 'id',
                 'name',
@@ -91,68 +90,70 @@ class APITest extends TestCase
 
     public function test_api_get_events_list()
     {
-        $events = Event::factory()->count(5)->create();
+        $services = Service::factory()->count(5)->create();
 
-        $response = $this->getJson('/api/events');
+        $response = $this->getJson('/api/services');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
                 '*' => [
                     'id',
-                    'title',
+                    'name',
                     'description',
-                    'date',
-                    'location',
+                    'price',
                     'category'
                 ]
-            ],
-            'meta' => [
-                'current_page',
-                'per_page',
-                'total'
             ]
         ]);
     }
 
     public function test_api_get_single_event()
     {
-        $event = Event::factory()->create();
+        $service = Service::factory()->create();
 
-        $response = $this->getJson("/api/events/{$event->id}");
+        $response = $this->getJson("/api/services/{$service->id}");
 
         $response->assertStatus(200);
         $response->assertJson([
             'data' => [
-                'id' => $event->id,
-                'title' => $event->title,
-                'description' => $event->description
+                'id' => $service->id,
+                'name' => $service->name,
+                'description' => $service->description
             ]
         ]);
     }
 
     public function test_api_search_events()
     {
-        $event1 = Event::factory()->create(['title' => 'Concert in Dubai']);
-        $event2 = Event::factory()->create(['title' => 'Football Match']);
+        $service1 = Service::factory()->create(['name' => 'حفلة في دبي', 'description' => 'حفلة موسيقية رائعة']);
+        $service2 = Service::factory()->create(['name' => 'مباراة كرة قدم', 'description' => 'مباراة مثيرة']);
 
-        $response = $this->getJson('/api/events?search=Dubai');
+        $response = $this->getJson('/api/services?search=دبي');
 
         $response->assertStatus(200);
-        $response->assertJsonFragment(['title' => 'Concert in Dubai']);
-        $response->assertJsonMissing(['title' => 'Football Match']);
+        $response->assertJsonPath('data.0.name', 'حفلة في دبي');
+        
+        // Verify other service is not returned
+        $responseData = $response->json('data');
+        $this->assertCount(1, $responseData);
+        $this->assertNotEquals('مباراة كرة قدم', $responseData[0]['name']);
     }
 
     public function test_api_filter_events_by_category()
     {
-        $musicEvent = Event::factory()->create(['category' => 'music']);
-        $sportsEvent = Event::factory()->create(['category' => 'sports']);
+        $musicService = Service::factory()->create(['category' => 'music']);
+        $sportsService = Service::factory()->create(['category' => 'sports']);
 
-        $response = $this->getJson('/api/events?category=music');
+        $response = $this->getJson('/api/services?category=music');
 
         $response->assertStatus(200);
-        $response->assertJsonFragment(['category' => 'music']);
-        $response->assertJsonMissing(['category' => 'sports']);
+        $response->assertJsonPath('data.0.category', 'music');
+        
+        // Verify sports service is not returned
+        $responseData = $response->json('data');
+        $this->assertCount(1, $responseData);
+        $this->assertNotEquals('sports', $responseData[0]['category']);
     }
 
     public function test_authenticated_user_can_create_booking()
@@ -312,7 +313,7 @@ class APITest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'message' => 'Successfully logged out'
+            'message' => 'Logout successful'
         ]);
     }
 

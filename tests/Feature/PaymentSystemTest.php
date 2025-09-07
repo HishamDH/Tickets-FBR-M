@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Ticket;
-use App\Models\Event;
+use App\Models\Offering;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -20,15 +20,16 @@ class PaymentSystemTest extends TestCase
         parent::setUp();
         
         $this->customer = User::factory()->create(['role' => 'customer']);
-        $this->event = Event::factory()->create();
+        $this->offering = Offering::factory()->create();
         $this->ticket = Ticket::factory()->create([
-            'event_id' => $this->event->id,
+            'offering_id' => $this->offering->id,
             'price' => 150
         ]);
         
         $this->booking = Booking::factory()->create([
-            'user_id' => $this->customer->id,
-            'ticket_id' => $this->ticket->id,
+            'customer_id' => $this->customer->id,
+            'bookable_id' => $this->ticket->id,
+            'bookable_type' => Ticket::class,
             'quantity' => 2,
             'total_amount' => 300,
             'status' => 'pending'
@@ -42,7 +43,7 @@ class PaymentSystemTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('300'); // Total amount
-        $response->assertSee($this->event->title);
+        $response->assertSee($this->offering->name);
     }
 
     public function test_customer_can_process_credit_card_payment()
@@ -230,7 +231,7 @@ class PaymentSystemTest extends TestCase
     public function test_merchant_can_view_payment_reports()
     {
         $merchant = User::factory()->create(['role' => 'merchant']);
-        $merchantEvent = Event::factory()->create(['merchant_id' => $merchant->id]);
+        $merchantOffering = Offering::factory()->create(['user_id' => $merchant->id]);
         
         $payment = Payment::factory()->create([
             'booking_id' => $this->booking->id,

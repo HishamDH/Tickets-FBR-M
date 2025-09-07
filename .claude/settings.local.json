@@ -55,7 +55,8 @@
       "Read(/C:\\laragon\\www\\Tickets-FBR-M\\routes/**)",
       "Read(/C:\\laragon\\www\\Tickets-FBR-M\\app\\Http\\Resources/**)",
       "Read(/C:\\laragon\\www\\Tickets-FBR-M\\app\\Http\\Resources/**)",
-      "Read(/C:\\laragon\\www\\Tickets-FBR-M\\app\\Http\\Controllers\\Api/**)"
+      "Read(/C:\\laragon\\www\\Tickets-FBR-M\\app\\Http\\Controllers\\Api/**)",
+      "Bash(npm install)"
     ],
     "deny": [],
     "ask": []

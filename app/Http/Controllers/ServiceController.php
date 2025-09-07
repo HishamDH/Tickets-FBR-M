@@ -79,13 +79,27 @@ class ServiceController extends Controller
             ->orderBy('category')
             ->pluck('category');
 
+        // Return JSON for API requests
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'data' => $services->items(),
+                'meta' => [
+                    'current_page' => $services->currentPage(),
+                    'last_page' => $services->lastPage(),
+                    'per_page' => $services->perPage(),
+                    'total' => $services->total(),
+                ],
+                'categories' => $categories
+            ]);
+        }
+
         return view('services.index', compact('services', 'categories'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $service = Service::where('is_active', true)->findOrFail($id);
 
@@ -95,6 +109,14 @@ class ServiceController extends Controller
             ->where('is_active', true)
             ->limit(3)
             ->get();
+
+        // Return JSON for API requests
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'data' => $service,
+                'related_services' => $relatedServices
+            ]);
+        }
 
         return view('services.show', compact('service', 'relatedServices'));
     }

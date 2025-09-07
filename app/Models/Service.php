@@ -183,6 +183,7 @@ class Service extends Model
         return $this->is_active &&
                $this->is_available &&
                $this->online_booking_enabled &&
+               $this->merchant && 
                $this->merchant->isVerified();
     }
 
