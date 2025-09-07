@@ -84,7 +84,7 @@ class BookingService
     public function confirmBooking(Booking $booking): bool
     {
         try {
-            $booking->update(['booking_status' => 'confirmed']);
+            $booking->update(['status' => 'confirmed']);
 
             $this->notificationService->sendBookingConfirmation($booking);
 
@@ -109,7 +109,7 @@ class BookingService
         try {
             DB::transaction(function () use ($booking, $reason, $cancelledBy) {
                 $booking->update([
-                    'booking_status' => 'cancelled',
+                    'status' => 'cancelled',
                     'cancellation_reason' => $reason,
                     'cancelled_at' => now(),
                     'cancelled_by' => $cancelledBy->id,
@@ -247,7 +247,7 @@ class BookingService
     public function getUpcomingBookings(Service $service, int $days = 30): \Illuminate\Database\Eloquent\Collection
     {
         return $service->bookings()
-            ->where('booking_status', '!=', 'cancelled')
+            ->where('status', '!=', 'cancelled')
             ->where('booking_date', '>=', now()->toDateString())
             ->where('booking_date', '<=', now()->addDays($days)->toDateString())
             ->with(['customer', 'service'])
@@ -269,10 +269,10 @@ class BookingService
 
         return [
             'total_bookings' => $query->count(),
-            'confirmed_bookings' => $query->where('booking_status', 'confirmed')->count(),
-            'pending_bookings' => $query->where('booking_status', 'pending')->count(),
-            'cancelled_bookings' => $query->where('booking_status', 'cancelled')->count(),
-            'completed_bookings' => $query->where('booking_status', 'completed')->count(),
+            'confirmed_bookings' => $query->where('status', 'confirmed')->count(),
+            'pending_bookings' => $query->where('status', 'pending')->count(),
+            'cancelled_bookings' => $query->where('status', 'cancelled')->count(),
+            'completed_bookings' => $query->where('status', 'completed')->count(),
             'total_revenue' => $query->where('payment_status', 'paid')->sum('total_amount'),
             'today_bookings' => $query->whereDate('created_at', today())->count(),
             'this_month_bookings' => $query->whereMonth('created_at', now()->month)->count(),

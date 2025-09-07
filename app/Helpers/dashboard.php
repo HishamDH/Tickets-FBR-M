@@ -1,7 +1,7 @@
 <?php
 
-if (!function_exists('dashboard_route')) {
-    function dashboard_route($userId) {
+if (!function_exists('legacy_dashboard_route')) {
+    function legacy_dashboard_route($userId) {
         $user = \App\Models\User::find($userId);
         if (!$user) return '/';
 

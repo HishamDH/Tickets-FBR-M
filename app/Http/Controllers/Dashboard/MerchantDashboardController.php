@@ -27,8 +27,22 @@ class MerchantDashboardController extends Controller
         $merchant = $user->merchant;
 
         if (! $merchant) {
-            // If no merchant record exists, redirect to status page
-            return redirect()->route('merchant.status');
+            // Create merchant record if it doesn't exist for approved merchant users
+            $merchant = Merchant::create([
+                'user_id' => $user->id,
+                'business_name' => $user->business_name ?? 'Business Name',
+                'business_type' => $user->business_type ?? 'service',
+                'cr_number' => $user->commercial_registration_number ?? '000000',
+                'business_address' => $user->address ?? '',
+                'city' => $user->business_city ?? $user->city ?? 'City',
+                'verification_status' => 'approved',
+                'commission_rate' => 10.00,
+            ]);
+            
+            // If still no merchant record, show error with support contact
+            if (! $merchant) {
+                abort(403, 'Merchant profile not found. Please contact support.');
+            }
         }
 
         // إحصائيات التاجر
@@ -36,8 +50,8 @@ class MerchantDashboardController extends Controller
             'total_services' => $merchant->services()->count(),
             'active_services' => $merchant->services()->where('is_active', true)->count(),
             'total_bookings' => $merchant->bookings()->count(),
-            'pending_bookings' => $merchant->bookings()->where('booking_status', 'pending')->count(),
-            'confirmed_bookings' => $merchant->bookings()->where('booking_status', 'confirmed')->count(),
+            'pending_bookings' => $merchant->bookings()->where('status', 'pending')->count(),
+            'confirmed_bookings' => $merchant->bookings()->where('status', 'confirmed')->count(),
             'total_revenue' => $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount'),
             'commission_paid' => $merchant->bookings()->where('payment_status', 'paid')->sum('commission_amount'),
             'net_revenue' => $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount') -
@@ -85,8 +99,8 @@ class MerchantDashboardController extends Controller
 
         // إحصائيات الحجوزات حسب الحالة
         $bookingsByStatus = $merchant->bookings()
-            ->select('booking_status', DB::raw('count(*) as count'))
-            ->groupBy('booking_status')
+            ->select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
             ->get();
 
         return view('dashboard.merchant.index', compact(
@@ -131,7 +145,7 @@ class MerchantDashboardController extends Controller
 
         // فلترة حسب الحالة
         if ($request->has('status') && $request->status != '') {
-            $query->where('booking_status', $request->status);
+            $query->where('status', $request->status);
         }
 
         // فلترة حسب الخدمة
@@ -179,14 +193,14 @@ class MerchantDashboardController extends Controller
         $merchant = $user->merchant;
 
         $request->validate([
-            'booking_status' => 'required|in:pending,confirmed,completed,cancelled',
+            'status' => 'required|in:pending,confirmed,completed,cancelled',
             'notes' => 'nullable|string|max:500',
         ]);
 
         $booking = $merchant->bookings()->findOrFail($bookingId);
 
         $booking->update([
-            'booking_status' => $request->booking_status,
+            'status' => $request->status,
             'merchant_notes' => $request->notes,
         ]);
 
@@ -288,7 +302,7 @@ class MerchantDashboardController extends Controller
 
         // معدل الإلغاء
         $totalBookings = $merchant->bookings()->count();
-        $cancelledBookings = $merchant->bookings()->where('booking_status', 'cancelled')->count();
+        $cancelledBookings = $merchant->bookings()->where('status', 'cancelled')->count();
         $cancellationRate = $totalBookings > 0 ? ($cancelledBookings / $totalBookings) * 100 : 0;
 
         // نمو الحجوزات (مقارنة بالشهر الماضي)
@@ -326,7 +340,21 @@ class MerchantDashboardController extends Controller
         $merchant = $user->merchant;
 
         if (! $merchant) {
-            return redirect()->route('merchant.dashboard')->with('error', 'الملف التجاري غير موجود');
+            // Create merchant record if it doesn't exist
+            $merchant = Merchant::create([
+                'user_id' => $user->id,
+                'business_name' => $user->business_name ?? 'Business Name',
+                'business_type' => $user->business_type ?? 'service',
+                'cr_number' => $user->commercial_registration_number ?? '000000',
+                'business_address' => $user->address ?? '',
+                'city' => $user->business_city ?? $user->city ?? 'City',
+                'verification_status' => 'approved',
+                'commission_rate' => 10.00,
+            ]);
+            
+            if (! $merchant) {
+                return redirect()->route('merchant.dashboard')->with('error', 'الملف التجاري غير موجود');
+            }
         }
 
         // جلب جميع بوابات الدفع المتاحة
@@ -354,7 +382,21 @@ class MerchantDashboardController extends Controller
         $merchant = $user->merchant;
 
         if (! $merchant) {
-            return redirect()->route('merchant.dashboard')->with('error', 'الملف التجاري غير موجود');
+            // Create merchant record if it doesn't exist
+            $merchant = Merchant::create([
+                'user_id' => $user->id,
+                'business_name' => $user->business_name ?? 'Business Name',
+                'business_type' => $user->business_type ?? 'service',
+                'cr_number' => $user->commercial_registration_number ?? '000000',
+                'business_address' => $user->address ?? '',
+                'city' => $user->business_city ?? $user->city ?? 'City',
+                'verification_status' => 'approved',
+                'commission_rate' => 10.00,
+            ]);
+            
+            if (! $merchant) {
+                return redirect()->route('merchant.dashboard')->with('error', 'الملف التجاري غير موجود');
+            }
         }
 
         $gateway = PaymentGateway::findOrFail($gatewayId);

@@ -22,22 +22,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Merchant Authentication Routes
-Route::prefix('merchant')->name('merchant.')->group(function () {
-    // Merchant Login Routes
-    Route::middleware('guest:merchant')->group(function () {
-        Route::get('login', [MerchantLoginController::class, 'create'])->name('login');
-        Route::post('login', [MerchantLoginController::class, 'store']);
-    });
+// Merchant Authentication Routes - prefix and name already set in RouteServiceProvider
 
-    // Merchant Protected Routes
-    Route::middleware(['merchant.status'])->group(function () {
-        // Logout
-        Route::post('logout', [MerchantLoginController::class, 'destroy'])->name('logout');
+// Merchant Login Routes
+Route::middleware('guest')->group(function () {
+    Route::get('login', [MerchantLoginController::class, 'create'])->name('login');
+    Route::post('login', [MerchantLoginController::class, 'store']);
+});
 
-        // Dashboard
-        Route::get('/', [MerchantDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard', [MerchantDashboardController::class, 'index'])->name('dashboard.index');
+// Merchant Protected Routes
+Route::middleware(['merchant.status'])->group(function () {
+    // Logout
+    Route::post('logout', [MerchantLoginController::class, 'destroy'])->name('logout');
+
+    // Dashboard
+    Route::get('/', [MerchantDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [MerchantDashboardController::class, 'index'])->name('dashboard.index');
 
         // Services Management
         Route::prefix('services')->name('services.')->group(function () {
@@ -234,4 +234,3 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
             });
         });
     });
-});

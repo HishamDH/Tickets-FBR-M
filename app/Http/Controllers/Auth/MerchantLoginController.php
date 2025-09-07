@@ -59,7 +59,7 @@ class MerchantLoginController extends Controller
 
             // If approved, redirect to dashboard
             if ($user->merchant_status === 'approved') {
-                return redirect()->intended('/merchant/dashboard');
+                return redirect()->intended(route('merchant.dashboard'));
             }
 
             // For any other status, go to status page
@@ -76,7 +76,7 @@ class MerchantLoginController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('merchant')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

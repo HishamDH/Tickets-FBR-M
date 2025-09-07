@@ -841,13 +841,39 @@ if (! function_exists('get_user_dashboard_route')) {
             return route('customer.login'); // Default to customer login if no user
         }
 
-        return match ($user->role ?? $user->user_type) {
-            'admin' => route('admin.dashboard'),
-            'merchant' => route('merchant.dashboard'),
-            'partner' => route('partner.dashboard'),
-            'customer', 'user' => route('customer.dashboard'),
-            default => route('customer.dashboard')
-        };
+        // Debug: check what we're getting
+        $userRole = $user->role ?? $user->user_type ?? 'customer';
+        
+        // Log what we're getting for debugging
+        if ($userRole === 'ltr' || $userRole === 'rtl') {
+            \Log::error('Dashboard route called with language direction instead of user role', [
+                'userRole' => $userRole,
+                'user_id' => $user->id,
+                'user_type' => $user->user_type ?? 'null',
+                'user_role' => $user->role ?? 'null'
+            ]);
+            $userRole = 'customer'; // Fallback
+        }
+        
+        // Ensure we have a valid role string
+        if (!is_string($userRole) || empty($userRole)) {
+            $userRole = 'customer';
+        }
+        
+        // Use a more defensive approach instead of match
+        switch ($userRole) {
+            case 'admin':
+                return route('admin.dashboard');
+            case 'merchant':
+                return route('merchant.dashboard');
+            case 'partner':
+                return route('partner.dashboard');
+            case 'customer':
+            case 'user':
+                return route('customer.dashboard');
+            default:
+                return route('customer.dashboard');
+        }
     }
 }
 

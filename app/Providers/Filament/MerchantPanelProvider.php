@@ -25,7 +25,7 @@ class MerchantPanelProvider extends PanelProvider
     {
         return $panel
             ->id('merchant')
-            ->path('merchant')
+            ->path('merchant-admin')
             ->login()
             ->registration(\App\Filament\Merchant\Pages\Auth\Register::class)
             ->loginRouteSlug('login')

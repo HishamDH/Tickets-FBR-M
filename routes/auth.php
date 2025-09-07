@@ -104,13 +104,13 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
         Route::post('login', [MerchantLoginController::class, 'store']);
     });
 
-    Route::middleware('auth:merchant')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::post('logout', [MerchantLoginController::class, 'destroy'])
             ->name('logout');
     });
 
     // Status page for all authenticated merchants
-    Route::middleware(['auth:merchant', 'merchant.status'])->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::get('status', function () {
             return view('auth.merchant.status');
         })->name('status');
@@ -129,6 +129,10 @@ Route::prefix('merchant/auth')->name('filament.merchant.auth.')->group(function 
 
     Route::post('register', [MerchantRegisterController::class, 'store']);
 });
+
+// Filament merchant logout route (the one Filament expects at /merchant/logout)
+Route::post('merchant/logout', [MerchantLoginController::class, 'destroy'])
+    ->name('filament.merchant.auth.logout');
 
 // Partner Authentication Routes
 Route::prefix('partner')->name('partner.')->group(function () {

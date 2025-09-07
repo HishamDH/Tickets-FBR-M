@@ -47,7 +47,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/admin.php'));
 
             // Merchant Routes
-            Route::middleware(['web', 'auth:merchant'])
+            Route::middleware(['web'])
                 ->prefix('merchant')
                 ->name('merchant.')
                 ->group(base_path('routes/merchant.php'));

@@ -208,7 +208,7 @@
                             </div>
                             <div class="text-right">
                                 <p class="font-bold text-gray-900">{{ number_format($booking->total_amount) }} ريال</p>
-                                @switch($booking->booking_status)
+                                @switch($booking->status)
                                     @case('pending')
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                             في الانتظار
@@ -391,11 +391,11 @@
                                 <p class="text-sm text-gray-600">{{ number_format($booking->total_amount) }} ريال</p>
                                 <span @class([
                                     'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
-                                    'bg-green-100 text-green-800' => $booking->booking_status === 'confirmed',
-                                    'bg-yellow-100 text-yellow-800' => $booking->booking_status === 'pending',
-                                    'bg-red-100 text-red-800' => !in_array($booking->booking_status, ['confirmed', 'pending'])
+                                    'bg-green-100 text-green-800' => $booking->status === 'confirmed',
+                                    'bg-yellow-100 text-yellow-800' => $booking->status === 'pending',
+                                    'bg-red-100 text-red-800' => !in_array($booking->status, ['confirmed', 'pending'])
                                 ])>
-                                    {{ $booking->booking_status }}
+                                    {{ $booking->status }}
                                 </span>
                             </div>
                         </div>
@@ -472,12 +472,12 @@
                                 <p class="text-sm font-semibold text-gray-900">{{ number_format($booking->total_amount) }} ريال</p>
                                 <span @class([
                                     'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
-                                    'bg-green-100 text-green-800' => $booking->booking_status === 'confirmed',
-                                    'bg-yellow-100 text-yellow-800' => $booking->booking_status === 'pending',
-                                    'bg-blue-100 text-blue-800' => $booking->booking_status === 'completed',
-                                    'bg-red-100 text-red-800' => !in_array($booking->booking_status, ['confirmed', 'pending', 'completed'])
+                                    'bg-green-100 text-green-800' => $booking->status === 'confirmed',
+                                    'bg-yellow-100 text-yellow-800' => $booking->status === 'pending',
+                                    'bg-blue-100 text-blue-800' => $booking->status === 'completed',
+                                    'bg-red-100 text-red-800' => !in_array($booking->status, ['confirmed', 'pending', 'completed'])
                                 ])>
-                                    {{ $booking->booking_status }}
+                                    {{ $booking->status }}
                                 </span>
                             </div>
                         </div>

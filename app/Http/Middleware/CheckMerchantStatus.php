@@ -16,11 +16,11 @@ class CheckMerchantStatus
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! Auth::guard('merchant')->check()) {
+        if (! Auth::check()) {
             return redirect()->route('merchant.login');
         }
 
-        $user = Auth::guard('merchant')->user();
+        $user = Auth::user();
 
         // Check merchant verification status
         if ($user->merchant_status === 'pending') {
