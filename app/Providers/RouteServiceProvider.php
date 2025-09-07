@@ -33,9 +33,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
-
             // Auth Routes (important to load these first)
             Route::middleware('web')
                 ->group(base_path('routes/auth.php'));
@@ -46,23 +43,27 @@ class RouteServiceProvider extends ServiceProvider
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
 
-            // Merchant Routes
+            // Merchant Routes (load before web.php to avoid conflicts)
             Route::middleware(['web'])
                 ->prefix('merchant')
                 ->name('merchant.')
                 ->group(base_path('routes/merchant.php'));
 
             // Customer Routes
-            Route::middleware(['web', 'auth:customer'])
+            Route::middleware(['web'])
                 ->prefix('customer')
                 ->name('customer.')
                 ->group(base_path('routes/customer.php'));
 
             // Partner Routes
-            Route::middleware(['web', 'auth:partner'])
+            Route::middleware(['web'])
                 ->prefix('partner')
                 ->name('partner.')
                 ->group(base_path('routes/partner.php'));
+
+            // Web Routes (load last to avoid conflicts with specific prefixed routes)
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
 
             // Subdomain Routes
             if (file_exists(base_path('routes/subdomain.php'))) {

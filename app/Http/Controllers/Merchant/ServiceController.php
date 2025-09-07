@@ -77,6 +77,7 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::info('Service creation attempt', $request->all());
         $user = Auth::user();
         
         $request->validate([
@@ -84,35 +85,39 @@ class ServiceController extends Controller
             'description' => 'required|string',
             'category' => 'required|string|max:100',
             'price' => 'required|numeric|min:0',
-            'duration' => 'required|integer|min:1',
             'location' => 'nullable|string|max:255',
-            'capacity' => 'required|integer|min:1',
+            'capacity' => 'nullable|integer|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'features' => 'nullable|string',
             'is_active' => 'boolean',
+            'is_available' => 'boolean',
             'is_featured' => 'boolean',
-            'requirements' => 'nullable|string',
-            'cancellation_policy' => 'nullable|string',
         ]);
 
         $serviceData = $request->all();
         $serviceData['merchant_id'] = $user->id;
         $serviceData['is_active'] = $request->has('is_active');
+        $serviceData['is_available'] = $request->has('is_available');
         $serviceData['is_featured'] = $request->has('is_featured');
+        
+        // Convert features to array if provided
+        if ($request->filled('features')) {
+            $features = array_map('trim', explode(',', $request->features));
+            $serviceData['features'] = array_filter($features);
+        }
 
         // Handle main image upload
         if ($request->hasFile('image')) {
             $serviceData['image'] = $request->file('image')->store('services', 'public');
         }
 
-        // Handle gallery images
-        if ($request->hasFile('gallery')) {
-            $galleryPaths = [];
-            foreach ($request->file('gallery') as $file) {
-                $galleryPaths[] = $file->store('services/gallery', 'public');
-            }
-            $serviceData['gallery'] = json_encode($galleryPaths);
-        }
+        // Set default values
+        $serviceData['currency'] = 'SAR';
+        $serviceData['price_type'] = 'fixed';
+        $serviceData['pricing_model'] = 'fixed';
+        $serviceData['service_type'] = 'service';
+        $serviceData['status'] = 'active';
+        $serviceData['online_booking_enabled'] = true;
 
         $service = Service::create($serviceData);
 
@@ -172,20 +177,25 @@ class ServiceController extends Controller
             'description' => 'required|string',
             'category' => 'required|string|max:100',
             'price' => 'required|numeric|min:0',
-            'duration' => 'required|integer|min:1',
             'location' => 'nullable|string|max:255',
-            'capacity' => 'required|integer|min:1',
+            'capacity' => 'nullable|integer|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'features' => 'nullable|string',
             'is_active' => 'boolean',
+            'is_available' => 'boolean',
             'is_featured' => 'boolean',
-            'requirements' => 'nullable|string',
-            'cancellation_policy' => 'nullable|string',
         ]);
 
         $serviceData = $request->all();
         $serviceData['is_active'] = $request->has('is_active');
+        $serviceData['is_available'] = $request->has('is_available');
         $serviceData['is_featured'] = $request->has('is_featured');
+        
+        // Convert features to array if provided
+        if ($request->filled('features')) {
+            $features = array_map('trim', explode(',', $request->features));
+            $serviceData['features'] = array_filter($features);
+        }
 
         // Handle main image upload
         if ($request->hasFile('image')) {
@@ -196,22 +206,6 @@ class ServiceController extends Controller
             $serviceData['image'] = $request->file('image')->store('services', 'public');
         }
 
-        // Handle gallery images
-        if ($request->hasFile('gallery')) {
-            // Delete old gallery images
-            if ($service->gallery) {
-                $oldGallery = json_decode($service->gallery, true);
-                foreach ($oldGallery as $oldImage) {
-                    Storage::disk('public')->delete($oldImage);
-                }
-            }
-            
-            $galleryPaths = [];
-            foreach ($request->file('gallery') as $file) {
-                $galleryPaths[] = $file->store('services/gallery', 'public');
-            }
-            $serviceData['gallery'] = json_encode($galleryPaths);
-        }
 
         $service->update($serviceData);
 

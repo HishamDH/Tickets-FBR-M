@@ -158,6 +158,16 @@ class Service extends Model
         return $this->hasMany(ServiceAvailability::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function activeBookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'service_id')->whereIn('status', ['pending', 'confirmed']);
+    }
+
     /**
      * Get formatted price
      */

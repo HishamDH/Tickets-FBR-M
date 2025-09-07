@@ -22,19 +22,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Customer Authentication Routes
-Route::prefix('customer')->name('customer.')->group(function () {
-    // Customer Login Routes
-    Route::middleware('guest:customer')->group(function () {
-        Route::get('login', [CustomerLoginController::class, 'create'])->name('login');
-        Route::post('login', [CustomerLoginController::class, 'store']);
-        Route::get('register', function () {
-            return view('auth.customer.register');
-        })->name('register');
-    });
+// Customer Authentication Routes - prefix and name already set in RouteServiceProvider
 
-    // Customer Protected Routes
-    Route::middleware(['customer'])->group(function () {
+// Customer Login Routes
+Route::middleware('guest')->group(function () {
+    Route::get('login', [CustomerLoginController::class, 'create'])->name('login');
+    Route::post('login', [CustomerLoginController::class, 'store']);
+    Route::get('register', [App\Http\Controllers\Auth\CustomerRegisterController::class, 'create'])->name('register');
+    Route::post('register', [App\Http\Controllers\Auth\CustomerRegisterController::class, 'store']);
+});
+
+// Customer Protected Routes
+Route::middleware(['auth'])->group(function () {
         // Logout
         Route::post('logout', [CustomerLoginController::class, 'destroy'])->name('logout');
 
@@ -162,4 +161,3 @@ Route::prefix('customer')->name('customer.')->group(function () {
             });
         });
     });
-});

@@ -23,58 +23,46 @@ class MerchantDashboardController extends Controller
         if ($user->merchant_status !== 'approved') {
             return redirect()->route('merchant.status');
         }
-        
-        $merchant = $user->merchant;
 
-        if (! $merchant) {
-            // Create merchant record if it doesn't exist for approved merchant users
-            $merchant = Merchant::create([
-                'user_id' => $user->id,
-                'business_name' => $user->business_name ?? 'Business Name',
-                'business_type' => $user->business_type ?? 'service',
-                'cr_number' => $user->commercial_registration_number ?? '000000',
-                'business_address' => $user->address ?? '',
-                'city' => $user->business_city ?? $user->city ?? 'City',
-                'verification_status' => 'approved',
-                'commission_rate' => 10.00,
-            ]);
-            
-            // If still no merchant record, show error with support contact
-            if (! $merchant) {
-                abort(403, 'Merchant profile not found. Please contact support.');
-            }
-        }
+        // Get services and bookings directly from user's services
+        $userServices = $user->services();
+        
+        // Get bookings through services
+        $serviceIds = $userServices->pluck('id');
+        $userBookings = \App\Models\Booking::whereIn('service_id', $serviceIds);
 
         // إحصائيات التاجر
         $stats = [
-            'total_services' => $merchant->services()->count(),
-            'active_services' => $merchant->services()->where('is_active', true)->count(),
-            'total_bookings' => $merchant->bookings()->count(),
-            'pending_bookings' => $merchant->bookings()->where('status', 'pending')->count(),
-            'confirmed_bookings' => $merchant->bookings()->where('status', 'confirmed')->count(),
-            'total_revenue' => $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount'),
-            'commission_paid' => $merchant->bookings()->where('payment_status', 'paid')->sum('commission_amount'),
-            'net_revenue' => $merchant->bookings()->where('payment_status', 'paid')->sum('total_amount') -
-                           $merchant->bookings()->where('payment_status', 'paid')->sum('commission_amount'),
+            'total_services' => $userServices->count(),
+            'active_services' => $userServices->where('is_active', true)->count(),
+            'featured_services' => $userServices->where('is_featured', true)->count(),
+            'inactive_services' => $userServices->where('is_active', false)->count(),
+            'total_bookings' => $userBookings->count(),
+            'pending_bookings' => $userBookings->where('status', 'pending')->count(),
+            'confirmed_bookings' => $userBookings->where('status', 'confirmed')->count(),
+            'completed_bookings' => $userBookings->where('status', 'completed')->count(),
+            'cancelled_bookings' => $userBookings->where('status', 'cancelled')->count(),
+            'total_revenue' => $userBookings->where('payment_status', 'paid')->sum('total_amount') ?? 0,
+            'pending_revenue' => $userBookings->where('payment_status', 'pending')->sum('total_amount') ?? 0,
         ];
 
-        // إيرادات شهرية
-        $monthlyRevenue = $merchant->bookings()
+        // إيرادات شهرية للـ 6 أشهر الماضية
+        $monthlyRevenue = \App\Models\Booking::whereIn('service_id', $serviceIds)
             ->select(
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('COUNT(*) as bookings_count'),
-                DB::raw('SUM(total_amount) as total_revenue'),
-                DB::raw('SUM(commission_amount) as commission_amount')
+                DB::raw('SUM(total_amount) as total_revenue')
             )
             ->where('payment_status', 'paid')
-            ->whereYear('created_at', Carbon::now()->year)
+            ->where('created_at', '>=', Carbon::now()->subMonths(6))
             ->groupBy('year', 'month')
-            ->orderBy('month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
             ->get();
 
         // أفضل خدمات التاجر
-        $topServices = $merchant->services()
+        $topServices = $user->services()
             ->withCount('bookings')
             ->withSum(['bookings as total_revenue' => function ($query) {
                 $query->where('payment_status', 'paid');
@@ -84,27 +72,27 @@ class MerchantDashboardController extends Controller
             ->get();
 
         // أحدث الحجوزات
-        $recentBookings = $merchant->bookings()
-            ->with(['service', 'customer'])
+        $recentBookings = \App\Models\Booking::whereIn('service_id', $serviceIds)
+            ->with(['service', 'user'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
 
         // حجوزات اليوم
-        $todayBookings = $merchant->bookings()
-            ->with(['service', 'customer'])
+        $todayBookings = \App\Models\Booking::whereIn('service_id', $serviceIds)
+            ->with(['service', 'user'])
             ->whereDate('booking_date', Carbon::today())
             ->orderBy('booking_time')
             ->get();
 
         // إحصائيات الحجوزات حسب الحالة
-        $bookingsByStatus = $merchant->bookings()
+        $bookingsByStatus = \App\Models\Booking::whereIn('service_id', $serviceIds)
             ->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->get();
 
-        return view('dashboard.merchant.index', compact(
-            'merchant',
+        return view('merchant.dashboard.index', compact(
+            'user',
             'stats',
             'monthlyRevenue',
             'topServices',

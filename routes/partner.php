@@ -19,23 +19,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Partner Authentication Routes
-Route::prefix('partner')->name('partner.')->group(function () {
-    // Partner Login Routes
-    Route::middleware('guest:partner')->group(function () {
-        Route::get('login', [PartnerLoginController::class, 'create'])->name('login');
-        Route::post('login', [PartnerLoginController::class, 'store']);
-        Route::get('register', [App\Http\Controllers\Auth\PartnerRegisterController::class, 'create'])->name('register');
-        Route::post('register', [App\Http\Controllers\Auth\PartnerRegisterController::class, 'store']);
-    });
+// Partner Authentication Routes - prefix and name already set in RouteServiceProvider
 
-    // Partner Status Page (for pending approval)
-    Route::get('status', function () {
-        return view('auth.partner.status');
-    })->name('status');
+// Partner Login Routes
+Route::middleware('guest')->group(function () {
+    Route::get('login', [PartnerLoginController::class, 'create'])->name('login');
+    Route::post('login', [PartnerLoginController::class, 'store']);
+    Route::get('register', [App\Http\Controllers\Auth\PartnerRegisterController::class, 'create'])->name('register');
+    Route::post('register', [App\Http\Controllers\Auth\PartnerRegisterController::class, 'store']);
+});
 
-    // Partner Protected Routes
-    Route::middleware(['partner', 'partner.status'])->group(function () {
+// Partner Status Page (for pending approval)
+Route::get('status', function () {
+    return view('auth.partner.status');
+})->name('status');
+
+// Partner Protected Routes
+Route::middleware(['auth', 'partner.status'])->group(function () {
         // Logout
         Route::post('logout', [PartnerLoginController::class, 'destroy'])->name('logout');
 
@@ -151,4 +151,3 @@ Route::prefix('partner')->name('partner.')->group(function () {
             });
         });
     });
-});

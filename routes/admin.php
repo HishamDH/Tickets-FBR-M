@@ -20,16 +20,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Admin Authentication Routes
-Route::prefix('admin')->name('admin.')->group(function () {
-    // Admin Login Routes
-    Route::middleware('guest:admin')->group(function () {
-        Route::get('login', [AdminLoginController::class, 'create'])->name('login');
-        Route::post('login', [AdminLoginController::class, 'store']);
-    });
+// Admin Authentication Routes - prefix and name already set in RouteServiceProvider
 
-    // Admin Protected Routes
-    Route::middleware(['admin'])->group(function () {
+// Admin Login Routes
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AdminLoginController::class, 'create'])->name('login');
+    Route::post('login', [AdminLoginController::class, 'store']);
+});
+
+// Admin Protected Routes
+Route::middleware(['auth', 'admin'])->group(function () {
         // Logout
         Route::post('logout', [AdminLoginController::class, 'destroy'])->name('logout');
 
@@ -147,4 +147,3 @@ Route::prefix('admin')->name('admin.')->group(function () {
             });
         });
     });
-});

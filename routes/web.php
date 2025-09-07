@@ -109,13 +109,7 @@ Route::get('/old-home', function () {
 // Language Switcher Route
 Route::get('/language/{lang}', [App\Http\Controllers\LanguageController::class, 'switchLang'])->name('language.switch');
 
-// Public Booking Routes - صفحات الحجز العامة للتجار
-Route::prefix('merchant/{merchant}')->group(function () {
-    Route::get('/', [PublicBookingController::class, 'show'])->name('merchant.booking');
-    Route::get('/service/{service}', [PublicBookingController::class, 'service'])->name('merchant.service.booking');
-    Route::post('/service/{service}/book', [PublicBookingController::class, 'book'])->name('merchant.book');
-    Route::get('/booking/{booking}/confirmation', [PublicBookingController::class, 'confirmation'])->name('merchant.booking.confirmation');
-});
+// This route is moved to the end to avoid conflicts with merchant auth routes
 
 // Public Booking Confirmation
 Route::get('/booking/confirmation/{bookingNumber}', [PublicBookingController::class, 'confirmation'])
@@ -268,6 +262,14 @@ Route::middleware('auth')->group(function () {
 Route::get('/design-showcase', function () {
     return view('design-showcase');
 })->name('design.showcase');
+
+// Public Booking Routes - صفحات الحجز العامة للتجار (moved here to avoid auth route conflicts)
+Route::prefix('merchant/{merchant}')->group(function () {
+    Route::get('/', [PublicBookingController::class, 'show'])->name('merchant.booking');
+    Route::get('/service/{service}', [PublicBookingController::class, 'service'])->name('merchant.service.booking');
+    Route::post('/service/{service}/book', [PublicBookingController::class, 'book'])->name('merchant.book');
+    Route::get('/booking/{booking}/confirmation', [PublicBookingController::class, 'confirmation'])->name('merchant.booking.confirmation');
+});
 
 // Merchant Storefronts - Public Routes (should be last to avoid conflicts)
 Route::get('/merchants/directory', [MerchantStorefrontController::class, 'search'])->name('merchants.directory');

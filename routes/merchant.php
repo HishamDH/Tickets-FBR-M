@@ -28,16 +28,28 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     Route::get('login', [MerchantLoginController::class, 'create'])->name('login');
     Route::post('login', [MerchantLoginController::class, 'store']);
+    Route::get('register', [App\Http\Controllers\Auth\MerchantRegisterController::class, 'create'])->name('register');
+    Route::post('register', [App\Http\Controllers\Auth\MerchantRegisterController::class, 'store']);
 });
 
+// Merchant Status Page (for pending approval)
+Route::get('status', function () {
+    return view('auth.merchant.status');
+})->name('status');
+
 // Merchant Protected Routes
-Route::middleware(['merchant.status'])->group(function () {
+Route::middleware(['auth:web', 'merchant.status'])->group(function () {
     // Logout
     Route::post('logout', [MerchantLoginController::class, 'destroy'])->name('logout');
 
     // Dashboard
     Route::get('/', [MerchantDashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [MerchantDashboardController::class, 'index'])->name('dashboard.index');
+
+    // Test route for debugging
+    Route::get('/test-service-form', function () {
+        return view('test-service-form');
+    })->name('test.service.form');
 
         // Services Management
         Route::prefix('services')->name('services.')->group(function () {

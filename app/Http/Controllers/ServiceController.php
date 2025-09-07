@@ -110,14 +110,27 @@ class ServiceController extends Controller
             ->limit(3)
             ->get();
 
+        // Get reviews data
+        $reviews = $service->reviews()->where('is_approved', true)->get();
+        $totalReviews = $reviews->count();
+        $avgRating = $totalReviews > 0 ? $reviews->avg('rating') : 0;
+        
+        // Calculate rating distribution
+        $ratingDistribution = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+        foreach ($reviews as $review) {
+            $ratingDistribution[$review->rating]++;
+        }
+
         // Return JSON for API requests
         if ($request->wantsJson() || $request->is('api/*')) {
             return response()->json([
                 'data' => $service,
-                'related_services' => $relatedServices
+                'related_services' => $relatedServices,
+                'avg_rating' => $avgRating,
+                'total_reviews' => $totalReviews
             ]);
         }
 
-        return view('services.show', compact('service', 'relatedServices'));
+        return view('services.show', compact('service', 'relatedServices', 'avgRating', 'totalReviews', 'ratingDistribution'));
     }
 }
