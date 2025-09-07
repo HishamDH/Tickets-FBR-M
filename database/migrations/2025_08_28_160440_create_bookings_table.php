@@ -16,9 +16,8 @@ return new class extends Migration
             $table->string('booking_number')->unique();
             $table->uuid('qr_code')->unique();
             $table->foreignId('customer_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->morphs('bookable');
-            $table->foreignId('merchant_id')->constrained()->onDelete('cascade');
+            $table->foreignId('merchant_id')->constrained('users')->onDelete('cascade');
             $table->date('booking_date');
             $table->time('booking_time');
             $table->integer('guest_count');

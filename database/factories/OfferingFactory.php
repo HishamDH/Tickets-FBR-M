@@ -23,13 +23,14 @@ class OfferingFactory extends Factory
             'name' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
             'price' => $this->faker->randomFloat(2, 10, 500),
-            'category' => Category::factory()->create()->name,
+            'category' => $this->faker->word,
             'status' => $this->faker->randomElement(['active', 'inactive']),
             'max_capacity' => $this->faker->numberBetween(50, 200),
             'start_time' => $this->faker->dateTimeBetween('+1 week', '+1 month'),
             'end_time' => $this->faker->dateTimeBetween('+1 month', '+2 months'),
             'location' => $this->faker->address,
             'image' => $this->faker->imageUrl(),
+            'is_active' => true,
         ];
     }
 }

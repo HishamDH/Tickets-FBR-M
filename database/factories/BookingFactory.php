@@ -74,25 +74,15 @@ class BookingFactory extends Factory
             'booking_number' => 'TKT-' . $this->faker->unique()->numberBetween(100000, 999999),
             'qr_code' => $this->faker->unique()->uuid(),
             'customer_id' => $this->faker->boolean(70) ? User::factory()->customer() : null,
-            'service_id' => Service::factory(),
             'bookable_type' => $this->faker->randomElement(['App\\Models\\Service', 'App\\Models\\Offering']),
             'bookable_id' => function (array $attributes) {
                 if ($attributes['bookable_type'] === 'App\\Models\\Service') {
-                    return $attributes['service_id'] ?? Service::factory()->create()->id;
+                    return Service::factory()->create()->id;
                 } else {
                     return \App\Models\Offering::factory()->create()->id;
                 }
             },
-            'merchant_id' => function (array $attributes) {
-                // Get merchant from service if service is created, otherwise create new merchant
-                if (isset($attributes['service_id']) && is_numeric($attributes['service_id'])) {
-                    $service = Service::find($attributes['service_id']);
-
-                    return $service ? $service->merchant_id : Merchant::factory();
-                }
-
-                return Merchant::factory();
-            },
+            'merchant_id' => User::factory()->merchant(),
             'booking_date' => $bookingDate,
             'booking_time' => $bookingTime,
             'guest_count' => $guestCount,
@@ -236,7 +226,8 @@ class BookingFactory extends Factory
     public function forService(Service $service): static
     {
         return $this->state(fn (array $attributes) => [
-            'service_id' => $service->id,
+            'bookable_type' => Service::class,
+            'bookable_id' => $service->id,
             'merchant_id' => $service->merchant_id,
         ]);
     }
