@@ -104,7 +104,7 @@
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-2 md:grid-cols-6 gap-6">
-                    <a href="{{ route('merchant.dashboard.services') }}" 
+                    <a href="{{ route('merchant.services.index') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border-2 border-blue-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@
                         <span class="text-sm text-blue-600 font-medium">إضافة وتعديل</span>
                     </a>
 
-                    <a href="{{ route('merchant.dashboard.bookings') }}" 
+                    <a href="{{ route('merchant.bookings.index') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-green-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@
                         <span class="text-sm text-green-600 font-medium">متابعة الطلبات</span>
                     </a>
 
-                    <a href="{{ route('merchant.dashboard.analytics') }}" 
+                    <a href="{{ route('merchant.analytics.index') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border-2 border-purple-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@
                         <span class="text-sm text-purple-600 font-medium">تقارير الأداء</span>
                     </a>
 
-                    <a href="{{ route('merchant.dashboard.payment-settings') }}" 
+                    <a href="{{ route('merchant.payments.index') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border-2 border-yellow-200 hover:border-yellow-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-yellow-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +189,7 @@
                             </svg>
                             أحدث الحجوزات
                         </h2>
-                        <a href="{{ route('merchant.dashboard.bookings') }}" 
+                        <a href="{{ route('merchant.bookings.index') }}" 
                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">عرض الكل</a>
                     </div>
                     
@@ -340,34 +340,42 @@
         </div>
     </div>
 </div>
-@endsection
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                        </svg>
-                    </div>
-                    <div class="mr-4">
-                        <p class="text-sm font-medium text-gray-600">صافي الإيرادات</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['net_revenue'], 2) }} ريال</p>
-                        <p class="text-xs text-gray-500">بعد العمولة</p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- الحجوزات المؤكدة -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div class="mr-4">
-                        <p class="text-sm font-medium text-gray-600">الحجوزات المؤكدة</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['confirmed_bookings']) }}</p>
-                    </div>
+<!-- Statistics Grid -->
+<div class="container mx-auto px-4 -mt-8 relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- صافي الإيرادات -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    </svg>
+                </div>
+                <div class="mr-4">
+                    <p class="text-sm font-medium text-gray-600">صافي الإيرادات</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['net_revenue'], 2) }} ريال</p>
+                    <p class="text-xs text-gray-500">بعد العمولة</p>
                 </div>
             </div>
         </div>
+
+        <!-- الحجوزات المؤكدة -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="mr-4">
+                    <p class="text-sm font-medium text-gray-600">الحجوزات المؤكدة</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['confirmed_bookings']) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Today's Bookings -->
         @if($todayBookings->count() > 0)
@@ -488,19 +496,19 @@
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <a href="{{ route('merchant.dashboard.services') }}" 
+            <a href="{{ route('merchant.services.index') }}" 
                class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-blue-700 transition duration-200">
                 إدارة الخدمات
             </a>
-            <a href="{{ route('merchant.dashboard.bookings') }}" 
+            <a href="{{ route('merchant.bookings.index') }}" 
                class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-green-700 transition duration-200">
                 إدارة الحجوزات
             </a>
-            <a href="{{ route('merchant.dashboard.revenue-report') }}" 
+            <a href="{{ route('merchant.analytics.revenue') }}" 
                class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-purple-700 transition duration-200">
                 تقرير الإيرادات
             </a>
-            <a href="{{ route('merchant.dashboard.analytics') }}" 
+            <a href="{{ route('merchant.analytics.index') }}" 
                class="bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-yellow-700 transition duration-200">
                 التحليلات
             </a>
