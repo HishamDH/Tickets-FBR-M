@@ -3,7 +3,7 @@
 @section('title', 'لوحة تحكم التاجر')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100" dir="rtl">
+<div class="min-h-screen" dir="rtl">
     <!-- Hero Header -->
     <div class="bg-gradient-to-r from-blue-500 to-blue-600 relative overflow-hidden">
         <div class="absolute inset-0 opacity-20">

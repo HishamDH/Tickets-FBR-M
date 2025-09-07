@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\CustomerLoginController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
@@ -88,14 +89,77 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+        // Shopping Cart Management
+        Route::prefix('cart')->name('cart.')->group(function () {
+            Route::get('/', [App\Http\Controllers\CartController::class, 'index'])->name('index');
+            Route::post('/', [App\Http\Controllers\CartController::class, 'store'])->name('store');
+            Route::put('/{cartItem}', [App\Http\Controllers\CartController::class, 'update'])->name('update');
+            Route::delete('/{cartItem}', [App\Http\Controllers\CartController::class, 'destroy'])->name('destroy');
+            Route::delete('/', [App\Http\Controllers\CartController::class, 'clear'])->name('clear');
+            Route::get('/count', [App\Http\Controllers\CartController::class, 'count'])->name('count');
+            Route::post('/merge', [App\Http\Controllers\CartController::class, 'merge'])->name('merge');
+            Route::get('/validate', [App\Http\Controllers\CartController::class, 'validateCart'])->name('validate');
+        });
+
+        // Checkout Process
+        Route::prefix('checkout')->name('checkout.')->group(function () {
+            Route::get('/', [App\Http\Controllers\CheckoutController::class, 'index'])->name('index');
+            Route::post('/', [App\Http\Controllers\CheckoutController::class, 'store'])->name('store');
+            Route::get('/confirmation/{order}', [App\Http\Controllers\CheckoutController::class, 'confirmation'])->name('confirmation');
+            Route::get('/payment/stripe/{order}', [App\Http\Controllers\CheckoutController::class, 'stripePayment'])->name('payment.stripe');
+            Route::post('/payment/stripe/{order}', [App\Http\Controllers\CheckoutController::class, 'processStripePayment'])->name('payment.stripe.process');
+            Route::get('/payment/paypal/{order}', [App\Http\Controllers\CheckoutController::class, 'paypalPayment'])->name('payment.paypal');
+            Route::post('/payment/paypal/{order}', [App\Http\Controllers\CheckoutController::class, 'processPaypalPayment'])->name('payment.paypal.process');
+        });
+
+        // Customer Booking Routes  
+        Route::prefix('book')->name('book.')->group(function () {
+            Route::get('/{offering}', [App\Http\Controllers\Frontend\BookingController::class, 'show'])->name('show');
+            Route::post('/{offering}', [App\Http\Controllers\Frontend\BookingController::class, 'store'])->name('store');
+        });
+
+        // Customer Booking Management
+        Route::prefix('booking')->name('booking.')->group(function () {
+            Route::get('/{booking}/confirmation', [App\Http\Controllers\Frontend\BookingController::class, 'confirmation'])->name('confirmation');
+            Route::patch('/{booking}/cancel', [App\Http\Controllers\Frontend\BookingController::class, 'cancel'])->name('cancel');
+        });
+
+        // Reviews Management
+        Route::prefix('reviews')->name('reviews.')->group(function () {
+            Route::get('/service/{service}/create', [App\Http\Controllers\ReviewController::class, 'create'])->name('create');
+            Route::post('/service/{service}', [App\Http\Controllers\ReviewController::class, 'store'])->name('store');
+            Route::get('/service/{service}', [App\Http\Controllers\ReviewController::class, 'index'])->name('index');
+            Route::get('/my-reviews', [App\Http\Controllers\ReviewController::class, 'userReviews'])->name('user');
+            Route::get('/{review}/edit', [App\Http\Controllers\ReviewController::class, 'edit'])->name('edit');
+            Route::put('/{review}', [App\Http\Controllers\ReviewController::class, 'update'])->name('update');
+            Route::delete('/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('delete');
+        });
+
         // Favorites
         Route::get('/favorites', function () {
             return view('customer.favorites.index');
         })->name('favorites.index');
 
-        // Reviews
-        Route::get('/reviews', function () {
+        // Customer Reviews Page
+        Route::get('/my-reviews', function () {
             return view('customer.reviews.index');
-        })->name('reviews.index');
+        })->name('my-reviews.index');
+
+        // Customer Chat & Messaging Routes
+        Route::prefix('chat')->name('chat.')->group(function () {
+            Route::get('/', [ChatController::class, 'index'])->name('index');
+            Route::get('/conversations', [ChatController::class, 'getConversations'])->name('conversations');
+            Route::get('/conversations/{conversation}', [ChatController::class, 'getMessages'])->name('conversations.show');
+            Route::post('/conversations/{conversation}/messages', [ChatController::class, 'sendMessage'])->name('conversations.messages.send');
+            Route::post('/conversations/start', [ChatController::class, 'startConversation'])->name('conversations.start');
+            Route::patch('/conversations/{conversation}/close', [ChatController::class, 'closeConversation'])->name('conversations.close');
+            Route::delete('/messages/{message}', [ChatController::class, 'deleteMessage'])->name('messages.delete');
+
+            // Customer Support Chat
+            Route::prefix('support')->name('support.')->group(function () {
+                Route::get('/', [ChatController::class, 'support'])->name('index');
+                Route::post('/ticket', [ChatController::class, 'createSupportTicket'])->name('ticket.create');
+            });
+        });
     });
 });

@@ -19,6 +19,7 @@ class Booking extends Model
         'customer_id',
         'bookable_id', // Polymorphic
         'bookable_type', // Polymorphic
+        'service_id', // For backward compatibility
         'merchant_id',
         'booking_date',
         'booking_time',
@@ -77,6 +78,18 @@ class Booking extends Model
             if (empty($booking->qr_code)) {
                 $booking->qr_code = Str::uuid()->toString();
             }
+            
+            // Auto-populate service_id when bookable is a Service
+            if ($booking->bookable_type === Service::class && !$booking->service_id) {
+                $booking->service_id = $booking->bookable_id;
+            }
+        });
+
+        static::updating(function ($booking) {
+            // Auto-populate service_id when bookable is a Service
+            if ($booking->bookable_type === Service::class && !$booking->service_id) {
+                $booking->service_id = $booking->bookable_id;
+            }
         });
     }
 
@@ -116,23 +129,11 @@ class Booking extends Model
     }
 
     /**
-     * Service relationship (for backward compatibility)
+     * Service relationship (direct via service_id)
      */
     public function service(): BelongsTo
     {
-        return $this->belongsTo(Service::class, 'bookable_id')
-            ->where('bookable_type', Service::class);
-    }
-
-    /**
-     * Get the service when bookable is a service
-     */
-    public function getServiceAttribute()
-    {
-        if ($this->bookable_type === Service::class) {
-            return $this->bookable;
-        }
-        return null;
+        return $this->belongsTo(Service::class, 'service_id');
     }
 
     public function isConfirmed(): bool

@@ -19,18 +19,17 @@ class OfferingFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->merchant(),
-            'name' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
-            'price' => $this->faker->randomFloat(2, 10, 500),
-            'category' => $this->faker->word,
-            'status' => $this->faker->randomElement(['active', 'inactive']),
-            'max_capacity' => $this->faker->numberBetween(50, 200),
-            'start_time' => $this->faker->dateTimeBetween('+1 week', '+1 month'),
-            'end_time' => $this->faker->dateTimeBetween('+1 month', '+2 months'),
-            'location' => $this->faker->address,
-            'image' => $this->faker->imageUrl(),
-            'is_active' => true,
+            'user_id' => 1, // Use existing user
+            'name' => 'Test Offering',
+            'description' => 'Test Description',
+            'price' => 100.00,
+            'category' => 'events',
+            'status' => 'active',
+            'max_capacity' => 100,
+            'start_time' => now()->addWeek(),
+            'end_time' => now()->addMonth(),
+            'location' => 'Test Location',
+            'image' => 'test.jpg',
         ];
     }
 }

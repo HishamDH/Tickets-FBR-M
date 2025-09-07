@@ -143,11 +143,11 @@ class Service extends Model
     }
 
     /**
-     * Bookings relationship
+     * Bookings relationship - using direct service_id for better performance
      */
     public function bookings(): HasMany
     {
-        return $this->hasMany(Booking::class);
+        return $this->hasMany(Booking::class, 'service_id');
     }
 
     /**

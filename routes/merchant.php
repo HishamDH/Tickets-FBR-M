@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Auth\MerchantLoginController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Merchant\BookingController;
 use App\Http\Controllers\Dashboard\MerchantDashboardController;
 use App\Http\Controllers\NotificationController;
@@ -30,12 +31,13 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
     });
 
     // Merchant Protected Routes
-    Route::middleware(['merchant', 'merchant.status'])->group(function () {
+    Route::middleware(['merchant.status'])->group(function () {
         // Logout
         Route::post('logout', [MerchantLoginController::class, 'destroy'])->name('logout');
 
         // Dashboard
-        Route::get('/dashboard', [MerchantDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', [MerchantDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [MerchantDashboardController::class, 'index'])->name('dashboard.index');
 
         // Services Management
         Route::prefix('services')->name('services.')->group(function () {
@@ -139,8 +141,23 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
         // POS System
         Route::prefix('pos')->name('pos.')->group(function () {
             Route::get('/', [App\Http\Controllers\PosController::class, 'index'])->name('index');
+            Route::get('/dashboard', [App\Http\Controllers\PosController::class, 'index'])->name('dashboard');
             Route::post('/process-payment', [App\Http\Controllers\PosController::class, 'processPayment'])->name('process-payment');
+            Route::post('/sales', [App\Http\Controllers\PosController::class, 'processDirectSale'])->name('sales.process');
+            Route::get('/customer-lookup', [App\Http\Controllers\PosController::class, 'customerLookup'])->name('customer.lookup');
+            Route::post('/attendance-check', [App\Http\Controllers\PosController::class, 'attendanceCheck'])->name('attendance.check');
+            Route::get('/reports', [App\Http\Controllers\PosController::class, 'reports'])->name('reports');
+            Route::get('/sales-history', [App\Http\Controllers\PosController::class, 'salesHistory'])->name('sales.history');
+            Route::get('/daily-summary', [App\Http\Controllers\PosController::class, 'dailySummary'])->name('daily.summary');
             Route::get('/analytics', [App\Http\Controllers\PosController::class, 'analytics'])->name('analytics');
+            
+            // API routes for POS
+            Route::prefix('api')->name('api.')->group(function () {
+                Route::get('/services', [App\Http\Controllers\PosController::class, 'getServices'])->name('services');
+                Route::post('/validate-qr', [App\Http\Controllers\PosController::class, 'validateQr'])->name('validate-qr');
+                Route::get('/customers/search', [App\Http\Controllers\PosController::class, 'searchCustomers'])->name('customers.search');
+                Route::post('/customers', [App\Http\Controllers\PosController::class, 'createCustomer'])->name('customers.create');
+            });
             
             // Printing routes
             Route::post('/print/ticket/{reservation}', [App\Http\Controllers\PosController::class, 'printTicket'])->name('print.ticket');
@@ -159,6 +176,62 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
             Route::post('/offline/export', [App\Http\Controllers\PosController::class, 'exportOfflineData'])->name('offline.export');
             Route::get('/offline/download/{filename}', [App\Http\Controllers\PosController::class, 'downloadOfflineExport'])->name('download-offline-export');
             Route::get('/connection/status', [App\Http\Controllers\PosController::class, 'checkConnectionStatus'])->name('connection.status');
+        });
+
+        // Withdrawal Management - Merchant Financial Wallet
+        Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
+            Route::get('/', [App\Http\Controllers\WithdrawController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\WithdrawController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\WithdrawController::class, 'store'])->name('store');
+            Route::get('/{withdrawal}', [App\Http\Controllers\WithdrawController::class, 'show'])->name('show');
+            Route::patch('/{withdrawal}/cancel', [App\Http\Controllers\WithdrawController::class, 'cancel'])->name('cancel');
+        });
+
+        // Merchant Analytics & Reports
+        Route::prefix('analytics')->name('analytics.')->group(function () {
+            Route::get('/', [AnalyticsController::class, 'index'])->name('index');
+            Route::get('/revenue', [AnalyticsController::class, 'revenue'])->name('revenue');
+            Route::get('/customers', [AnalyticsController::class, 'customers'])->name('customers');
+            Route::get('/operations', [AnalyticsController::class, 'operations'])->name('operations');
+            Route::get('/real-time', [AnalyticsController::class, 'realTimeData'])->name('real-time');
+            Route::get('/predictive', [AnalyticsController::class, 'predictiveAnalytics'])->name('predictive');
+            Route::get('/merchant-specific', [AnalyticsController::class, 'merchantSpecificAnalytics'])->name('merchant-specific');
+            Route::get('/export', [AnalyticsController::class, 'export'])->name('export');
+            Route::post('/export/schedule', [AnalyticsController::class, 'scheduleExport'])->name('export.schedule');
+            Route::get('/dashboard/configure', [AnalyticsController::class, 'configureDashboard'])->name('dashboard.configure');
+            Route::post('/dashboard/save-layout', [AnalyticsController::class, 'saveDashboardLayout'])->name('dashboard.save-layout');
+            Route::post('/alerts/{alert}/dismiss', [AnalyticsController::class, 'dismissAlert'])->name('alerts.dismiss');
+            Route::get('/alerts/configure', [AnalyticsController::class, 'configureAlerts'])->name('alerts.configure');
+            Route::post('/alerts/save', [AnalyticsController::class, 'saveAlertSettings'])->name('alerts.save');
+            Route::get('/performance/monitor', [AnalyticsController::class, 'performanceMonitor'])->name('performance.monitor');
+            Route::get('/performance/logs', [AnalyticsController::class, 'performanceLogs'])->name('performance.logs');
+
+            // API Endpoints
+            Route::prefix('api')->name('api.')->group(function () {
+                Route::get('/dashboard-data', [AnalyticsController::class, 'getDashboardData'])->name('dashboard-data');
+                Route::get('/revenue-data', [AnalyticsController::class, 'getRevenueData'])->name('revenue-data');
+                Route::get('/customer-data', [AnalyticsController::class, 'getCustomerData'])->name('customer-data');
+                Route::get('/merchant-data', [AnalyticsController::class, 'getMerchantData'])->name('merchant-data');
+                Route::get('/operations-data', [AnalyticsController::class, 'getOperationsData'])->name('operations-data');
+                Route::get('/chart-data/{type}', [AnalyticsController::class, 'getChartData'])->name('chart-data');
+            });
+        });
+
+        // Merchant Chat & Messaging Routes
+        Route::prefix('chat')->name('chat.')->group(function () {
+            Route::get('/', [ChatController::class, 'index'])->name('index');
+            Route::get('/conversations', [ChatController::class, 'getConversations'])->name('conversations');
+            Route::get('/conversations/{conversation}', [ChatController::class, 'getMessages'])->name('conversations.show');
+            Route::post('/conversations/{conversation}/messages', [ChatController::class, 'sendMessage'])->name('conversations.messages.send');
+            Route::post('/conversations/start', [ChatController::class, 'startConversation'])->name('conversations.start');
+            Route::patch('/conversations/{conversation}/close', [ChatController::class, 'closeConversation'])->name('conversations.close');
+            Route::delete('/messages/{message}', [ChatController::class, 'deleteMessage'])->name('messages.delete');
+
+            // Merchant Support Chat
+            Route::prefix('support')->name('support.')->group(function () {
+                Route::get('/', [ChatController::class, 'support'])->name('index');
+                Route::post('/ticket', [ChatController::class, 'createSupportTicket'])->name('ticket.create');
+            });
         });
     });
 });

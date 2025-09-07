@@ -75,6 +75,15 @@ class PasswordForceChangeController extends Controller
         // Reset failed login attempts
         $user->resetFailedLoginAttempts();
         
-        return redirect()->intended(route('dashboard'))->with('status', 'تم تحديث كلمة المرور بنجاح.');
+        // Redirect to appropriate dashboard based on user role
+        $dashboardRoute = match ($user->role ?? $user->user_type) {
+            'admin' => 'admin.dashboard',
+            'merchant' => 'merchant.dashboard',
+            'partner' => 'partner.dashboard',
+            'customer', 'user' => 'customer.dashboard',
+            default => 'customer.dashboard'
+        };
+        
+        return redirect()->intended(route($dashboardRoute))->with('status', 'تم تحديث كلمة المرور بنجاح.');
     }
 }

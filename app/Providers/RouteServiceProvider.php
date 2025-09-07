@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/dashboard';
+    public const HOME = '/';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -36,17 +36,33 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
-            // Admin Routes
+            // Auth Routes (important to load these first)
             Route::middleware('web')
+                ->group(base_path('routes/auth.php'));
+
+            // Admin Routes
+            Route::middleware(['web'])
+                ->prefix('admin')
+                ->name('admin.')
                 ->group(base_path('routes/admin.php'));
 
             // Merchant Routes
-            Route::middleware('web')
+            Route::middleware(['web', 'auth:merchant'])
+                ->prefix('merchant')
+                ->name('merchant.')
                 ->group(base_path('routes/merchant.php'));
 
             // Customer Routes
-            Route::middleware('web')
+            Route::middleware(['web', 'auth:customer'])
+                ->prefix('customer')
+                ->name('customer.')
                 ->group(base_path('routes/customer.php'));
+
+            // Partner Routes
+            Route::middleware(['web', 'auth:partner'])
+                ->prefix('partner')
+                ->name('partner.')
+                ->group(base_path('routes/partner.php'));
 
             // Subdomain Routes
             if (file_exists(base_path('routes/subdomain.php'))) {

@@ -17,44 +17,55 @@ class Offering extends Model
         'name',
         'description',
         'price',
-        'category_id',
-        'is_active',
-        'capacity',
-        'available_slots',
-        'start_date',
-        'end_date',
+        'category',
+        'status',
         'location',
-        'image_url',
-        'terms_conditions',
-        'cancellation_policy',
-        'min_booking_time',
-        'max_booking_time',
-        'auto_accept',
-        'featured',
-        'sort_order',
-        'meta_data'
+        'image',
+        'start_time',
+        'end_time',
+        'type',
+        'additional_data',
+        'translations',
+        'has_chairs',
+        'chairs_count',
+        'features',
+        'max_capacity',
+        'min_capacity',
+        'allow_overbooking',
+        'overbooking_percentage',
+        'capacity_type',
+        'buffer_capacity'
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
-        'auto_accept' => 'boolean',
-        'featured' => 'boolean',
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'has_chairs' => 'boolean',
+        'allow_overbooking' => 'boolean',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
         'price' => 'decimal:2',
-        'meta_data' => 'array',
-        'min_booking_time' => 'integer',
-        'max_booking_time' => 'integer',
-        'capacity' => 'integer',
-        'available_slots' => 'integer',
-        'sort_order' => 'integer',
+        'additional_data' => 'array',
+        'translations' => 'array',
+        'features' => 'array',
+        'chairs_count' => 'integer',
+        'max_capacity' => 'integer',
+        'min_capacity' => 'integer',
+        'overbooking_percentage' => 'decimal:2',
+        'buffer_capacity' => 'integer',
     ];
 
     protected $dates = [
-        'start_date',
-        'end_date',
+        'start_time',
+        'end_time',
         'deleted_at'
     ];
+
+    /**
+     * Get is_active attribute based on status field
+     */
+    public function getIsActiveAttribute(): bool
+    {
+        return $this->status === 'active';
+    }
 
     /**
      * Get the user that owns the offering.

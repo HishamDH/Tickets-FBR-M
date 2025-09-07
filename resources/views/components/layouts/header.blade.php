@@ -7,7 +7,7 @@
             <div class="hidden md:flex items-center space-x-6">
                 <a href="{{ route('services.index') }}" class="text-gray-600 hover:text-orange-500">Services</a>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-orange-500">Dashboard</a>
+                    <a href="{{ dashboard_route() }}" class="text-gray-600 hover:text-orange-500">Dashboard</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <a href="{{ route('logout') }}" 
@@ -30,7 +30,7 @@
         <div x-show="open" @click.away="open = false" class="md:hidden mt-4">
             <a href="{{ route('services.index') }}" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Services</a>
             @auth
-                <a href="{{ route('dashboard') }}" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Dashboard</a>
+                <a href="{{ dashboard_route() }}" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Dashboard</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <a href="{{ route('logout') }}" 

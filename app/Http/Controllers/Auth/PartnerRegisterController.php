@@ -40,9 +40,16 @@ class PartnerRegisterController extends Controller
             'commission_rate' => ['required', 'numeric', 'min:0', 'max:100'],
         ]);
 
+        // Split the name into first and last name
+        $nameParts = explode(' ', trim($request->name), 2);
+        $firstName = $nameParts[0] ?? '';
+        $lastName = $nameParts[1] ?? '';
+
         // Create user
         $user = User::create([
             'name' => $request->name,
+            'f_name' => $firstName,
+            'l_name' => $lastName,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => 'partner',

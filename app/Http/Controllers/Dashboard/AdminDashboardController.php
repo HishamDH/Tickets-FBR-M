@@ -51,6 +51,7 @@ class AdminDashboardController extends Controller
 
         // أحدث الحجوزات
         $recentBookings = Booking::with(['service', 'customer', 'service.merchant'])
+            ->whereNotNull('service_id')
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();

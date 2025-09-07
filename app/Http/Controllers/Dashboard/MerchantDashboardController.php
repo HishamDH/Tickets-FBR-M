@@ -18,10 +18,17 @@ class MerchantDashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Check if merchant is approved
+        if ($user->merchant_status !== 'approved') {
+            return redirect()->route('merchant.status');
+        }
+        
         $merchant = $user->merchant;
 
         if (! $merchant) {
-            abort(403, 'غير مصرح لك بالوصول لهذه الصفحة');
+            // If no merchant record exists, redirect to status page
+            return redirect()->route('merchant.status');
         }
 
         // إحصائيات التاجر
@@ -319,7 +326,7 @@ class MerchantDashboardController extends Controller
         $merchant = $user->merchant;
 
         if (! $merchant) {
-            return redirect()->route('dashboard')->with('error', 'الملف التجاري غير موجود');
+            return redirect()->route('merchant.dashboard')->with('error', 'الملف التجاري غير موجود');
         }
 
         // جلب جميع بوابات الدفع المتاحة
@@ -347,7 +354,7 @@ class MerchantDashboardController extends Controller
         $merchant = $user->merchant;
 
         if (! $merchant) {
-            return redirect()->route('dashboard')->with('error', 'الملف التجاري غير موجود');
+            return redirect()->route('merchant.dashboard')->with('error', 'الملف التجاري غير موجود');
         }
 
         $gateway = PaymentGateway::findOrFail($gatewayId);

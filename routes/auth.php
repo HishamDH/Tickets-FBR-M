@@ -19,17 +19,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    // Add these routes back for test compatibility
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
-
-    Route::post('register', [RegisteredUserController::class, 'store']);
-
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
-
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
-
+    // Password reset routes only (no general login/register)
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
@@ -120,7 +110,7 @@ Route::prefix('merchant')->name('merchant.')->group(function () {
     });
 
     // Status page for all authenticated merchants
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth:merchant', 'merchant.status'])->group(function () {
         Route::get('status', function () {
             return view('auth.merchant.status');
         })->name('status');

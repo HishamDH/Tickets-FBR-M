@@ -163,7 +163,7 @@
                                  x-transition:leave-start="opacity-1 transform scale-100"
                                  x-transition:leave-end="opacity-0 transform scale-95"
                                  class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">
+                                <a href="{{ dashboard_route() }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">
                                     لوحة التحكم
                                 </a>
                                 <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">
@@ -213,7 +213,7 @@
                     <a href="#" class="block py-3 text-gray-700 hover:text-orange-500 transition-colors">عن المنصة</a>
                     @auth
                         <hr class="my-4">
-                        <a href="{{ route('dashboard') }}" class="block py-3 text-gray-700 hover:text-orange-500 transition-colors">لوحة التحكم</a>
+                        <a href="{{ dashboard_route() }}" class="block py-3 text-gray-700 hover:text-orange-500 transition-colors">لوحة التحكم</a>
                         <a href="#" class="block py-3 text-gray-700 hover:text-orange-500 transition-colors">حجوزاتي</a>
                         <form method="POST" action="{{ route('logout') }}" class="mt-4">
                             @csrf

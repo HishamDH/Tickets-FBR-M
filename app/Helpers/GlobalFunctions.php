@@ -826,6 +826,42 @@ if (! function_exists('notifcate')) {
 }
 
 // ===========================================
+// AUTHENTICATION AND ROUTING FUNCTIONS
+// ===========================================
+
+if (! function_exists('get_user_dashboard_route')) {
+    /**
+     * Get appropriate dashboard route for current user or specific user
+     */
+    function get_user_dashboard_route($userId = null)
+    {
+        $user = $userId ? User::find($userId) : Auth::user();
+
+        if (! $user) {
+            return route('customer.login'); // Default to customer login if no user
+        }
+
+        return match ($user->role ?? $user->user_type) {
+            'admin' => route('admin.dashboard'),
+            'merchant' => route('merchant.dashboard'),
+            'partner' => route('partner.dashboard'),
+            'customer', 'user' => route('customer.dashboard'),
+            default => route('customer.dashboard')
+        };
+    }
+}
+
+if (! function_exists('dashboard_route')) {
+    /**
+     * Alias for get_user_dashboard_route for backward compatibility
+     */
+    function dashboard_route($userId = null)
+    {
+        return get_user_dashboard_route($userId);
+    }
+}
+
+// ===========================================
 // LANGUAGE AND LOCALIZATION FUNCTIONS
 // ===========================================
 

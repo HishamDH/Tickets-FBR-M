@@ -134,7 +134,7 @@
                                            opacity-0 invisible group-hover:opacity-100 group-hover:visible 
                                            transition-all duration-200 z-50">
                                     <div class="py-2">
-                                        <a href="{{ route('dashboard') }}" 
+                                        <a href="{{ dashboard_route() }}" 
                                            class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
                                                   hover:text-primary-600 transition-colors">
                                             <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
@@ -202,7 +202,7 @@
                     </div>
                     
                     <nav class="space-y-2">
-                        <a href="{{ route('dashboard') }}" 
+                        <a href="{{ dashboard_route() }}" 
                            class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
                                   hover:text-primary-600 rounded-lg transition-colors">
                             <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
@@ -331,7 +331,7 @@
                             <li><a href="{{ route('home') }}" class="text-orange-100 hover:text-white transition-colors flex items-center">
                                 <i class="fas fa-home ml-2"></i> الرئيسية
                             </a></li>
-                            <li><a href="{{ route('dashboard') }}" class="text-orange-100 hover:text-white transition-colors flex items-center">
+                            <li><a href="{{ dashboard_route() }}" class="text-orange-100 hover:text-white transition-colors flex items-center">
                                 <i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم
                             </a></li>
                             <li><a href="#" class="text-orange-100 hover:text-white transition-colors flex items-center">
