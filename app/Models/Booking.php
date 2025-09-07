@@ -115,6 +115,26 @@ class Booking extends Model
         return $this->hasMany(SeatReservation::class);
     }
 
+    /**
+     * Service relationship (for backward compatibility)
+     */
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class, 'bookable_id')
+            ->where('bookable_type', Service::class);
+    }
+
+    /**
+     * Get the service when bookable is a service
+     */
+    public function getServiceAttribute()
+    {
+        if ($this->bookable_type === Service::class) {
+            return $this->bookable;
+        }
+        return null;
+    }
+
     public function isConfirmed(): bool
     {
         return $this->status === 'confirmed';

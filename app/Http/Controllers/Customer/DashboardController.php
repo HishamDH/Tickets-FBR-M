@@ -25,6 +25,20 @@ class DashboardController extends Controller
             'cancelled' => $user->bookings()->where('status', 'cancelled')->count(),
         ];
 
+        // Create stats array for the view
+        $stats = [
+            'total_bookings' => $bookingsStats['total'],
+            'confirmed_bookings' => $bookingsStats['confirmed'],
+            'upcoming_bookings' => $user->bookings()
+                ->where('booking_date', '>=', now())
+                ->where('status', '!=', 'cancelled')
+                ->count(),
+            'total_spent' => $user->bookings()
+                ->where('payment_status', 'paid')
+                ->sum('total_amount'),
+            'favorite_services' => $user->favoriteServices()->count(),
+        ];
+
         // Get recent bookings
         $recentBookings = $user->bookings()
             ->with(['bookable', 'merchant'])
@@ -75,8 +89,9 @@ class DashboardController extends Controller
         // Recent activity
         $recentActivity = $this->getRecentActivity($user);
 
-        return view('customer.dashboard', compact(
+        return view('dashboard.customer.index', compact(
             'user',
+            'stats',
             'bookingsStats',
             'recentBookings',
             'upcomingBookings',

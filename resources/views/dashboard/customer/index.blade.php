@@ -15,7 +15,7 @@
         <div class="relative container mx-auto px-4 py-12">
             <div class="flex items-center justify-between text-white">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2">مرحباً بك، {{ $customer->name }} 👋</h1>
+                    <h1 class="text-4xl font-bold mb-2">مرحباً بك، {{ $user->name }} 👋</h1>
                     <p class="text-orange-100 text-lg">إدارة حجوزاتك وتفضيلاتك بسهولة وأمان</p>
                 </div>
                 <div class="hidden md:block">
@@ -132,7 +132,7 @@
                     @endforeach
                 </div>
                 <div class="mt-6 text-center">
-                    <a href="{{ route('customer.dashboard.bookings') }}" class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <a href="{{ route('customer.bookings.index') }}" class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl">
                         عرض جميع الحجوزات
                     </a>
                 </div>
@@ -219,7 +219,7 @@
                         <span class="text-sm text-orange-600 font-medium">ابدأ رحلتك</span>
                     </a>
 
-                    <a href="{{ route('customer.dashboard.bookings') }}" 
+                    <a href="{{ route('customer.bookings.index') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-green-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,7 +230,7 @@
                         <span class="text-sm text-green-600 font-medium">تتبع طلباتك</span>
                     </a>
 
-                    <a href="{{ route('customer.dashboard.profile') }}" 
+                    <a href="{{ route('customer.profile.show') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border-2 border-purple-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,7 +241,7 @@
                         <span class="text-sm text-purple-600 font-medium">بياناتك</span>
                     </a>
 
-                    <a href="{{ route('customer.dashboard.favorites') }}" 
+                    <a href="{{ route('customer.favorites.index') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border-2 border-yellow-200 hover:border-yellow-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-yellow-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -290,7 +290,7 @@
                     @endforeach
                 </div>
                 <div class="mt-6 text-center">
-                    <a href="{{ route('customer.dashboard.notifications') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <a href="{{ route('customer.notifications.index') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl">
                         عرض جميع الإشعارات
                     </a>
                 </div>
