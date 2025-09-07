@@ -25,25 +25,24 @@ class MerchantDashboardController extends Controller
         }
 
         // Get services and bookings directly from user's services
-        $userServices = $user->services();
+        $allServices = $user->services;  // Get as collection, not query builder
         
         // Get bookings through services
-        $serviceIds = $userServices->pluck('id');
-        $userBookings = \App\Models\Booking::whereIn('service_id', $serviceIds);
-
+        $serviceIds = $allServices->pluck('id');
+        
         // إحصائيات التاجر
         $stats = [
-            'total_services' => $userServices->count(),
-            'active_services' => $userServices->where('is_active', true)->count(),
-            'featured_services' => $userServices->where('is_featured', true)->count(),
-            'inactive_services' => $userServices->where('is_active', false)->count(),
-            'total_bookings' => $userBookings->count(),
-            'pending_bookings' => $userBookings->where('status', 'pending')->count(),
-            'confirmed_bookings' => $userBookings->where('status', 'confirmed')->count(),
-            'completed_bookings' => $userBookings->where('status', 'completed')->count(),
-            'cancelled_bookings' => $userBookings->where('status', 'cancelled')->count(),
-            'total_revenue' => $userBookings->where('payment_status', 'paid')->sum('total_amount') ?? 0,
-            'pending_revenue' => $userBookings->where('payment_status', 'pending')->sum('total_amount') ?? 0,
+            'total_services' => $allServices->count(),
+            'active_services' => $allServices->where('is_active', true)->count(),
+            'featured_services' => $allServices->where('is_featured', true)->count(),
+            'inactive_services' => $allServices->where('is_active', false)->count(),
+            'total_bookings' => \App\Models\Booking::whereIn('service_id', $serviceIds)->count(),
+            'pending_bookings' => \App\Models\Booking::whereIn('service_id', $serviceIds)->where('status', 'pending')->count(),
+            'confirmed_bookings' => \App\Models\Booking::whereIn('service_id', $serviceIds)->where('status', 'confirmed')->count(),
+            'completed_bookings' => \App\Models\Booking::whereIn('service_id', $serviceIds)->where('status', 'completed')->count(),
+            'cancelled_bookings' => \App\Models\Booking::whereIn('service_id', $serviceIds)->where('status', 'cancelled')->count(),
+            'total_revenue' => \App\Models\Booking::whereIn('service_id', $serviceIds)->where('payment_status', 'paid')->sum('total_amount') ?? 0,
+            'pending_revenue' => \App\Models\Booking::whereIn('service_id', $serviceIds)->where('payment_status', 'pending')->sum('total_amount') ?? 0,
         ];
 
         // إيرادات شهرية للـ 6 أشهر الماضية

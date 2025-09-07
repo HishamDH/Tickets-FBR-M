@@ -296,7 +296,7 @@
 
         <!-- Quick Links -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <a href="{{ route('analytics.revenue') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
+            <a href="{{ route('merchant.analytics.revenue') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
                         <span class="text-2xl">💰</span>
@@ -308,7 +308,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('analytics.customers') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
+            <a href="{{ route('merchant.analytics.customers') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center">
                     <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
                         <span class="text-2xl">👥</span>
@@ -320,7 +320,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('analytics.merchants') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
+            <a href="{{ route('admin.analytics.merchants') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center">
                     <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
                         <span class="text-2xl">🏪</span>
@@ -332,7 +332,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('analytics.operations') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
+            <a href="{{ route('merchant.analytics.operations') }}" class="bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center">
                     <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
                         <span class="text-2xl">⚙️</span>
@@ -510,7 +510,7 @@ function updateDashboard(period, comparison) {
     showLoading();
     
     // Fetch new data
-    fetch(`{{ route('analytics.index') }}?period=${period}&comparison=${comparison}`, {
+    fetch(`{{ route('merchant.analytics.index') }}?period=${period}&comparison=${comparison}`, {
         headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
@@ -537,7 +537,7 @@ function refreshData() {
 
 function exportReport(format) {
     const period = document.getElementById('periodSelect').value;
-    const url = `{{ route('analytics.export') }}?type=dashboard&format=${format}&period=${period}`;
+    const url = `{{ route('merchant.analytics.export') }}?type=dashboard&format=${format}&period=${period}`;
     window.open(url, '_blank');
 }
 

@@ -142,12 +142,18 @@ class ReportController extends Controller
             ->map(function ($user) {
                 $bookings = $user->merchant->services->flatMap->bookings;
 
+                // Get average rating from reviews instead of bookings
+                $serviceIds = $user->merchant->services->pluck('id');
+                $averageRating = \App\Models\Review::whereIn('service_id', $serviceIds)
+                    ->where('is_approved', true)
+                    ->avg('rating') ?? 0;
+
                 return [
                     'merchant' => $user->merchant,
                     'total_bookings' => $bookings->count(),
                     'completed_bookings' => $bookings->where('booking_status', 'completed')->count(),
                     'total_revenue' => $bookings->where('booking_status', 'completed')->sum('total_amount'),
-                    'average_rating' => $bookings->where('rating', '>', 0)->avg('rating') ?? 0,
+                    'average_rating' => round($averageRating, 2),
                 ];
             });
     }

@@ -21,7 +21,7 @@
 
         <!-- Form -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <form method="POST" action="{{ route('merchant.services.store') }}" enctype="multipart/form-data" class="space-y-6" onsubmit="console.log('Form submitted')">
+            <form method="POST" action="{{ route('merchant.services.store') }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 <!-- Service Name -->

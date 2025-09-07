@@ -77,7 +77,6 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        \Log::info('Service creation attempt', $request->all());
         $user = Auth::user();
         
         $request->validate([

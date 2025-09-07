@@ -315,6 +315,14 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Merchant services relationship
+     */
+    public function services(): HasMany
+    {
+        return $this->hasMany(\App\Models\Service::class, 'merchant_id');
+    }
+
+    /**
      * Customer bookings relationship (alias)
      */
     public function customerBookings(): HasMany

@@ -12,13 +12,13 @@ class AnalyticsService
     /**
      * Get Key Performance Indicators
      */
-    public function getKPIs($period = 30, $comparison = 'previous')
+    public function getKPIs($period = 30, $comparison = 'previous', $merchantId = null)
     {
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays($period);
 
         // Current period data
-        $currentData = $this->getKPIData($startDate, $endDate);
+        $currentData = $this->getKPIData($startDate, $endDate, $merchantId);
 
         // Comparison period data
         if ($comparison === 'previous') {
@@ -29,7 +29,7 @@ class AnalyticsService
             $comparisonEndDate = $endDate->copy()->subYear();
         }
 
-        $comparisonData = $this->getKPIData($comparisonStartDate, $comparisonEndDate);
+        $comparisonData = $this->getKPIData($comparisonStartDate, $comparisonEndDate, $merchantId);
 
         return [
             'total_revenue' => [
@@ -88,39 +88,77 @@ class AnalyticsService
     /**
      * Get KPI raw data for a specific period
      */
-    protected function getKPIData($startDate, $endDate)
+    protected function getKPIData($startDate, $endDate, $merchantId = null)
     {
-        $totalRevenue = Booking::whereBetween('created_at', [$startDate, $endDate])
-            ->where('status', 'completed')
-            ->sum('total_amount');
+        // Build base queries with merchant filtering if specified
+        $revenueQuery = Booking::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'completed');
+        $bookingsQuery = Booking::whereBetween('created_at', [$startDate, $endDate]);
+        
+        if ($merchantId) {
+            $revenueQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+            $bookingsQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
 
-        $totalBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
+        $totalRevenue = $revenueQuery->sum('total_amount');
+        $totalBookings = $bookingsQuery->count();
 
-        $activeMerchants = User::whereHas('services.bookings', function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('created_at', [$startDate, $endDate]);
-        })
-            ->where('user_type', 'merchant')
-            ->count();
+        // For merchant-specific view, active merchants is always 1 (the current merchant) if they have bookings, 0 otherwise
+        if ($merchantId) {
+            $activeMerchants = $totalBookings > 0 ? 1 : 0;
+        } else {
+            $activeMerchants = User::whereHas('services.bookings', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+                ->where('user_type', 'merchant')
+                ->count();
+        }
 
         $avgBookingValue = $totalBookings > 0 ? $totalRevenue / $totalBookings : 0;
 
-        $customerSatisfaction = Booking::whereBetween('created_at', [$startDate, $endDate])
-            ->whereNotNull('rating')
-            ->avg('rating') ?? 0;
+        // Get customer satisfaction from reviews, not bookings
+        $reviewsQuery = \App\Models\Review::whereBetween('created_at', [$startDate, $endDate])
+            ->where('is_approved', true);
+        
+        if ($merchantId) {
+            $reviewsQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
+        
+        $customerSatisfaction = $reviewsQuery->avg('rating') ?? 0;
 
         // Daily revenue for trend calculation
-        $dailyRevenue = Booking::selectRaw('DATE(created_at) as date, SUM(total_amount) as revenue')
+        $dailyRevenueQuery = Booking::selectRaw('DATE(created_at) as date, SUM(total_amount) as revenue')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->where('status', 'completed')
-            ->groupBy('date')
+            ->where('status', 'completed');
+        
+        if ($merchantId) {
+            $dailyRevenueQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
+        
+        $dailyRevenue = $dailyRevenueQuery->groupBy('date')
             ->orderBy('date')
             ->pluck('revenue')
             ->toArray();
 
         // Daily bookings for trend calculation
-        $dailyBookings = Booking::selectRaw('DATE(created_at) as date, COUNT(*) as bookings')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy('date')
+        $dailyBookingsQuery = Booking::selectRaw('DATE(created_at) as date, COUNT(*) as bookings')
+            ->whereBetween('created_at', [$startDate, $endDate]);
+        
+        if ($merchantId) {
+            $dailyBookingsQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
+        
+        $dailyBookings = $dailyBookingsQuery->groupBy('date')
             ->orderBy('date')
             ->pluck('bookings')
             ->toArray();
@@ -260,7 +298,7 @@ class AnalyticsService
         return User::select('users.*')
             ->selectRaw('SUM(bookings.total_amount) as total_revenue')
             ->selectRaw('COUNT(bookings.id) as total_bookings')
-            ->selectRaw('AVG(bookings.rating) as avg_rating')
+            ->selectRaw('0 as avg_rating')
             ->join('services', 'users.id', '=', 'services.merchant_id')
             ->join('bookings', 'services.id', '=', 'bookings.service_id')
             ->whereBetween('bookings.booking_date', [$startDate, $endDate])

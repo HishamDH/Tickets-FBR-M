@@ -53,7 +53,7 @@
                         📊 تصدير التقرير
                     </button>
                     
-                    <a href="{{ route('analytics.index') }}" class="bg-gray-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-gray-700 transition-colors duration-200">
+                    <a href="{{ route('merchant.analytics.index') }}" class="bg-gray-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-gray-700 transition-colors duration-200">
                         ← العودة للوحة الرئيسية
                     </a>
                 </div>
@@ -497,7 +497,7 @@ function updateCharts() {
     // Show loading
     showLoading();
     
-    fetch(`{{ route('analytics.revenue') }}?period=${timeRange}&granularity=${granularity}`, {
+    fetch(`{{ route('merchant.analytics.revenue') }}?period=${timeRange}&granularity=${granularity}`, {
         headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
@@ -517,7 +517,7 @@ function updateCharts() {
 function exportReport() {
     const timeRange = document.getElementById('timeRange').value;
     const granularity = document.getElementById('granularity').value;
-    const url = `{{ route('analytics.export') }}?type=revenue&period=${timeRange}&granularity=${granularity}&format=pdf`;
+    const url = `{{ route('merchant.analytics.export') }}?type=revenue&period=${timeRange}&granularity=${granularity}&format=pdf`;
     window.open(url, '_blank');
 }
 

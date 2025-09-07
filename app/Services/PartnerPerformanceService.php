@@ -334,10 +334,11 @@ class PartnerPerformanceService
                 $merchantScore += ($successfulBookings / $totalBookings) * 40; // 40% من النقاط
             }
 
-            // متوسط التقييمات
-            $avgRating = $merchant->bookings()
+            // متوسط التقييمات من جدول المراجعات
+            $serviceIds = $merchant->services->pluck('id');
+            $avgRating = \App\Models\Review::whereIn('service_id', $serviceIds)
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->whereNotNull('rating')
+                ->where('is_approved', true)
                 ->avg('rating') ?? 0;
 
             $merchantScore += ($avgRating / 5) * 30; // 30% من النقاط

@@ -540,7 +540,10 @@ class PartnerReportService
     private function calculateMerchantPerformanceRating(Merchant $merchant): string
     {
         $bookingsCount = $merchant->bookings()->where('payment_status', 'paid')->count();
-        $avgRating = $merchant->bookings()->avg('rating') ?? 0;
+        // Get average rating from reviews instead of bookings
+        $avgRating = \App\Models\Review::whereHas('service', function($q) use ($merchant) {
+            $q->where('merchant_id', $merchant->user_id);
+        })->where('is_approved', true)->avg('rating') ?? 0;
         
         if ($bookingsCount >= 20 && $avgRating >= 4.5) return 'excellent';
         if ($bookingsCount >= 10 && $avgRating >= 4.0) return 'good';

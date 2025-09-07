@@ -74,7 +74,7 @@
                         📊 تصدير التقرير
                     </button>
                     
-                    <a href="{{ route('analytics.index') }}" class="bg-gray-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-gray-700 transition-colors duration-200">
+                    <a href="{{ route('merchant.analytics.index') }}" class="bg-gray-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-gray-700 transition-colors duration-200">
                         ← العودة للوحة الرئيسية
                     </a>
                 </div>
@@ -503,7 +503,7 @@ function startRealTimeUpdates() {
 }
 
 function refreshRealTimeData() {
-    fetch(`{{ route('analytics.real-time') }}`, {
+    fetch(`{{ route('merchant.analytics.real-time') }}`, {
         headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
@@ -543,7 +543,7 @@ function updateAnalysis() {
     
     showLoading();
     
-    fetch(`{{ route('analytics.operations') }}?period=${timeRange}`, {
+    fetch(`{{ route('merchant.analytics.operations') }}?period=${timeRange}`, {
         headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
@@ -581,7 +581,7 @@ function dismissAlert(alertId) {
 
 function exportOperationsReport() {
     const timeRange = document.getElementById('timeRange').value;
-    const url = `{{ route('analytics.export') }}?type=operations&period=${timeRange}&format=pdf`;
+    const url = `{{ route('merchant.analytics.export') }}?type=operations&period=${timeRange}&format=pdf`;
     window.open(url, '_blank');
 }
 

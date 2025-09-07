@@ -32,13 +32,20 @@ class AnalyticsController extends Controller
         // Cache key for analytics data
         $cacheKey = "analytics_dashboard_{$period}_{$comparison}_".auth()->id();
 
-        $data = Cache::remember($cacheKey, 300, function () use ($period, $comparison) {
+        // Get merchant ID for filtering (if user is merchant)
+        $merchantId = null;
+        $user = auth()->user();
+        if ($user && $user->user_type === 'merchant') {
+            $merchantId = $user->id;
+        }
+
+        $data = Cache::remember($cacheKey, 60, function () use ($period, $comparison, $merchantId) {
             return [
-                'kpis' => $this->analyticsService->getKPIs($period, $comparison),
-                'charts' => $this->chartDataService->getDashboardCharts($period),
-                'trends' => $this->analyticsService->getTrends($period),
-                'insights' => $this->analyticsService->getInsights($period),
-                'alerts' => $this->analyticsService->getPerformanceAlerts(),
+                'kpis' => $this->analyticsService->getKPIs($period, $comparison, $merchantId),
+                'charts' => $this->chartDataService->getDashboardCharts($period, $merchantId),
+                'trends' => $this->analyticsService->getTrends($period, $merchantId),
+                'insights' => $this->analyticsService->getInsights($period, $merchantId),
+                'alerts' => $this->analyticsService->getPerformanceAlerts($merchantId),
             ];
         });
 

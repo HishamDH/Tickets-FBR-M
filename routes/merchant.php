@@ -46,10 +46,6 @@ Route::middleware(['auth:web', 'merchant.status'])->group(function () {
     Route::get('/', [MerchantDashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [MerchantDashboardController::class, 'index'])->name('dashboard.index');
 
-    // Test route for debugging
-    Route::get('/test-service-form', function () {
-        return view('test-service-form');
-    })->name('test.service.form');
 
         // Services Management
         Route::prefix('services')->name('services.')->group(function () {

@@ -12,18 +12,18 @@ class ChartDataService
     /**
      * Get dashboard charts data
      */
-    public function getDashboardCharts($period = 30)
+    public function getDashboardCharts($period = 30, $merchantId = null)
     {
         $endDate = Carbon::now();
         $startDate = Carbon::now()->subDays($period);
 
         return [
-            'revenue_chart' => $this->getRevenueChart($startDate, $endDate, 'day'),
-            'bookings_chart' => $this->getBookingsChart($startDate, $endDate, 'day'),
-            'services_pie_chart' => $this->getTopServicesPieChart($startDate, $endDate),
-            'merchants_bar_chart' => $this->getTopMerchantsBarChart($startDate, $endDate),
-            'satisfaction_gauge' => $this->getCustomerSatisfactionGauge($startDate, $endDate),
-            'conversion_funnel' => $this->getConversionFunnel($startDate, $endDate),
+            'revenue_chart' => $this->getRevenueChart($startDate, $endDate, 'day', $merchantId),
+            'bookings_chart' => $this->getBookingsChart($startDate, $endDate, 'day', $merchantId),
+            'services_pie_chart' => $this->getTopServicesPieChart($startDate, $endDate, $merchantId),
+            'merchants_bar_chart' => $merchantId ? null : $this->getTopMerchantsBarChart($startDate, $endDate), // Hide for merchant view
+            'satisfaction_gauge' => $this->getCustomerSatisfactionGauge($startDate, $endDate, $merchantId),
+            'conversion_funnel' => $this->getConversionFunnel($startDate, $endDate, $merchantId),
         ];
     }
 
@@ -222,7 +222,7 @@ class ChartDataService
         $data = User::select('users.name')
             ->selectRaw('SUM(bookings.total_amount) as revenue')
             ->selectRaw('COUNT(bookings.id) as bookings_count')
-            ->selectRaw('AVG(bookings.rating) as avg_rating')
+            ->selectRaw('0 as avg_rating')
             ->join('services', 'users.id', '=', 'services.merchant_id')
             ->join('bookings', 'services.id', '=', 'bookings.service_id')
             ->whereBetween('bookings.booking_date', [$startDate, $endDate])
@@ -291,13 +291,14 @@ class ChartDataService
      */
     public function getCustomerSatisfactionGauge($startDate, $endDate)
     {
-        $avgRating = Booking::whereBetween('booking_date', [$startDate, $endDate])
-            ->whereNotNull('rating')
+        // Get ratings from reviews instead of bookings
+        $avgRating = \App\Models\Review::whereBetween('created_at', [$startDate, $endDate])
+            ->where('is_approved', true)
             ->avg('rating') ?? 0;
 
-        $ratingDistribution = Booking::selectRaw('rating, COUNT(*) as count')
-            ->whereBetween('booking_date', [$startDate, $endDate])
-            ->whereNotNull('rating')
+        $ratingDistribution = \App\Models\Review::selectRaw('rating, COUNT(*) as count')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('is_approved', true)
             ->groupBy('rating')
             ->orderBy('rating')
             ->get();
@@ -351,8 +352,8 @@ class ChartDataService
         $completedBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])
             ->where('status', 'completed')
             ->count();
-        $ratedBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])
-            ->whereNotNull('rating')
+        $ratedBookings = \App\Models\Review::whereBetween('created_at', [$startDate, $endDate])
+            ->where('is_approved', true)
             ->count();
 
         return [
