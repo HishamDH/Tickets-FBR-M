@@ -35,6 +35,7 @@
         },
         "files": [
             "app/Helpers/GlobalFunctions.php",
+            "app/Helpers/dashboard.php",
             "bootstrap/eloquent_alias.php"
         ]
     },

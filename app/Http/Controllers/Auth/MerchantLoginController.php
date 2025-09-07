@@ -24,16 +24,16 @@ class MerchantLoginController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Validate the user has merchant role
+        // Validate the user has merchant type
         $credentials = $request->validated();
-
-        if (Auth::guard('merchant')->attempt($credentials, $request->boolean('remember'))) {
-            $user = Auth::guard('merchant')->user();
-
-            // Check if user has merchant role
-            if ($user->role !== 'merchant') {
-                Auth::guard('merchant')->logout();
-
+        
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+            
+            // Check if user is a merchant
+            if ($user->user_type !== 'merchant') {
+                Auth::logout();
+                
                 return back()->withErrors([
                     'email' => 'These credentials do not match our merchant records.',
                 ]);
