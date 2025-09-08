@@ -59,7 +59,7 @@ class PartnerLoginController extends Controller
             }
 
             // If active, redirect to dashboard
-            return redirect()->intended('/partner/dashboard');
+            return redirect()->intended(route('partner.dashboard'));
         }
 
         return back()->withErrors([

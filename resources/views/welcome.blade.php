@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة التذاكر FBR-M</title>
+    <title>Ticket Window</title>
     @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-50">
@@ -12,7 +12,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-orange-600">منصة التذاكر FBR-M</h1>
+                    <h1 class="text-xl font-bold text-orange-600">Ticket Window</h1>
                 </div>
                 <div class="flex items-center space-x-reverse space-x-4">
                     <div class="relative group">
@@ -53,7 +53,7 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
             <div class="text-center">
                 <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
-                    منصة التذاكر الذكية
+                    Smart Ticket Platform
                 </h1>
                 <p class="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
                     حجز وإدارة التذاكر بسهولة ويسر مع نظام شامل للعملاء والتجار والشركاء
@@ -74,7 +74,7 @@
     <div class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">لماذا منصة FBR-M؟</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Ticket Window?</h2>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                     نوفر حلول شاملة ومتطورة لإدارة التذاكر والحجوزات بطريقة احترافية وآمنة
                 </p>
@@ -161,7 +161,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">منصة FBR-M</h3>
+                    <h3 class="text-lg font-semibold mb-4">Ticket Window</h3>
                     <p class="text-gray-400">
                         منصة شاملة لإدارة التذاكر والحجوزات بطريقة احترافية ومبتكرة
                     </p>
@@ -193,7 +193,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 منصة التذاكر FBR-M. جميع الحقوق محفوظة.</p>
+                <p>&copy; 2025 Ticket Window. All rights reserved.</p>
             </div>
         </div>
     </footer>

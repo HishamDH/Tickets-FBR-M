@@ -26,7 +26,7 @@ class BookingController extends Controller
 
         // Filter by status
         if ($request->filled('status')) {
-            $query->where('booking_status', $request->status);
+            $query->where('status', $request->status);
         }
 
         // Filter by date range
@@ -85,13 +85,11 @@ class BookingController extends Controller
 
         DB::beginTransaction();
         try {
-            $oldStatus = $booking->booking_status;
+            $oldStatus = $booking->status;
             
             $booking->update([
-                'booking_status' => $request->status,
-                'status_notes' => $request->notes,
-                'status_updated_by' => $user->id,
-                'status_updated_at' => now(),
+                'status' => $request->status,
+                'notes' => $request->notes,
             ]);
 
             // Log status change if you have logging
@@ -128,14 +126,14 @@ class BookingController extends Controller
 
         $booking = Booking::where('merchant_id', $merchantId)->findOrFail($id);
 
-        if ($booking->booking_status === 'confirmed') {
+        if ($booking->status === 'confirmed') {
             return redirect()->back()->with('info', 'هذا الحجز مؤكد بالفعل');
         }
 
         DB::beginTransaction();
         try {
             $booking->update([
-                'booking_status' => 'confirmed',
+                'status' => 'confirmed',
                 'confirmed_at' => now(),
                 'confirmed_by' => $user->id,
             ]);
@@ -169,18 +167,18 @@ class BookingController extends Controller
 
         $booking = Booking::where('merchant_id', $merchantId)->findOrFail($id);
 
-        if ($booking->booking_status === 'cancelled') {
+        if ($booking->status === 'cancelled') {
             return redirect()->back()->with('info', 'هذا الحجز ملغي بالفعل');
         }
 
-        if ($booking->booking_status === 'completed') {
+        if ($booking->status === 'completed') {
             return redirect()->back()->with('error', 'لا يمكن إلغاء حجز مكتمل');
         }
 
         DB::beginTransaction();
         try {
             $booking->update([
-                'booking_status' => 'cancelled',
+                'status' => 'cancelled',
                 'cancelled_at' => now(),
                 'cancelled_by' => $user->id,
                 'cancellation_reason' => $request->cancellation_reason,
@@ -229,16 +227,16 @@ class BookingController extends Controller
         DB::beginTransaction();
         try {
             foreach ($bookings as $booking) {
-                if ($request->action === 'confirm' && $booking->booking_status === 'pending') {
+                if ($request->action === 'confirm' && $booking->status === 'pending') {
                     $booking->update([
-                        'booking_status' => 'confirmed',
+                        'status' => 'confirmed',
                         'confirmed_at' => now(),
                         'confirmed_by' => $user->id,
                     ]);
                     $updated++;
-                } elseif ($request->action === 'cancel' && in_array($booking->booking_status, ['pending', 'confirmed'])) {
+                } elseif ($request->action === 'cancel' && in_array($booking->status, ['pending', 'confirmed'])) {
                     $booking->update([
-                        'booking_status' => 'cancelled',
+                        'status' => 'cancelled',
                         'cancelled_at' => now(),
                         'cancelled_by' => $user->id,
                     ]);

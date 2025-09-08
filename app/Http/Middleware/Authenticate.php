@@ -32,7 +32,7 @@ class Authenticate extends Middleware
         }
         
         if (str_starts_with($path, 'admin/') || str_starts_with($path, 'admin')) {
-            return route('filament.admin.auth.login');
+            return route('admin.login');
         }
         
         // Default to customer login for any other paths

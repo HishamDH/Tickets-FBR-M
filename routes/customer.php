@@ -45,9 +45,9 @@ Route::middleware(['auth:customer'])->group(function () {
             Route::get('/', [CustomerBookingController::class, 'index'])->name('index');
             Route::get('/create', [CustomerBookingController::class, 'create'])->name('create');
             Route::post('/', [CustomerBookingController::class, 'store'])->name('store');
-            Route::get('/{id}', [CustomerBookingController::class, 'show'])->name('show');
-            Route::post('/{id}/cancel', [CustomerBookingController::class, 'cancel'])->name('cancel');
-            Route::get('/{id}/receipt', [CustomerBookingController::class, 'receipt'])->name('receipt');
+            Route::get('/{booking}', [CustomerBookingController::class, 'show'])->name('show');
+            Route::post('/{booking}/cancel', [CustomerBookingController::class, 'cancel'])->name('cancel');
+            Route::get('/{booking}/receipt', [CustomerBookingController::class, 'receipt'])->name('receipt');
         });
 
         // Services Browsing

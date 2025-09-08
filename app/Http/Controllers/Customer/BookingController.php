@@ -31,7 +31,7 @@ class BookingController extends Controller
 
         // Filter by status
         if ($request->filled('status')) {
-            $query->where('booking_status', $request->status);
+            $query->where('status', $request->status);
         }
 
         // Filter by date range
@@ -148,6 +148,18 @@ class BookingController extends Controller
             return redirect()->back()
                 ->with('error', 'حدث خطأ أثناء إلغاء الحجز: '.$e->getMessage());
         }
+    }
+
+    /**
+     * Show booking receipt
+     */
+    public function receipt(Booking $booking)
+    {
+        $this->authorize('view', $booking);
+
+        $booking->load(['service', 'merchant', 'payments']);
+
+        return view('customer.bookings.receipt', compact('booking'));
     }
 
     /**

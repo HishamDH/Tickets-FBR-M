@@ -31,7 +31,7 @@ class AdminLoginController extends Controller
             $user = Auth::guard('admin')->user();
 
             // Check if user has admin role
-            if ($user->role !== 'admin') {
+            if ($user->user_type !== 'admin') {
                 Auth::guard('admin')->logout();
 
                 return back()->withErrors([
@@ -41,7 +41,7 @@ class AdminLoginController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended('/admin/dashboard');
+            return redirect()->intended(route('admin.dashboard'));
         }
 
         return back()->withErrors([

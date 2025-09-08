@@ -41,6 +41,13 @@ Route::middleware(['auth', 'partner.status'])->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [PartnerDashboardController::class, 'index'])->name('dashboard');
+        
+        // Partner's Merchants Management
+        Route::get('/merchants', [PartnerDashboardController::class, 'merchants'])->name('merchants');
+        Route::get('/merchants/{merchant}', [PartnerDashboardController::class, 'merchantDetails'])->name('merchants.show');
+        
+        // Reports
+        Route::get('/reports', [PartnerDashboardController::class, 'commissionReport'])->name('reports');
 
         // Commission & Earnings Management
         Route::prefix('commissions')->name('commissions.')->group(function () {

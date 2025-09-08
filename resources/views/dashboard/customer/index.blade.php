@@ -114,7 +114,30 @@
                                 <div>
                                     <p class="font-bold text-gray-900 text-lg">{{ $booking->service->name }}</p>
                                     <p class="text-orange-600 font-medium">{{ $booking->service->merchant->business_name }}</p>
-                                    <p class="text-sm text-gray-600">📅 {{ Carbon\Carbon::parse($booking->booking_date)->format('Y/m/d') }} - ⏰ {{ Carbon\Carbon::parse($booking->booking_time)->format('H:i') }}</p>
+                                    <p class="text-sm text-gray-600">📅 
+                                        @php
+                                            try {
+                                                $bookingDate = \Carbon\Carbon::parse($booking->booking_date);
+                                                $bookingDate->setTimezone('Asia/Riyadh');
+                                                echo $bookingDate->format('Y/m/d');
+                                            } catch (\Exception $e) {
+                                                echo 'غير محدد';
+                                            }
+                                        @endphp
+                                         - ⏰ 
+                                        @php
+                                            try {
+                                                if ($booking->booking_time) {
+                                                    $bookingTime = \Carbon\Carbon::parse($booking->booking_time);
+                                                    echo $bookingTime->format('H:i');
+                                                } else {
+                                                    echo '--';
+                                                }
+                                            } catch (\Exception $e) {
+                                                echo '--';
+                                            }
+                                        @endphp
+                                    </p>
                                 </div>
                             </div>
                             <div class="text-left">
@@ -154,7 +177,17 @@
                                 <div>
                                     <p class="font-bold text-gray-900">{{ $booking->service->name }}</p>
                                     <p class="text-blue-600 font-medium text-sm">{{ $booking->service->merchant->business_name }}</p>
-                                    <p class="text-xs text-gray-600">📅 {{ Carbon\Carbon::parse($booking->booking_date)->format('Y/m/d') }}</p>
+                                    <p class="text-xs text-gray-600">📅 
+                                        @php
+                                            try {
+                                                $bookingDate = \Carbon\Carbon::parse($booking->booking_date);
+                                                $bookingDate->setTimezone('Asia/Riyadh');
+                                                echo $bookingDate->format('Y/m/d');
+                                            } catch (\Exception $e) {
+                                                echo 'غير محدد';
+                                            }
+                                        @endphp
+                                    </p>
                                 </div>
                                 <div class="text-left">
                                     <p class="text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">{{ number_format($booking->total_amount) }} ريال</p>
@@ -279,7 +312,7 @@
                             <div class="flex-1">
                                 <p class="font-bold text-gray-900">{{ $notification->data['title'] ?? 'إشعار جديد' }}</p>
                                 <p class="text-sm text-gray-600">{{ $notification->data['message'] ?? $notification->data['body'] ?? 'لديك إشعار جديد' }}</p>
-                                <p class="text-xs text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ $notification->created_at ? $notification->created_at->setTimezone('Asia/Riyadh')->diffForHumans() : 'غير محدد' }}</p>
                             </div>
                             <div class="mr-auto">
                                 @if(!$notification->read_at)

@@ -28,22 +28,50 @@ class LayoutComposer
             'recentActivity' => $this->statsService->getRecentActivity(),
         ];
 
-        // Add user-specific stats
+        // Add user-specific stats and determine user type
+        $data['userType'] = 'guest';
+        $data['userStats'] = [];
+        
+        // Check customer guard first
         if (Auth::guard('customer')->check()) {
             $data['userStats'] = $this->statsService->getCustomerStats(Auth::guard('customer')->id());
             $data['userType'] = 'customer';
-        } elseif (Auth::check()) {
+        } 
+        // Check regular auth guard 
+        elseif (Auth::check()) {
             $user = Auth::user();
-            if ($user->user_type === 'merchant' || $user->merchant_status === 'approved') {
+            
+            // Determine user type based on user_type field or current route
+            if ($user->user_type === 'merchant' || request()->is('merchant/*')) {
                 $data['userStats'] = $this->statsService->getMerchantStats($user->id);
                 $data['userType'] = 'merchant';
-            } else {
-                $data['userStats'] = $this->statsService->getSiteStats();
+            } elseif ($user->user_type === 'partner' || request()->is('partner/*')) {
+                $data['userStats'] = $this->statsService->getPartnerStats($user->id);
+                $data['userType'] = 'partner';
+            } elseif ($user->user_type === 'admin' || request()->is('admin/*')) {
+                $data['userStats'] = $this->statsService->getAdminStats($user->id);
                 $data['userType'] = 'admin';
+            } else {
+                // Default based on route prefix
+                $routePrefix = request()->segment(1);
+                switch($routePrefix) {
+                    case 'merchant':
+                        $data['userType'] = 'merchant';
+                        $data['userStats'] = $this->statsService->getMerchantStats($user->id);
+                        break;
+                    case 'partner':
+                        $data['userType'] = 'partner';
+                        $data['userStats'] = $this->statsService->getPartnerStats($user->id);
+                        break;
+                    case 'admin':
+                        $data['userType'] = 'admin';
+                        $data['userStats'] = $this->statsService->getAdminStats($user->id);
+                        break;
+                    default:
+                        $data['userType'] = 'admin';
+                        $data['userStats'] = $this->statsService->getSiteStats();
+                }
             }
-        } else {
-            $data['userStats'] = [];
-            $data['userType'] = 'guest';
         }
 
         $view->with($data);

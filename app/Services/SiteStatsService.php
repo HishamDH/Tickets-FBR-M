@@ -88,6 +88,40 @@ class SiteStatsService
     }
 
     /**
+     * Get partner-specific stats for header
+     */
+    public function getPartnerStats($userId): array
+    {
+        return Cache::remember("partner_stats_{$userId}", 300, function () use ($userId) {
+            // Partner stats would depend on your partner model structure
+            // This is a placeholder implementation
+            return [
+                'total_referrals' => 0, // Count of referred merchants/customers
+                'active_partnerships' => 0, // Active partnership agreements
+                'commission_earned' => 0, // Total commission earned
+                'this_month_commissions' => 0, // This month's commissions
+            ];
+        });
+    }
+
+    /**
+     * Get admin-specific stats for header
+     */
+    public function getAdminStats($userId): array
+    {
+        return Cache::remember("admin_stats_{$userId}", 300, function () use ($userId) {
+            return [
+                'total_users' => User::count(),
+                'pending_approvals' => User::where('merchant_status', 'pending')->count(),
+                'total_revenue' => Booking::where('payment_status', 'paid')->sum('total_amount'),
+                'today_bookings' => Booking::whereDate('created_at', today())->count(),
+                'active_merchants' => User::where('user_type', 'merchant')
+                    ->where('merchant_status', 'approved')->count(),
+            ];
+        });
+    }
+
+    /**
      * Get cart stats for authenticated customer
      */
     public function getCartStats(): array

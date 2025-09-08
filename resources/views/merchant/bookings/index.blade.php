@@ -46,6 +46,34 @@
             </div>
         </div>
 
+        <!-- Flash Messages -->
+        @if(session('success'))
+            <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg alert flex items-center">
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg alert flex items-center">
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if(session('info'))
+            <div class="mb-6 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg alert flex items-center">
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ session('info') }}
+            </div>
+        @endif
+
         <!-- Bookings Table -->
         @if($bookings->count() > 0)
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -121,16 +149,18 @@
                                             </a>
                                             
                                             @if($booking->status === 'pending')
-                                                <form method="POST" action="{{ route('merchant.bookings.confirm', $booking->id) }}" class="inline">
+                                                <form method="POST" action="{{ route('merchant.bookings.confirm', $booking->id) }}" class="inline" onsubmit="return confirmAction('confirm')">
                                                     @csrf
-                                                    <button type="submit" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">
-                                                        تأكيد
+                                                    <button type="submit" class="confirm-btn text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">
+                                                        <span class="text">تأكيد</span>
+                                                        <span class="loading hidden">جاري التأكيد...</span>
                                                     </button>
                                                 </form>
-                                                <form method="POST" action="{{ route('merchant.bookings.cancel', $booking->id) }}" class="inline">
+                                                <form method="POST" action="{{ route('merchant.bookings.cancel', $booking->id) }}" class="inline" onsubmit="return confirmAction('cancel')">
                                                     @csrf
-                                                    <button type="submit" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors">
-                                                        إلغاء
+                                                    <button type="submit" class="cancel-btn text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors">
+                                                        <span class="text">إلغاء</span>
+                                                        <span class="loading hidden">جاري الإلغاء...</span>
                                                     </button>
                                                 </form>
                                             @endif
@@ -168,4 +198,50 @@
         @endif
     </div>
 </div>
+
+<script>
+function confirmAction(actionType) {
+    const messages = {
+        'confirm': 'هل أنت متأكد من تأكيد هذا الحجز؟',
+        'cancel': 'هل أنت متأكد من إلغاء هذا الحجز؟'
+    };
+    
+    const result = confirm(messages[actionType]);
+    
+    if (result) {
+        // Show loading state
+        const form = event.target.closest('form');
+        const button = form.querySelector('button[type="submit"]');
+        const textSpan = button.querySelector('.text');
+        const loadingSpan = button.querySelector('.loading');
+        
+        textSpan.classList.add('hidden');
+        loadingSpan.classList.remove('hidden');
+        button.disabled = true;
+        
+        // Set timeout to reset button state if form submission fails
+        setTimeout(() => {
+            textSpan.classList.remove('hidden');
+            loadingSpan.classList.add('hidden');
+            button.disabled = false;
+        }, 10000); // Reset after 10 seconds
+    }
+    
+    return result;
+}
+
+// Add general error handling for failed requests
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert, .notification');
+        alerts.forEach(function(alert) {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+});
+</script>
+
 @endsection

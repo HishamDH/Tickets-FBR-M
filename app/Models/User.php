@@ -271,6 +271,32 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Accessor for timezone attribute - ensures valid timezone
+     */
+    public function getTimezoneAttribute($value): string
+    {
+        // If timezone is empty or invalid, return default
+        if (empty($value) || !in_array($value, timezone_identifiers_list())) {
+            return 'Asia/Riyadh'; // Default timezone for Saudi Arabia
+        }
+        
+        return $value;
+    }
+
+    /**
+     * Mutator for timezone attribute - validates timezone
+     */
+    public function setTimezoneAttribute($value): void
+    {
+        // If timezone is invalid, set to default
+        if (empty($value) || !in_array($value, timezone_identifiers_list())) {
+            $this->attributes['timezone'] = 'Asia/Riyadh';
+        } else {
+            $this->attributes['timezone'] = $value;
+        }
+    }
+
+    /**
      * Check if user can access Filament panels
      */
     public function canAccessPanel(Panel $panel): bool

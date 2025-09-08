@@ -53,6 +53,13 @@
     <!-- 🌟 Main Application -->
     <div id="app" class="min-h-screen bg-gray-50 opacity-0 transition-opacity duration-500">
         
+        @if(config('app.debug'))
+        <!-- Debug Info (only in debug mode) -->
+        <div class="fixed bottom-4 left-4 bg-black text-white px-3 py-1 rounded text-xs z-50 opacity-75">
+            User Type: {{ $userType }} | Route: {{ request()->route()->getName() ?? 'unnamed' }}
+        </div>
+        @endif
+        
         <!-- ✨ Creative Navigation -->
         <nav class="bg-white shadow-xl border-b-4 border-primary-500 sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -80,39 +87,51 @@
                     <div class="hidden md:flex items-center space-x-6 space-x-reverse">
                         
                         <!-- Quick Stats -->
-                        <div class="flex items-center space-x-4 space-x-reverse bg-orange-50 px-4 py-2 rounded-xl">
+                        @if($userType !== 'guest')
+                        <div class="flex items-center space-x-4 space-x-reverse bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-2 rounded-xl">
                             @if($userType === 'customer')
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-primary-600">{{ $userStats['total_bookings'] ?? 0 }}</div>
+                                    <div class="text-lg font-bold text-blue-600">{{ $userStats['total_bookings'] ?? 0 }}</div>
                                     <div class="text-xs text-gray-600">حجوزاتي</div>
                                 </div>
-                                <div class="w-px h-8 bg-orange-200"></div>
+                                <div class="w-px h-8 bg-blue-200"></div>
                                 <div class="text-center">
                                     <div class="text-lg font-bold text-green-600">{{ $userStats['completion_rate'] ?? 0 }}%</div>
                                     <div class="text-xs text-gray-600">مكتملة</div>
                                 </div>
                             @elseif($userType === 'merchant')
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-primary-600">{{ $userStats['total_services'] ?? 0 }}</div>
+                                    <div class="text-lg font-bold text-blue-600">{{ $userStats['total_services'] ?? 0 }}</div>
                                     <div class="text-xs text-gray-600">خدماتي</div>
                                 </div>
-                                <div class="w-px h-8 bg-orange-200"></div>
+                                <div class="w-px h-8 bg-blue-200"></div>
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-green-600">{{ $userStats['pending_bookings'] ?? 0 }}</div>
+                                    <div class="text-lg font-bold text-orange-600">{{ $userStats['pending_bookings'] ?? 0 }}</div>
                                     <div class="text-xs text-gray-600">في الانتظار</div>
                                 </div>
-                            @else
+                            @elseif($userType === 'partner')
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-primary-600">{{ number_format($siteStats['total_services'] ?? 0) }}</div>
-                                    <div class="text-xs text-gray-600">الخدمات</div>
+                                    <div class="text-lg font-bold text-blue-600">{{ $userStats['active_partnerships'] ?? 0 }}</div>
+                                    <div class="text-xs text-gray-600">شراكاتي</div>
                                 </div>
-                                <div class="w-px h-8 bg-orange-200"></div>
+                                <div class="w-px h-8 bg-blue-200"></div>
                                 <div class="text-center">
-                                    <div class="text-lg font-bold text-green-600">{{ $siteStats['completion_rate'] ?? 0 }}%</div>
-                                    <div class="text-xs text-gray-600">الإنجاز</div>
+                                    <div class="text-lg font-bold text-green-600">{{ number_format($userStats['commission_earned'] ?? 0) }}</div>
+                                    <div class="text-xs text-gray-600">العمولات</div>
+                                </div>
+                            @elseif($userType === 'admin')
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-blue-600">{{ number_format($userStats['total_users'] ?? 0) }}</div>
+                                    <div class="text-xs text-gray-600">المستخدمين</div>
+                                </div>
+                                <div class="w-px h-8 bg-blue-200"></div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-red-600">{{ $userStats['pending_approvals'] ?? 0 }}</div>
+                                    <div class="text-xs text-gray-600">في الانتظار</div>
                                 </div>
                             @endif
                         </div>
+                        @endif
                         
                         <!-- Language Toggle -->
                         <div class="flex items-center">
@@ -131,141 +150,76 @@
                         </div>
                         
                         <!-- Navigation Items -->
-                        @auth('customer')
+                        @if($userType !== 'guest')
                         <div class="flex items-center space-x-4 space-x-reverse">
                             
-                            <!-- Shopping Cart (Customer Only) -->
-                            <div class="relative">
-                                <a href="{{ route('customer.cart.index') }}" class="relative p-3 bg-orange-50 rounded-xl hover:bg-orange-100 
-                                             transition-colors duration-200 group">
-                                    <i class="fas fa-shopping-cart text-primary-500 group-hover:text-primary-600"></i>
-                                    @if($cartStats['items'] > 0)
-                                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white 
-                                                   text-xs rounded-full flex items-center justify-center animate-bounce">{{ $cartStats['items'] }}</span>
-                                    @endif
-                                </a>
-                            </div>
-                            
-                            <!-- Notifications -->
-                            <div class="relative">
-                                <button class="relative p-3 bg-orange-50 rounded-xl hover:bg-orange-100 
-                                             transition-colors duration-200 group">
-                                    <i class="fas fa-bell text-primary-500 group-hover:text-primary-600"></i>
-                                    @if($notificationCount > 0)
-                                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
-                                                   text-xs rounded-full flex items-center justify-center animate-bounce">{{ $notificationCount > 9 ? '9+' : $notificationCount }}</span>
-                                    @endif
-                                </button>
-                            </div>
-                            
-                            <!-- User Menu for Customer -->
-                            <div class="relative group">
-                                <button class="flex items-center space-x-3 space-x-reverse bg-gradient-soft 
-                                             px-4 py-2 rounded-xl hover:bg-gradient-warm transition-all duration-300 
-                                             shadow-md hover:shadow-lg">
-                                    @php
-                                        $user = Auth::guard('customer')->user();
-                                        $userName = $user->name ?? 'عميل';
-                                    @endphp
-                                    <div class="w-10 h-10 bg-gradient-fire rounded-full flex items-center justify-center 
-                                               text-white font-bold shadow-md">
-                                        {{ substr($userName, 0, 1) }}
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-sm font-semibold text-gray-800">{{ $userName }}</div>
-                                        <div class="text-xs text-gray-600">عميل</div>
-                                        @if(isset($userStats['favorite_services']))
-                                            <div class="text-xs text-primary-500">{{ $userStats['favorite_services'] }} مفضلة</div>
+                            <!-- Role-specific Icons -->
+                            @if($userType === 'customer')
+                                <!-- Shopping Cart (Customer Only) -->
+                                <div class="relative">
+                                    <a href="{{ route('customer.cart.index') }}" class="relative p-3 bg-blue-50 rounded-xl hover:bg-blue-100 
+                                                 transition-colors duration-200 group">
+                                        <i class="fas fa-shopping-cart text-blue-500 group-hover:text-blue-600"></i>
+                                        @if($cartStats['items'] > 0)
+                                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white 
+                                                       text-xs rounded-full flex items-center justify-center animate-bounce">{{ $cartStats['items'] }}</span>
                                         @endif
-                                    </div>
-                                    <i class="fas fa-chevron-down text-gray-400 group-hover:text-gray-600"></i>
-                                </button>
-                                
-                                <!-- Customer Dropdown Menu -->
-                                <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 
-                                           opacity-0 invisible group-hover:opacity-100 group-hover:visible 
-                                           transition-all duration-200 z-50">
-                                    <div class="py-2">
-                                        <a href="{{ route('customer.dashboard') }}" 
-                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                  hover:text-primary-600 transition-colors">
-                                            <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
-                                            لوحة التحكم
-                                        </a>
-                                        <a href="{{ route('customer.services.index') }}" 
-                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                  hover:text-primary-600 transition-colors">
-                                            <i class="fas fa-concierge-bell ml-3 text-primary-500"></i>
-                                            الخدمات
-                                        </a>
-                                        <a href="{{ route('customer.bookings.index') }}" 
-                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                  hover:text-primary-600 transition-colors">
-                                            <i class="fas fa-calendar-alt ml-3 text-primary-500"></i>
-                                            حجوزاتي
-                                        </a>
-                                        <a href="{{ route('customer.favorites.index') }}" 
-                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                  hover:text-primary-600 transition-colors">
-                                            <i class="fas fa-heart ml-3 text-primary-500"></i>
-                                            المفضلة
-                                        </a>
-                                        <a href="{{ route('customer.profile.show') }}" 
-                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                  hover:text-primary-600 transition-colors">
-                                            <i class="fas fa-user-edit ml-3 text-primary-500"></i>
-                                            الملف الشخصي
-                                        </a>
-                                        <hr class="my-2 border-gray-100">
-                                        <form method="POST" action="{{ route('customer.logout') }}" class="block">
-                                            @csrf
-                                            <button type="submit" 
-                                                    class="flex items-center w-full px-4 py-3 text-red-600 
-                                                           hover:bg-red-50 transition-colors text-right">
-                                                <i class="fas fa-sign-out-alt ml-3"></i>
-                                                تسجيل الخروج
-                                            </button>
-                                        </form>
-                                    </div>
+                                    </a>
                                 </div>
-                            </div>
-                        </div>
-                        @elseif(Auth::check())
-                        <div class="flex items-center space-x-4 space-x-reverse">
+                            @elseif($userType === 'merchant')
+                                <!-- Quick Actions for Merchant -->
+                                <div class="relative">
+                                    <a href="{{ route('merchant.services.create') }}" class="relative p-3 bg-green-50 rounded-xl hover:bg-green-100 
+                                                 transition-colors duration-200 group" title="إضافة خدمة جديدة">
+                                        <i class="fas fa-plus text-green-500 group-hover:text-green-600"></i>
+                                    </a>
+                                </div>
+                            @elseif($userType === 'admin')
+                                <!-- Admin Quick Actions -->
+                                <div class="relative">
+                                    <a href="{{ route('admin.dashboard') }}" class="relative p-3 bg-purple-50 rounded-xl hover:bg-purple-100 
+                                                 transition-colors duration-200 group" title="لوحة الإدارة">
+                                        <i class="fas fa-cogs text-purple-500 group-hover:text-purple-600"></i>
+                                    </a>
+                                </div>
+                            @endif
                             
                             <!-- Notifications -->
                             <div class="relative">
                                 <button class="relative p-3 bg-orange-50 rounded-xl hover:bg-orange-100 
                                              transition-colors duration-200 group">
-                                    <i class="fas fa-bell text-primary-500 group-hover:text-primary-600"></i>
+                                    <i class="fas fa-bell text-orange-500 group-hover:text-orange-600"></i>
                                     @if($notificationCount > 0)
                                         <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
                                                    text-xs rounded-full flex items-center justify-center animate-bounce">{{ $notificationCount > 9 ? '9+' : $notificationCount }}</span>
                                     @endif
                                 </button>
-                            </div>
-                            
-                            <!-- Language Switcher -->
-                            <div class="mx-2">
-                                @include('components.language-switcher')
                             </div>
                             
                             <!-- User Menu -->
                             <div class="relative group">
-                                <button class="flex items-center space-x-3 space-x-reverse bg-gradient-soft 
-                                             px-4 py-2 rounded-xl hover:bg-gradient-warm transition-all duration-300 
-                                             shadow-md hover:shadow-lg">
+                                <button class="flex items-center space-x-3 space-x-reverse bg-gradient-to-r from-blue-50 to-purple-50 
+                                             px-4 py-2 rounded-xl hover:from-blue-100 hover:to-purple-100 transition-all duration-300 
+                                             shadow-md hover:shadow-lg border border-blue-100">
                                     @php
                                         $user = Auth::guard('customer')->check() ? Auth::guard('customer')->user() : Auth::user();
                                         $userName = $user->name ?? 'مستخدم';
-                                        $userTypeLabel = match($userType) {
+                                        $userTypeLabels = [
                                             'customer' => 'عميل',
-                                            'merchant' => 'تاجر', 
+                                            'merchant' => 'تاجر',
+                                            'partner' => 'شريك',
                                             'admin' => 'مدير',
-                                            default => 'مستخدم'
-                                        };
+                                        ];
+                                        $userTypeLabel = $userTypeLabels[$userType] ?? 'مستخدم';
+                                        $avatarColors = [
+                                            'customer' => 'from-blue-400 to-blue-600',
+                                            'merchant' => 'from-green-400 to-green-600',
+                                            'partner' => 'from-purple-400 to-purple-600',
+                                            'admin' => 'from-red-400 to-red-600',
+                                        ];
+                                        $avatarColor = $avatarColors[$userType] ?? 'from-gray-400 to-gray-600';
                                     @endphp
-                                    <div class="w-10 h-10 bg-gradient-fire rounded-full flex items-center justify-center 
+                                    <div class="w-10 h-10 bg-gradient-to-r {{ $avatarColor }} rounded-full flex items-center justify-center 
                                                text-white font-bold shadow-md">
                                         {{ substr($userName, 0, 1) }}
                                     </div>
@@ -273,7 +227,7 @@
                                         <div class="text-sm font-semibold text-gray-800">{{ $userName }}</div>
                                         <div class="text-xs text-gray-600">{{ $userTypeLabel }}</div>
                                         @if($userType === 'customer' && isset($userStats['favorite_services']))
-                                            <div class="text-xs text-primary-500">{{ $userStats['favorite_services'] }} مفضلة</div>
+                                            <div class="text-xs text-blue-500">{{ $userStats['favorite_services'] }} مفضلة</div>
                                         @elseif($userType === 'merchant' && isset($userStats['total_revenue']))
                                             <div class="text-xs text-green-600">{{ number_format($userStats['total_revenue']) }} ريال</div>
                                         @endif
@@ -282,50 +236,102 @@
                                 </button>
                                 
                                 <!-- Dropdown Menu -->
-                                <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 
+                                <div class="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 
                                            opacity-0 invisible group-hover:opacity-100 group-hover:visible 
                                            transition-all duration-200 z-50">
                                     <div class="py-2">
                                         @if($userType === 'customer')
                                             <a href="{{ route('customer.dashboard') }}" 
-                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                      hover:text-primary-600 transition-colors">
-                                                <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 
+                                                      hover:text-blue-600 transition-colors">
+                                                <i class="fas fa-tachometer-alt ml-3 text-blue-500"></i>
                                                 لوحة التحكم
                                             </a>
+                                            <a href="{{ route('customer.services.index') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 
+                                                      hover:text-blue-600 transition-colors">
+                                                <i class="fas fa-concierge-bell ml-3 text-blue-500"></i>
+                                                تصفح الخدمات
+                                            </a>
                                             <a href="{{ route('customer.bookings.index') }}" 
-                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                      hover:text-primary-600 transition-colors">
-                                                <i class="fas fa-calendar-alt ml-3 text-primary-500"></i>
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 
+                                                      hover:text-blue-600 transition-colors">
+                                                <i class="fas fa-calendar-alt ml-3 text-blue-500"></i>
                                                 حجوزاتي
                                             </a>
                                             <a href="{{ route('customer.favorites.index') }}" 
-                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                      hover:text-primary-600 transition-colors">
-                                                <i class="fas fa-heart ml-3 text-primary-500"></i>
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 
+                                                      hover:text-blue-600 transition-colors">
+                                                <i class="fas fa-heart ml-3 text-blue-500"></i>
                                                 المفضلة
                                             </a>
+                                        @elseif($userType === 'merchant')
+                                            <a href="{{ route('merchant.dashboard') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 
+                                                      hover:text-green-600 transition-colors">
+                                                <i class="fas fa-tachometer-alt ml-3 text-green-500"></i>
+                                                لوحة التحكم
+                                            </a>
+                                            <a href="{{ route('merchant.services.index') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 
+                                                      hover:text-green-600 transition-colors">
+                                                <i class="fas fa-concierge-bell ml-3 text-green-500"></i>
+                                                خدماتي
+                                            </a>
+                                            <a href="{{ route('merchant.bookings.index') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 
+                                                      hover:text-green-600 transition-colors">
+                                                <i class="fas fa-calendar-check ml-3 text-green-500"></i>
+                                                الحجوزات
+                                            </a>
+                                            <a href="{{ route('merchant.payments.analytics') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 
+                                                      hover:text-green-600 transition-colors">
+                                                <i class="fas fa-chart-line ml-3 text-green-500"></i>
+                                                التقارير
+                                            </a>
+                                        @elseif($userType === 'partner')
+                                            <a href="{{ route('partner.dashboard') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-purple-50 
+                                                      hover:text-purple-600 transition-colors">
+                                                <i class="fas fa-tachometer-alt ml-3 text-purple-500"></i>
+                                                لوحة التحكم
+                                            </a>
+                                        @elseif($userType === 'admin')
+                                            <a href="{{ route('admin.dashboard') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 
+                                                      hover:text-red-600 transition-colors">
+                                                <i class="fas fa-tachometer-alt ml-3 text-red-500"></i>
+                                                لوحة الإدارة
+                                            </a>
+                                            <a href="{{ route('filament.admin.pages.dashboard') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 
+                                                      hover:text-red-600 transition-colors">
+                                                <i class="fas fa-database ml-3 text-red-500"></i>
+                                                نظام الإدارة
+                                            </a>
+                                        @endif
+                                        
+                                        <hr class="my-2 border-gray-100">
+                                        
+                                        <!-- Profile Link -->
+                                        @if($userType === 'customer')
                                             <a href="{{ route('customer.profile.show') }}" 
-                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                      hover:text-primary-600 transition-colors">
-                                                <i class="fas fa-user-edit ml-3 text-primary-500"></i>
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 
+                                                      hover:text-blue-600 transition-colors">
+                                                <i class="fas fa-user-edit ml-3 text-blue-500"></i>
                                                 الملف الشخصي
                                             </a>
                                         @else
-                                            <a href="{{ dashboard_route() }}" 
-                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                      hover:text-primary-600 transition-colors">
-                                                <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
-                                                لوحة التحكم
-                                            </a>
                                             <a href="{{ route('profile.edit') }}" 
-                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                      hover:text-primary-600 transition-colors">
-                                                <i class="fas fa-user-edit ml-3 text-primary-500"></i>
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 
+                                                      hover:text-gray-600 transition-colors">
+                                                <i class="fas fa-user-edit ml-3 text-gray-500"></i>
                                                 الملف الشخصي
                                             </a>
                                         @endif
-                                        <hr class="my-2 border-gray-100">
+                                        
+                                        <!-- Logout -->
                                         @if($userType === 'customer')
                                             <form method="POST" action="{{ route('customer.logout') }}" class="block">
                                         @else

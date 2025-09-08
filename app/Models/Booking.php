@@ -53,6 +53,8 @@ class Booking extends Model
         'is_offline_transaction',
         'offline_transaction_id',
         'synced_at',
+        'confirmed_at',
+        'confirmed_by',
     ];
 
     protected $casts = [
@@ -61,6 +63,7 @@ class Booking extends Model
         'commission_amount' => 'decimal:2',
         'commission_rate' => 'decimal:2',
         'cancelled_at' => 'datetime',
+        'confirmed_at' => 'datetime',
         'discount' => 'decimal:2',
         'pos_data' => 'array',
         'printed_at' => 'datetime',

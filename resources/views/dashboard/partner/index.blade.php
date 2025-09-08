@@ -15,7 +15,7 @@
         <div class="relative container mx-auto px-4 py-12">
             <div class="flex items-center justify-between text-white">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2">مرحباً بك، {{ $partner->company_name }} 🤝</h1>
+                    <h1 class="text-4xl font-bold mb-2">مرحباً بك، {{ $partner->company_name ?? 'شريك' }} 🤝</h1>
                     <p class="text-green-100 text-lg">متابعة شراكاتك وعمولاتك بكل سهولة ووضوح</p>
                 </div>
                 <div class="hidden md:block">
@@ -42,8 +42,8 @@
                     </div>
                     <div class="mr-4 flex-1">
                         <p class="text-sm font-medium text-gray-600 mb-1">إجمالي التجار</p>
-                        <p class="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">{{ number_format($stats['total_merchants']) }}</p>
-                        <p class="text-xs text-green-600 font-medium">{{ $stats['active_merchants'] }} نشط</p>
+                        <p class="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">{{ number_format($stats['total_merchants'] ?? 0) }}</p>
+                        <p class="text-xs text-green-600 font-medium">{{ $stats['active_merchants'] ?? 0 }} نشط</p>
                     </div>
                 </div>
             </div>
@@ -58,8 +58,8 @@
                     </div>
                     <div class="mr-4 flex-1">
                         <p class="text-sm font-medium text-gray-600 mb-1">إجمالي العمولات</p>
-                        <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">{{ number_format($stats['total_commissions'], 2) }} ريال</p>
-                        <p class="text-xs text-blue-600 font-medium">{{ number_format($stats['this_month_commissions'], 2) }} هذا الشهر</p>
+                        <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">{{ number_format($stats['partner_commission'] ?? 0, 2) }} ريال</p>
+                        <p class="text-xs text-blue-600 font-medium">{{ number_format($stats['monthly_growth'] ?? 0, 2) }}% نمو شهري</p>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                     </div>
                     <div class="mr-4">
                         <p class="text-sm font-medium text-gray-600">إجمالي الحجوزات</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['total_bookings']) }}</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['total_bookings'] ?? 0) }}</p>
                         <p class="text-xs text-purple-600">من شبكة التجار</p>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="mr-4">
                         <p class="text-sm font-medium text-gray-600">معدل العمولة</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['avg_commission_rate'], 1) }}%</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($partner->commission_rate ?? 10, 1) }}%</p>
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
             </div>
             <div class="p-6">
                 <div class="space-y-4">
-                    @foreach($topMerchants->take(5) as $merchant)
+                    @forelse($topMerchants->take(5) as $merchant)
                         <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
                             <div class="flex items-center">
                                 <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
@@ -112,16 +112,18 @@
                                 <div>
                                     <p class="font-medium text-gray-900">{{ $merchant->business_name }}</p>
                                     <p class="text-sm text-gray-600">{{ $merchant->contact_email }}</p>
-                                    <p class="text-xs text-gray-500">{{ $merchant->total_bookings }} حجز • {{ $merchant->active_services }} خدمة نشطة</p>
+                                    <p class="text-xs text-gray-500">{{ $merchant->bookings_count ?? 0 }} حجز • {{ $merchant->services_count ?? 0 }} خدمة نشطة</p>
                                 </div>
                             </div>
                             <div class="text-left">
                                 <p class="font-semibold text-gray-900">{{ number_format($merchant->total_revenue ?? 0, 2) }} ريال</p>
-                                <p class="text-sm text-blue-600">عمولة: {{ number_format($merchant->total_commissions ?? 0, 2) }} ريال</p>
-                                <p class="text-xs text-green-600">{{ number_format($merchant->commission_rate ?? 0, 1) }}% معدل العمولة</p>
+                                <p class="text-sm text-blue-600">عمولة: {{ number_format(($merchant->total_revenue ?? 0) * ($merchant->commission_rate ?? 10) / 100, 2) }} ريال</p>
+                                <p class="text-xs text-green-600">{{ number_format($merchant->commission_rate ?? 10, 1) }}% معدل العمولة</p>
                             </div>
                         </div>
-                    @endforeach
+                    @empty
+                        <p class="text-center text-gray-500 py-8">لا توجد بيانات تجار حتى الآن</p>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -214,56 +216,46 @@
             </div>
             <div class="p-6">
                 <div class="space-y-4">
-                    @foreach($recentActivities->take(5) as $activity)
+                    @forelse($recentBookings->take(5) as $booking)
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div class="flex items-center">
                                 <div class="p-2 rounded-full bg-blue-100 text-blue-600 mr-3">
-                                    @if($activity->type === 'booking')
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                        </svg>
-                                    @elseif($activity->type === 'commission')
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                                        </svg>
-                                    @else
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                        </svg>
-                                    @endif
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-900 text-sm">{{ $activity->description }}</p>
-                                    <p class="text-xs text-gray-600">{{ $activity->merchant_name }}</p>
-                                    <p class="text-xs text-gray-500">{{ $activity->created_at->diffForHumans() }}</p>
+                                    <p class="font-medium text-gray-900 text-sm">حجز #{{ $booking->id }}</p>
+                                    <p class="text-xs text-gray-600">{{ $booking->service->name ?? 'خدمة' }} - {{ $booking->merchant->business_name ?? '' }}</p>
+                                    <p class="text-xs text-gray-500">{{ $booking->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
                             <div class="text-left">
-                                @if(isset($activity->commission_amount))
-                                    <p class="text-sm font-semibold text-green-600">+{{ number_format($activity->commission_amount, 2) }} ريال</p>
-                                @endif
+                                <p class="text-sm font-semibold text-green-600">{{ number_format($booking->total_amount ?? 0, 2) }} ريال</p>
                             </div>
                         </div>
-                    @endforeach
+                    @empty
+                        <p class="text-center text-gray-500 py-8">لا توجد أنشطة حديثة</p>
+                    @endforelse
                 </div>
             </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <a href="{{ route('partner.dashboard.merchants') }}" 
+            <a href="{{ route('partner.merchants') }}" 
                class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-blue-700 transition duration-200">
                 إدارة التجار
             </a>
-            <a href="{{ route('partner.dashboard.commissions') }}" 
+            <a href="{{ route('partner.commissions') }}" 
                class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-green-700 transition duration-200">
                 تقارير العمولات
             </a>
-            <a href="{{ route('partner.dashboard.analytics') }}" 
+            <a href="{{ route('partner.analytics.index') }}" 
                class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-purple-700 transition duration-200">
                 التحليلات المتقدمة
             </a>
-            <a href="{{ route('partner.dashboard.growth-report') }}" 
+            <a href="{{ route('partner.reports') }}" 
                class="bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-yellow-700 transition duration-200">
                 تقرير النمو
             </a>
