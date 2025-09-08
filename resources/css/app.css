@@ -222,6 +222,79 @@
     }
 }
 
+/* 🌙 Dark Mode Styles */
+.dark-mode {
+    background-color: #1a1a1a !important;
+    color: #e5e7eb !important;
+}
+
+.dark-mode nav {
+    background-color: #2d2d2d !important;
+    border-color: #374151 !important;
+}
+
+.dark-mode .bg-white {
+    background-color: #2d2d2d !important;
+    color: #e5e7eb !important;
+}
+
+.dark-mode .text-gray-800 {
+    color: #e5e7eb !important;
+}
+
+.dark-mode .text-gray-700 {
+    color: #d1d5db !important;
+}
+
+.dark-mode .text-gray-600 {
+    color: #9ca3af !important;
+}
+
+.dark-mode .border-gray-200 {
+    border-color: #374151 !important;
+}
+
+.dark-mode .border-gray-300 {
+    border-color: #4b5563 !important;
+}
+
+.dark-mode .bg-gray-50 {
+    background-color: #1f1f1f !important;
+}
+
+.dark-mode .bg-gray-100 {
+    background-color: #2d2d2d !important;
+}
+
+.dark-mode .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-mode .shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-mode .card {
+    background-color: #2d2d2d !important;
+    border-color: #374151 !important;
+    color: #e5e7eb !important;
+}
+
+.dark-mode .form-input {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #e5e7eb !important;
+}
+
+.dark-mode .form-input:focus {
+    border-color: var(--primary) !important;
+    background-color: #374151 !important;
+}
+
+.dark-mode footer {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+}
+
 /* ♿ Accessibility */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

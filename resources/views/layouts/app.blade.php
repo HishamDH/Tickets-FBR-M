@@ -62,18 +62,16 @@
                     <div class="flex items-center">
                         <a href="{{ route('home') }}" class="flex items-center group hover:scale-105 transition-transform duration-300">
                             <div class="relative">
-                                <div class="w-14 h-14 bg-gradient-fire rounded-2xl flex items-center justify-center ml-4 shadow-lg 
-                                           group-hover:shadow-xl transition-shadow duration-300 fire-glow">
-                                    <i class="fas fa-ticket-alt text-2xl text-white"></i>
+                                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center ml-4 shadow-lg 
+                                           group-hover:shadow-xl transition-shadow duration-300">
+                                    <img src="{{ asset('images/logo.jpg') }}" alt="Ticket Window" class="w-12 h-12 object-contain rounded-xl">
                                 </div>
-                                <div class="absolute -top-1 -right-1 w-6 h-6 bg-orange-fire rounded-full 
-                                           animate-pulse border-2 border-white"></div>
                             </div>
                             <div>
                                 <h1 class="text-2xl font-black text-gray-800 group-hover:text-primary-500 transition-colors">
-                                    {{ config('app.name', 'تذاكر FBR-M') }}
+                                    Ticket Window
                                 </h1>
-                                <p class="text-sm text-orange-fire font-medium">منصة إدارة التذاكر</p>
+                                <p class="text-sm text-orange-fire font-medium">نافذة التذاكر</p>
                             </div>
                         </a>
                     </div>
@@ -116,6 +114,22 @@
                             @endif
                         </div>
                         
+                        <!-- Language Toggle -->
+                        <div class="flex items-center">
+                            <button onclick="toggleLanguage()" class="p-3 bg-blue-50 rounded-xl hover:bg-blue-100 
+                                         transition-colors duration-200 group" title="تبديل اللغة">
+                                <i class="fas fa-globe text-blue-500 group-hover:text-blue-600"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Theme Toggle -->
+                        <div class="flex items-center">
+                            <button onclick="toggleTheme()" id="theme-toggle" class="p-3 bg-purple-50 rounded-xl hover:bg-purple-100 
+                                         transition-colors duration-200 group" title="تبديل المظهر">
+                                <i class="fas fa-moon text-purple-500 group-hover:text-purple-600"></i>
+                            </button>
+                        </div>
+                        
                         <!-- Navigation Items -->
                         @auth('customer')
                         <div class="flex items-center space-x-4 space-x-reverse">
@@ -143,6 +157,79 @@
                                     @endif
                                 </button>
                             </div>
+                            
+                            <!-- User Menu for Customer -->
+                            <div class="relative group">
+                                <button class="flex items-center space-x-3 space-x-reverse bg-gradient-soft 
+                                             px-4 py-2 rounded-xl hover:bg-gradient-warm transition-all duration-300 
+                                             shadow-md hover:shadow-lg">
+                                    @php
+                                        $user = Auth::guard('customer')->user();
+                                        $userName = $user->name ?? 'عميل';
+                                    @endphp
+                                    <div class="w-10 h-10 bg-gradient-fire rounded-full flex items-center justify-center 
+                                               text-white font-bold shadow-md">
+                                        {{ substr($userName, 0, 1) }}
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm font-semibold text-gray-800">{{ $userName }}</div>
+                                        <div class="text-xs text-gray-600">عميل</div>
+                                        @if(isset($userStats['favorite_services']))
+                                            <div class="text-xs text-primary-500">{{ $userStats['favorite_services'] }} مفضلة</div>
+                                        @endif
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 group-hover:text-gray-600"></i>
+                                </button>
+                                
+                                <!-- Customer Dropdown Menu -->
+                                <div class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 
+                                           opacity-0 invisible group-hover:opacity-100 group-hover:visible 
+                                           transition-all duration-200 z-50">
+                                    <div class="py-2">
+                                        <a href="{{ route('customer.dashboard') }}" 
+                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                  hover:text-primary-600 transition-colors">
+                                            <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
+                                            لوحة التحكم
+                                        </a>
+                                        <a href="{{ route('customer.services.index') }}" 
+                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                  hover:text-primary-600 transition-colors">
+                                            <i class="fas fa-concierge-bell ml-3 text-primary-500"></i>
+                                            الخدمات
+                                        </a>
+                                        <a href="{{ route('customer.bookings.index') }}" 
+                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                  hover:text-primary-600 transition-colors">
+                                            <i class="fas fa-calendar-alt ml-3 text-primary-500"></i>
+                                            حجوزاتي
+                                        </a>
+                                        <a href="{{ route('customer.favorites.index') }}" 
+                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                  hover:text-primary-600 transition-colors">
+                                            <i class="fas fa-heart ml-3 text-primary-500"></i>
+                                            المفضلة
+                                        </a>
+                                        <a href="{{ route('customer.profile.show') }}" 
+                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                  hover:text-primary-600 transition-colors">
+                                            <i class="fas fa-user-edit ml-3 text-primary-500"></i>
+                                            الملف الشخصي
+                                        </a>
+                                        <hr class="my-2 border-gray-100">
+                                        <form method="POST" action="{{ route('customer.logout') }}" class="block">
+                                            @csrf
+                                            <button type="submit" 
+                                                    class="flex items-center w-full px-4 py-3 text-red-600 
+                                                           hover:bg-red-50 transition-colors text-right">
+                                                <i class="fas fa-sign-out-alt ml-3"></i>
+                                                تسجيل الخروج
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @elseif(Auth::check())
                         <div class="flex items-center space-x-4 space-x-reverse">
                             
@@ -416,11 +503,11 @@
                     <div class="md:col-span-2">
                         <div class="flex items-center mb-6">
                             <div class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center ml-4">
-                                <i class="fas fa-ticket-alt text-3xl text-white"></i>
+                                <img src="{{ asset('images/logo.jpg') }}" alt="Ticket Window" class="w-14 h-14 object-contain rounded-xl">
                             </div>
                             <div>
-                                <h3 class="text-2xl font-black">تذاكر FBR-M</h3>
-                                <p class="text-orange-100">منصة إدارة التذاكر المتطورة</p>
+                                <h3 class="text-2xl font-black text-white">Ticket Window</h3>
+                                <p class="text-orange-100">نافذة التذاكر المتطورة</p>
                             </div>
                         </div>
                         <p class="text-orange-100 mb-6 leading-relaxed">
@@ -449,27 +536,27 @@
                     <div>
                         <h4 class="text-xl font-bold mb-6">إحصائيات المنصة</h4>
                         <div class="space-y-4">
-                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <div class="bg-black bg-opacity-20 rounded-lg p-4 border border-white border-opacity-20">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-orange-100">الخدمات النشطة</span>
+                                    <span class="text-gray-200">الخدمات النشطة</span>
                                     <span class="font-bold text-white">{{ number_format($siteStats['total_services'] ?? 0) }}</span>
                                 </div>
                             </div>
-                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <div class="bg-black bg-opacity-20 rounded-lg p-4 border border-white border-opacity-20">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-orange-100">إجمالي الحجوزات</span>
+                                    <span class="text-gray-200">إجمالي الحجوزات</span>
                                     <span class="font-bold text-white">{{ number_format($siteStats['total_bookings'] ?? 0) }}</span>
                                 </div>
                             </div>
-                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <div class="bg-black bg-opacity-20 rounded-lg p-4 border border-white border-opacity-20">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-orange-100">العملاء</span>
+                                    <span class="text-gray-200">العملاء</span>
                                     <span class="font-bold text-white">{{ number_format($siteStats['total_customers'] ?? 0) }}</span>
                                 </div>
                             </div>
-                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <div class="bg-black bg-opacity-20 rounded-lg p-4 border border-white border-opacity-20">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-orange-100">التجار</span>
+                                    <span class="text-gray-200">التجار</span>
                                     <span class="font-bold text-white">{{ number_format($siteStats['total_merchants'] ?? 0) }}</span>
                                 </div>
                             </div>
@@ -483,39 +570,39 @@
                             <!-- Quick Links -->
                             <div class="mb-6">
                                 <ul class="space-y-2">
-                                    <li><a href="{{ route('home') }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
-                                        <i class="fas fa-home ml-2 w-4"></i> الرئيسية
+                                    <li><a href="{{ route('home') }}" class="text-gray-200 hover:text-white transition-colors flex items-center text-sm">
+                                        <i class="fas fa-home ml-2 w-4 text-orange-400"></i> الرئيسية
                                     </a></li>
                                     @if($userType === 'customer')
-                                        <li><a href="{{ route('customer.services.index') }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
-                                            <i class="fas fa-concierge-bell ml-2 w-4"></i> الخدمات
+                                        <li><a href="{{ route('customer.services.index') }}" class="text-gray-200 hover:text-white transition-colors flex items-center text-sm">
+                                            <i class="fas fa-concierge-bell ml-2 w-4 text-orange-400"></i> الخدمات
                                         </a></li>
-                                        <li><a href="{{ route('customer.dashboard') }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
-                                            <i class="fas fa-tachometer-alt ml-2 w-4"></i> لوحة التحكم
+                                        <li><a href="{{ route('customer.dashboard') }}" class="text-gray-200 hover:text-white transition-colors flex items-center text-sm">
+                                            <i class="fas fa-tachometer-alt ml-2 w-4 text-orange-400"></i> لوحة التحكم
                                         </a></li>
                                     @else
-                                        <li><a href="{{ dashboard_route() }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
-                                            <i class="fas fa-tachometer-alt ml-2 w-4"></i> لوحة التحكم
+                                        <li><a href="{{ dashboard_route() }}" class="text-gray-200 hover:text-white transition-colors flex items-center text-sm">
+                                            <i class="fas fa-tachometer-alt ml-2 w-4 text-orange-400"></i> لوحة التحكم
                                         </a></li>
                                     @endif
-                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
-                                        <i class="fas fa-headset ml-2 w-4"></i> الدعم الفني
+                                    <li><a href="#" class="text-gray-200 hover:text-white transition-colors flex items-center text-sm">
+                                        <i class="fas fa-headset ml-2 w-4 text-orange-400"></i> الدعم الفني
                                     </a></li>
                                 </ul>
                             </div>
                             
                             <!-- Contact Info -->
                             <div class="space-y-2">
-                                <div class="flex items-center text-orange-100 text-sm">
-                                    <i class="fas fa-envelope ml-2 w-4"></i>
-                                    <span>support@fbr-m.com</span>
+                                <div class="flex items-center text-gray-200 text-sm">
+                                    <i class="fas fa-envelope ml-2 w-4 text-orange-400"></i>
+                                    <span>support@ticketwindow.com</span>
                                 </div>
-                                <div class="flex items-center text-orange-100 text-sm">
-                                    <i class="fas fa-phone ml-2 w-4"></i>
+                                <div class="flex items-center text-gray-200 text-sm">
+                                    <i class="fas fa-phone ml-2 w-4 text-orange-400"></i>
                                     <span>+966 50 123 4567</span>
                                 </div>
-                                <div class="flex items-center text-orange-100 text-sm">
-                                    <i class="fas fa-map-marker-alt ml-2 w-4"></i>
+                                <div class="flex items-center text-gray-200 text-sm">
+                                    <i class="fas fa-map-marker-alt ml-2 w-4 text-orange-400"></i>
                                     <span>الرياض، السعودية</span>
                                 </div>
                             </div>
@@ -546,13 +633,13 @@
                     </div>
                     
                     <div class="flex flex-col md:flex-row justify-between items-center">
-                        <p class="text-orange-100 text-sm">
-                            © {{ date('Y') }} تذاكر FBR-M. جميع الحقوق محفوظة. | آخر تحديث: {{ now()->format('d/m/Y H:i') }}
+                        <p class="text-gray-200 text-sm">
+                            © {{ date('Y') }} Ticket Window. جميع الحقوق محفوظة. | آخر تحديث: {{ now()->format('d/m/Y H:i') }}
                         </p>
                         <div class="flex items-center space-x-6 space-x-reverse mt-4 md:mt-0">
-                            <span class="text-orange-100 text-sm">صُنع بـ</span>
+                            <span class="text-gray-200 text-sm">صُنع بـ</span>
                             <i class="fas fa-heart text-red-400 mx-2 animate-pulse"></i>
-                            <span class="text-orange-100 text-sm">في السعودية</span>
+                            <span class="text-gray-200 text-sm">في السعودية</span>
                         </div>
                     </div>
                 </div>
@@ -584,6 +671,95 @@
             document.querySelectorAll('.card').forEach(card => {
                 card.classList.add('reveal-on-scroll');
             });
+            
+            // Initialize theme
+            initTheme();
+        });
+        
+        // Language Toggle Function
+        function toggleLanguage() {
+            const currentLang = document.documentElement.lang;
+            const newLang = currentLang === 'ar' ? 'en' : 'ar';
+            const newDir = newLang === 'ar' ? 'rtl' : 'ltr';
+            
+            // Show loading indication
+            document.querySelector('button[onclick="toggleLanguage()"]').innerHTML = '<i class="fas fa-spinner fa-spin text-blue-500"></i>';
+            
+            // Make AJAX request to switch language
+            fetch('/language/switch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ 
+                    language: newLang 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update page attributes
+                    document.documentElement.lang = newLang;
+                    document.documentElement.dir = newDir;
+                    
+                    // Reload page to apply changes
+                    window.location.reload();
+                } else {
+                    // Reset button
+                    document.querySelector('button[onclick="toggleLanguage()"]').innerHTML = '<i class="fas fa-globe text-blue-500"></i>';
+                    alert('فشل في تبديل اللغة');
+                }
+            })
+            .catch(error => {
+                console.error('Language switch error:', error);
+                document.querySelector('button[onclick="toggleLanguage()"]').innerHTML = '<i class="fas fa-globe text-blue-500"></i>';
+            });
+        }
+        
+        // Theme Toggle Functions
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        }
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+        }
+        
+        function applyTheme(theme) {
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                if (themeToggle) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun text-yellow-500 group-hover:text-yellow-600"></i>';
+                    themeToggle.title = 'تبديل للوضع الفاتح';
+                }
+            } else {
+                body.classList.remove('dark-mode');
+                if (themeToggle) {
+                    themeToggle.innerHTML = '<i class="fas fa-moon text-purple-500 group-hover:text-purple-600"></i>';
+                    themeToggle.title = 'تبديل للوضع المظلم';
+                }
+            }
+        }
+        
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
         });
     </script>
 </body>

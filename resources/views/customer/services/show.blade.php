@@ -158,7 +158,7 @@
 
                             <!-- Action Buttons -->
                             <div class="space-y-3">
-                                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition duration-200">
+                                <button type="button" onclick="bookNow({{ $service->id }})" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition duration-200">
                                     📅 احجز الآن
                                 </button>
                                 
@@ -236,7 +236,12 @@
 </div>
 
 <script>
-function addToCart(serviceId) {
+function bookNow(serviceId) {
+    // Get quantity from form
+    const quantityInput = document.querySelector('input[name="quantity"]');
+    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    
+    // Add to cart and redirect to checkout
     fetch('/customer/cart', {
         method: 'POST',
         headers: {
@@ -244,15 +249,47 @@ function addToCart(serviceId) {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
         body: JSON.stringify({
-            service_id: serviceId,
-            quantity: 1
+            item_id: serviceId,
+            item_type: 'App\\Models\\Service',
+            quantity: quantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Redirect directly to checkout
+            window.location.href = '/customer/checkout';
+        } else {
+            alert(data.message || 'حدث خطأ أثناء إضافة الخدمة إلى السلة');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء إضافة الخدمة إلى السلة');
+    });
+}
+
+function addToCart(serviceId) {
+    // Get quantity from form
+    const quantityInput = document.querySelector('input[name="quantity"]');
+    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    
+    fetch('/customer/cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            item_id: serviceId,
+            item_type: 'App\\Models\\Service',
+            quantity: quantity
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             alert('تم إضافة الخدمة إلى السلة بنجاح!');
-            updateCartCount();
         } else {
             alert('حدث خطأ أثناء إضافة الخدمة إلى السلة');
         }
@@ -285,16 +322,6 @@ function toggleFavorite(serviceId) {
     });
 }
 
-function updateCartCount() {
-    fetch('/customer/cart/count')
-        .then(response => response.json())
-        .then(data => {
-            const cartCount = document.getElementById('cart-count');
-            if (cartCount) {
-                cartCount.textContent = data.count;
-            }
-        });
-}
 </script>
 
 @endsection

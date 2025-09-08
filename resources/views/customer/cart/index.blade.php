@@ -127,36 +127,36 @@
 <!-- Item Template (Hidden) -->
 <template id="cartItemTemplate">
     <div class="cart-item p-6" data-item-id="">
-        <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex gap-4">
             <!-- Service Image -->
-            <div class="w-full md:w-32 h-32 bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center flex-shrink-0">
                 <img class="service-image w-full h-full object-cover rounded-lg hidden" alt="">
-                <div class="service-placeholder text-4xl">🎯</div>
+                <div class="service-placeholder text-2xl md:text-3xl">🎯</div>
             </div>
 
             <!-- Service Details -->
-            <div class="flex-1">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <h3 class="service-name text-lg font-bold text-gray-800 mb-2"></h3>
-                        <p class="merchant-name text-sm text-gray-600 mb-2"></p>
+            <div class="flex-1 min-w-0">
+                <div class="flex flex-col md:flex-row md:justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="service-name text-lg font-bold text-gray-800 mb-1 truncate"></h3>
+                        <p class="merchant-name text-sm text-gray-600 mb-2 truncate"></p>
                         <p class="service-description text-sm text-gray-600 line-clamp-2 mb-3"></p>
                         
                         <!-- Quantity Controls -->
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 mb-3 md:mb-0">
                             <span class="text-sm text-gray-600">الكمية:</span>
                             <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                                <button class="quantity-decrease px-3 py-2 hover:bg-gray-100 transition duration-200">-</button>
-                                <input type="number" class="quantity-input w-16 text-center border-0 focus:outline-none" min="1" max="50">
-                                <button class="quantity-increase px-3 py-2 hover:bg-gray-100 transition duration-200">+</button>
+                                <button class="quantity-decrease px-2 py-1 hover:bg-gray-100 transition duration-200 text-sm">-</button>
+                                <input type="number" class="quantity-input w-12 text-center border-0 focus:outline-none text-sm" min="1" max="50">
+                                <button class="quantity-increase px-2 py-1 hover:bg-gray-100 transition duration-200 text-sm">+</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Price and Actions -->
-                    <div class="text-right">
-                        <div class="service-price text-2xl font-bold text-green-600 mb-3"></div>
-                        <button class="remove-item bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition duration-200 flex items-center gap-2">
+                    <div class="text-right md:text-left flex flex-col justify-between">
+                        <div class="service-price text-xl font-bold text-green-600 mb-2"></div>
+                        <button class="remove-item bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200 transition duration-200 flex items-center gap-1 text-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>

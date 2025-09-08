@@ -35,20 +35,6 @@
             <div class="text-center">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">🛍️ الخدمات المتاحة</h1>
                 <p class="text-xl opacity-90 max-w-2xl mx-auto">اكتشف مجموعة واسعة من الخدمات المميزة وأضفها لسلة التسوق الخاصة بك</p>
-                <!-- Cart Info -->
-                <div class="mt-6">
-                    <div class="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-white">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.8 8.2M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6M7 13H5.4"></path>
-                            </svg>
-                            <span>السلة: <span id="cart-count" class="font-bold">0</span> عنصر</span>
-                        </div>
-                        <a href="{{ route('customer.cart.index') }}" class="mr-3 bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-medium hover:bg-gray-100 transition">
-                            عرض السلة
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -230,9 +216,9 @@
 </div>
 
 <script>
-// Initialize cart count on page load
+// Services page JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    updateCartCount();
+    // Page initialization
 });
 
 function addToCart(serviceId) {
@@ -263,7 +249,6 @@ function addToCart(serviceId) {
     .then(data => {
         if (data.success) {
             showToast('تم إضافة الخدمة إلى السلة بنجاح! 🛒', 'success');
-            updateCartCount();
             
             // Temporarily show success state
             button.classList.add('bg-green-500');
@@ -320,19 +305,6 @@ function toggleFavorite(serviceId) {
     });
 }
 
-function updateCartCount() {
-    fetch('/customer/cart/count')
-        .then(response => response.json())
-        .then(data => {
-            const cartCount = document.getElementById('cart-count');
-            if (cartCount && data.count !== undefined) {
-                cartCount.textContent = data.count;
-            }
-        })
-        .catch(error => {
-            console.error('Error updating cart count:', error);
-        });
-}
 
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
