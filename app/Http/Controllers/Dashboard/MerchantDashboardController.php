@@ -72,14 +72,14 @@ class MerchantDashboardController extends Controller
 
         // أحدث الحجوزات
         $recentBookings = \App\Models\Booking::whereIn('service_id', $serviceIds)
-            ->with(['service', 'user'])
+            ->with(['service', 'customer'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
 
         // حجوزات اليوم
         $todayBookings = \App\Models\Booking::whereIn('service_id', $serviceIds)
-            ->with(['service', 'user'])
+            ->with(['service', 'customer'])
             ->whereDate('booking_date', Carbon::today())
             ->orderBy('booking_time')
             ->get();
