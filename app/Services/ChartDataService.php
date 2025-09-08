@@ -30,15 +30,22 @@ class ChartDataService
     /**
      * Get revenue chart data
      */
-    public function getRevenueChart($startDate, $endDate, $groupBy = 'day')
+    public function getRevenueChart($startDate, $endDate, $groupBy = 'day', $merchantId = null)
     {
         $groupByClause = $this->getGroupByClause($groupBy);
         $dateFormat = $this->getDateFormat($groupBy);
 
-        $data = Booking::selectRaw("{$groupByClause} as period, SUM(total_amount) as revenue, COUNT(*) as bookings")
+        $query = Booking::selectRaw("{$groupByClause} as period, SUM(total_amount) as revenue, COUNT(*) as bookings")
             ->whereBetween('booking_date', [$startDate, $endDate])
-            ->where('status', 'completed')
-            ->groupBy('period')
+            ->where('status', 'completed');
+            
+        if ($merchantId) {
+            $query->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
+        
+        $data = $query->groupBy('period')
             ->orderBy('period')
             ->get();
 
@@ -289,17 +296,31 @@ class ChartDataService
     /**
      * Get customer satisfaction gauge
      */
-    public function getCustomerSatisfactionGauge($startDate, $endDate)
+    public function getCustomerSatisfactionGauge($startDate, $endDate, $merchantId = null)
     {
         // Get ratings from reviews instead of bookings
-        $avgRating = \App\Models\Review::whereBetween('created_at', [$startDate, $endDate])
-            ->where('is_approved', true)
-            ->avg('rating') ?? 0;
+        $query = \App\Models\Review::whereBetween('created_at', [$startDate, $endDate])
+            ->where('is_approved', true);
+            
+        if ($merchantId) {
+            $query->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
+        
+        $avgRating = $query->avg('rating') ?? 0;
 
-        $ratingDistribution = \App\Models\Review::selectRaw('rating, COUNT(*) as count')
+        $ratingQuery = \App\Models\Review::selectRaw('rating, COUNT(*) as count')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->where('is_approved', true)
-            ->groupBy('rating')
+            ->where('is_approved', true);
+            
+        if ($merchantId) {
+            $ratingQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
+        
+        $ratingDistribution = $ratingQuery->groupBy('rating')
             ->orderBy('rating')
             ->get();
 

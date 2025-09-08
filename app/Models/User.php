@@ -331,6 +331,14 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Merchant bookings relationship (bookings for services owned by this merchant)
+     */
+    public function merchantBookings(): HasMany
+    {
+        return $this->hasMany(\App\Models\Booking::class, 'merchant_id');
+    }
+
+    /**
      * Favorite services relationship
      */
     public function favoriteServices(): BelongsToMany

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -166,6 +167,15 @@ class Service extends Model
     public function activeBookings(): HasMany
     {
         return $this->hasMany(Booking::class, 'service_id')->whereIn('status', ['pending', 'confirmed']);
+    }
+
+    /**
+     * Users who favorited this service
+     */
+    public function favoritedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_favorite_services')
+            ->withTimestamps();
     }
 
     /**

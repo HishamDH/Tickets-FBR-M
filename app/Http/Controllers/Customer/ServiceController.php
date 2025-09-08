@@ -15,7 +15,7 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Service::with(['merchant', 'media'])
+        $query = Service::with(['merchant'])
             ->where('is_active', true)
             ->whereHas('merchant', function ($q) {
                 $q->where('status', 'active');
@@ -90,7 +90,9 @@ class ServiceController extends Controller
         $cities = Merchant::select('city')
             ->distinct()
             ->whereNotNull('city')
-            ->where('status', 'active')
+            ->whereHas('user', function ($q) {
+                $q->where('status', 'active');
+            })
             ->pluck('city');
 
         return view('customer.services.index', compact(
@@ -111,16 +113,13 @@ class ServiceController extends Controller
 
         $service->load([
             'merchant',
-            'media',
             'availability',
-            'bookings' => function ($query) {
-                $query->where('booking_status', 'completed')
-                    ->with(['customer' => function ($q) {
-                        $q->select('id', 'name');
-                    }])
-                    ->whereNotNull('review')
-                    ->latest()
-                    ->limit(5);
+            'reviews' => function ($query) {
+                $query->with(['customer' => function ($q) {
+                    $q->select('id', 'name');
+                }])
+                ->latest()
+                ->limit(5);
             },
         ]);
 
@@ -143,8 +142,8 @@ class ServiceController extends Controller
 
         // Check if user has booked this service before
         $hasBooked = false;
-        if (Auth::check()) {
-            $hasBooked = Auth::user()->bookings()
+        if (Auth::guard('customer')->check()) {
+            $hasBooked = Auth::guard('customer')->user()->bookings()
                 ->where('service_id', $service->id)
                 ->exists();
         }
@@ -162,7 +161,7 @@ class ServiceController extends Controller
      */
     public function addToFavorites(Service $service)
     {
-        $user = Auth::user();
+        $user = Auth::guard('customer')->user();
 
         if (! $user->favoriteServices()->where('service_id', $service->id)->exists()) {
             $user->favoriteServices()->attach($service->id);
@@ -184,13 +183,70 @@ class ServiceController extends Controller
      */
     public function removeFromFavorites(Service $service)
     {
-        $user = Auth::user();
+        $user = Auth::guard('customer')->user();
 
         $user->favoriteServices()->detach($service->id);
 
         return response()->json([
             'success' => true,
             'message' => 'تم حذف الخدمة من المفضلة',
+        ]);
+    }
+
+    /**
+     * Book a service
+     */
+    public function book(Request $request, Service $service)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'booking_date' => 'required|date|after_or_equal:today',
+            'booking_time' => 'required',
+            'notes' => 'nullable|string|max:1000'
+        ]);
+
+        $user = Auth::guard('customer')->user();
+        
+        // Calculate total amount
+        $totalAmount = $service->price * $request->quantity;
+        
+        // Create booking
+        $booking = $user->bookings()->create([
+            'service_id' => $service->id,
+            'merchant_id' => $service->merchant_id,
+            'quantity' => $request->quantity,
+            'booking_date' => $request->booking_date,
+            'booking_time' => $request->booking_time,
+            'total_amount' => $totalAmount,
+            'notes' => $request->notes,
+            'status' => 'pending'
+        ]);
+
+        return redirect()->route('customer.bookings.show', $booking->id)
+            ->with('success', 'تم إرسال طلب الحجز بنجاح! سيتم التواصل معك قريباً.');
+    }
+
+    /**
+     * Toggle service favorite status
+     */
+    public function toggleFavorite(Service $service)
+    {
+        $user = Auth::guard('customer')->user();
+
+        if ($user->favoriteServices()->where('service_id', $service->id)->exists()) {
+            $user->favoriteServices()->detach($service->id);
+            $message = 'تم حذف الخدمة من المفضلة';
+            $action = 'removed';
+        } else {
+            $user->favoriteServices()->attach($service->id);
+            $message = 'تمت إضافة الخدمة إلى المفضلة';
+            $action = 'added';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'action' => $action
         ]);
     }
 

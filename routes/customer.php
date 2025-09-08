@@ -33,7 +33,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Customer Protected Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:customer'])->group(function () {
         // Logout
         Route::post('logout', [CustomerLoginController::class, 'destroy'])->name('logout');
 
@@ -53,9 +53,9 @@ Route::middleware(['auth'])->group(function () {
         // Services Browsing
         Route::prefix('services')->name('services.')->group(function () {
             Route::get('/', [CustomerServiceController::class, 'index'])->name('index');
-            Route::get('/{id}', [CustomerServiceController::class, 'show'])->name('show');
-            Route::post('/{id}/book', [CustomerServiceController::class, 'book'])->name('book');
-            Route::post('/{id}/favorite', [CustomerServiceController::class, 'toggleFavorite'])->name('favorite');
+            Route::get('/{service}', [CustomerServiceController::class, 'show'])->name('show');
+            Route::post('/{service}/book', [CustomerServiceController::class, 'book'])->name('book');
+            Route::post('/{service}/favorite', [CustomerServiceController::class, 'toggleFavorite'])->name('favorite');
         });
 
         // Payments & History
@@ -90,7 +90,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Shopping Cart Management
         Route::prefix('cart')->name('cart.')->group(function () {
-            Route::get('/', [App\Http\Controllers\CartController::class, 'index'])->name('index');
+            Route::get('/', [App\Http\Controllers\CartController::class, 'show'])->name('index');
+            Route::get('/api', [App\Http\Controllers\CartController::class, 'index'])->name('api');
             Route::post('/', [App\Http\Controllers\CartController::class, 'store'])->name('store');
             Route::put('/{cartItem}', [App\Http\Controllers\CartController::class, 'update'])->name('update');
             Route::delete('/{cartItem}', [App\Http\Controllers\CartController::class, 'destroy'])->name('destroy');
@@ -102,13 +103,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Checkout Process
         Route::prefix('checkout')->name('checkout.')->group(function () {
-            Route::get('/', [App\Http\Controllers\CheckoutController::class, 'index'])->name('index');
-            Route::post('/', [App\Http\Controllers\CheckoutController::class, 'store'])->name('store');
-            Route::get('/confirmation/{order}', [App\Http\Controllers\CheckoutController::class, 'confirmation'])->name('confirmation');
-            Route::get('/payment/stripe/{order}', [App\Http\Controllers\CheckoutController::class, 'stripePayment'])->name('payment.stripe');
-            Route::post('/payment/stripe/{order}', [App\Http\Controllers\CheckoutController::class, 'processStripePayment'])->name('payment.stripe.process');
-            Route::get('/payment/paypal/{order}', [App\Http\Controllers\CheckoutController::class, 'paypalPayment'])->name('payment.paypal');
-            Route::post('/payment/paypal/{order}', [App\Http\Controllers\CheckoutController::class, 'processPaypalPayment'])->name('payment.paypal.process');
+            Route::get('/', [App\Http\Controllers\Customer\CheckoutController::class, 'index'])->name('index');
+            Route::post('/', [App\Http\Controllers\Customer\CheckoutController::class, 'store'])->name('store');
+            Route::get('/confirmation', [App\Http\Controllers\Customer\CheckoutController::class, 'confirmation'])->name('confirmation');
         });
 
         // Customer Booking Routes  

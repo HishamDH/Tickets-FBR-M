@@ -28,6 +28,7 @@ class Booking extends Model
         'commission_amount',
         'commission_rate',
         'payment_status',
+        'payment_method',
         'status',
         'reservation_status',
         'booking_source',

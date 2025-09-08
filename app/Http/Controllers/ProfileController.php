@@ -12,6 +12,20 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
+     * Display the user's profile.
+     */
+    public function show(Request $request): View
+    {
+        $user = Auth::guard('customer')->check() 
+            ? Auth::guard('customer')->user() 
+            : $request->user();
+            
+        return view('customer.profile.show', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
      * Display the user's profile form.
      */
     public function edit(Request $request): View

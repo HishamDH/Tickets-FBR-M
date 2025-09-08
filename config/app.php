@@ -174,6 +174,7 @@ return [
         App\Providers\Filament\CustomerPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\LanguageServiceProvider::class,
+        App\Providers\ViewServiceProvider::class,
     ])->toArray(),
 
     /*

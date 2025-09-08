@@ -35,6 +35,7 @@
                         📊 لوحة التحليلات المتقدمة
                     </h1>
                     <p class="text-slate-600 text-lg">رؤى عميقة وتحليلات شاملة لأداء المنصة</p>
+                    <p class="text-sm text-slate-500 mt-2" id="last-update">آخر تحديث: جاري التحميل...</p>
                 </div>
                 
                 <!-- Controls -->
@@ -94,26 +95,26 @@
         <!-- KPIs Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
             <!-- Total Revenue KPI -->
-            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6">
+            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6" data-kpi="revenue">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                         <span class="text-2xl">💰</span>
                     </div>
                     <div class="text-right">
                         <div class="text-sm text-slate-500">إجمالي الإيرادات</div>
-                        <div class="text-2xl font-bold text-slate-800">{{ number_format($data['kpis']['total_revenue']['current'], 0) }}</div>
+                        <div class="text-2xl font-bold text-slate-800">{{ number_format($data['kpis']['total_revenue']['current'], 0) }} ريال</div>
                         <div class="text-xs {{ $data['kpis']['total_revenue']['change'] >= 0 ? 'trend-up' : 'trend-down' }}">
                             {{ $data['kpis']['total_revenue']['change'] >= 0 ? '↗️' : '↘️' }} {{ abs($data['kpis']['total_revenue']['change']) }}%
                         </div>
                     </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ min(100, ($data['kpis']['total_revenue']['current'] / max($data['kpis']['total_revenue']['current'], $data['kpis']['total_revenue']['previous'])) * 100) }}%"></div>
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ max($data['kpis']['total_revenue']['current'], $data['kpis']['total_revenue']['previous']) > 0 ? min(100, ($data['kpis']['total_revenue']['current'] / max($data['kpis']['total_revenue']['current'], $data['kpis']['total_revenue']['previous'])) * 100) : 0 }}%"></div>
                 </div>
             </div>
 
             <!-- Total Bookings KPI -->
-            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6">
+            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6" data-kpi="bookings">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                         <span class="text-2xl">📅</span>
@@ -127,7 +128,7 @@
                     </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ min(100, ($data['kpis']['total_bookings']['current'] / max($data['kpis']['total_bookings']['current'], $data['kpis']['total_bookings']['previous'])) * 100) }}%"></div>
+                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ max($data['kpis']['total_bookings']['current'], $data['kpis']['total_bookings']['previous']) > 0 ? min(100, ($data['kpis']['total_bookings']['current'] / max($data['kpis']['total_bookings']['current'], $data['kpis']['total_bookings']['previous'])) * 100) : 0 }}%"></div>
                 </div>
             </div>
 
@@ -146,12 +147,12 @@
                     </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-purple-600 h-2 rounded-full" style="width: {{ min(100, ($data['kpis']['active_merchants']['current'] / max($data['kpis']['active_merchants']['current'], $data['kpis']['active_merchants']['previous'])) * 100) }}%"></div>
+                    <div class="bg-purple-600 h-2 rounded-full" style="width: {{ max($data['kpis']['active_merchants']['current'], $data['kpis']['active_merchants']['previous']) > 0 ? min(100, ($data['kpis']['active_merchants']['current'] / max($data['kpis']['active_merchants']['current'], $data['kpis']['active_merchants']['previous'])) * 100) : 0 }}%"></div>
                 </div>
             </div>
 
             <!-- Average Booking Value KPI -->
-            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6">
+            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6" data-kpi="avg_value">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
                         <span class="text-2xl">💵</span>
@@ -165,12 +166,12 @@
                     </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-orange-600 h-2 rounded-full" style="width: {{ min(100, ($data['kpis']['avg_booking_value']['current'] / max($data['kpis']['avg_booking_value']['current'], $data['kpis']['avg_booking_value']['previous'])) * 100) }}%"></div>
+                    <div class="bg-orange-600 h-2 rounded-full" style="width: {{ max($data['kpis']['avg_booking_value']['current'], $data['kpis']['avg_booking_value']['previous']) > 0 ? min(100, ($data['kpis']['avg_booking_value']['current'] / max($data['kpis']['avg_booking_value']['current'], $data['kpis']['avg_booking_value']['previous'])) * 100) : 0 }}%"></div>
                 </div>
             </div>
 
             <!-- Customer Satisfaction KPI -->
-            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6">
+            <div class="kpi-card bg-white/60 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-6" data-kpi="satisfaction">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
                         <span class="text-2xl">⭐</span>
@@ -570,13 +571,58 @@ function showError(message) {
 }
 
 function updateChartsAndKPIs(data) {
-    // This would update the charts and KPIs with new data
-    // Implementation would depend on the specific chart library used
-    location.reload(); // Temporary solution - reload the page
+    // Update KPI values
+    if (data.kpis) {
+        // Update revenue
+        if (data.kpis.total_revenue) {
+            const revenueEl = document.querySelector('[data-kpi="revenue"] .text-3xl');
+            if (revenueEl) revenueEl.textContent = new Intl.NumberFormat('ar-SA').format(data.kpis.total_revenue.current) + ' ريال';
+        }
+        
+        // Update bookings
+        if (data.kpis.total_bookings) {
+            const bookingsEl = document.querySelector('[data-kpi="bookings"] .text-3xl');
+            if (bookingsEl) bookingsEl.textContent = new Intl.NumberFormat('ar-SA').format(data.kpis.total_bookings.current);
+        }
+        
+        // Update satisfaction
+        if (data.kpis.customer_satisfaction) {
+            const satisfactionEl = document.querySelector('[data-kpi="satisfaction"] .text-3xl');
+            if (satisfactionEl) satisfactionEl.textContent = data.kpis.customer_satisfaction.current.toFixed(1) + '/5';
+        }
+        
+        // Update average booking value
+        if (data.kpis.avg_booking_value) {
+            const avgValueEl = document.querySelector('[data-kpi="avg_value"] .text-3xl');
+            if (avgValueEl) avgValueEl.textContent = new Intl.NumberFormat('ar-SA').format(data.kpis.avg_booking_value.current) + ' ريال';
+        }
+    }
+    
+    console.log('Analytics data updated at:', new Date().toLocaleString('ar-SA'));
 }
 
-// Auto-refresh every 5 minutes
-setInterval(refreshData, 300000);
+// Auto-refresh every 30 seconds for real-time updates
+setInterval(refreshData, 30000);
+
+// Show last updated time
+function updateLastRefreshTime() {
+    const lastUpdate = document.getElementById('last-update');
+    if (lastUpdate) {
+        lastUpdate.textContent = 'آخر تحديث: ' + new Date().toLocaleString('ar-SA');
+    }
+}
+
+// Initial load
+document.addEventListener('DOMContentLoaded', function() {
+    updateLastRefreshTime();
+});
+
+// Update time on each refresh
+const originalRefreshData = refreshData;
+refreshData = function() {
+    originalRefreshData();
+    updateLastRefreshTime();
+};
 </script>
 @endpush
 @endsection

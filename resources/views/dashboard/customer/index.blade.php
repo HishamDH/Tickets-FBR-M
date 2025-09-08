@@ -208,7 +208,7 @@
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <a href="{{ route('booking.form') }}" 
+                    <a href="{{ route('customer.services.index') }}" 
                        class="group flex flex-col items-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl border-2 border-orange-200 hover:border-orange-300 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         <div class="p-4 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

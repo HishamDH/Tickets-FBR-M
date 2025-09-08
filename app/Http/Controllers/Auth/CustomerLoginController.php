@@ -41,7 +41,7 @@ class CustomerLoginController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended('/customer/dashboard');
+            return redirect()->intended('/customer/services');
         }
 
         return back()->withErrors([

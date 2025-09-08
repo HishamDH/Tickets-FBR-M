@@ -164,7 +164,7 @@ class AnalyticsService
             ->toArray();
 
         // Conversion rate calculation (simplified)
-        $conversionRate = $this->calculateConversionRate($startDate, $endDate);
+        $conversionRate = $this->calculateConversionRate($startDate, $endDate, $merchantId);
 
         return [
             'total_revenue' => $totalRevenue,
@@ -428,14 +428,25 @@ class AnalyticsService
         return (($n * $sumXY) - ($sumX * $sumY)) / $denominator;
     }
 
-    protected function calculateConversionRate($startDate, $endDate)
+    protected function calculateConversionRate($startDate, $endDate, $merchantId = null)
     {
         // This is a simplified conversion rate calculation
         // In a real application, you'd track page views, clicks, etc.
-        $totalBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])->count();
-        $completedBookings = Booking::whereBetween('booking_date', [$startDate, $endDate])
-            ->where('status', 'completed')
-            ->count();
+        $totalBookingsQuery = Booking::whereBetween('booking_date', [$startDate, $endDate]);
+        $completedBookingsQuery = Booking::whereBetween('booking_date', [$startDate, $endDate])
+            ->where('status', 'completed');
+        
+        if ($merchantId) {
+            $totalBookingsQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+            $completedBookingsQuery->whereHas('service', function($q) use ($merchantId) {
+                $q->where('merchant_id', $merchantId);
+            });
+        }
+        
+        $totalBookings = $totalBookingsQuery->count();
+        $completedBookings = $completedBookingsQuery->count();
 
         return $totalBookings > 0 ? round(($completedBookings / $totalBookings) * 100, 1) : 0;
     }

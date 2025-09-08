@@ -14,7 +14,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::guard('customer')->user();
 
         // Get customer's bookings statistics
         $bookingsStats = [
@@ -89,6 +89,12 @@ class DashboardController extends Controller
         // Recent activity
         $recentActivity = $this->getRecentActivity($user);
 
+        // Get notifications
+        $notifications = $user->notifications()
+            ->latest()
+            ->limit(5)
+            ->get();
+
         return view('dashboard.customer.index', compact(
             'user',
             'stats',
@@ -98,7 +104,8 @@ class DashboardController extends Controller
             'totalSpent',
             'favoriteServices',
             'orderStats',
-            'recentActivity'
+            'recentActivity',
+            'notifications'
         ));
     }
 

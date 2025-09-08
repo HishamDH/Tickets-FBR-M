@@ -186,7 +186,9 @@ class Cart extends Model
             } else {
                 $query->where('session_id', $sessionId)->whereNull('user_id');
             }
-        })->with('item')->get();
+        })->with(['item' => function ($query) {
+            $query->with('merchant');
+        }])->get();
 
         $subtotal = $items->sum('subtotal');
         $discount = $items->sum('total_discount');

@@ -83,19 +83,67 @@
                         
                         <!-- Quick Stats -->
                         <div class="flex items-center space-x-4 space-x-reverse bg-orange-50 px-4 py-2 rounded-xl">
-                            <div class="text-center">
-                                <div class="text-lg font-bold text-primary-600">{{ number_format(1250) }}</div>
-                                <div class="text-xs text-gray-600">التذاكر</div>
-                            </div>
-                            <div class="w-px h-8 bg-orange-200"></div>
-                            <div class="text-center">
-                                <div class="text-lg font-bold text-green-600">{{ number_format(85) }}%</div>
-                                <div class="text-xs text-gray-600">الإنجاز</div>
-                            </div>
+                            @if($userType === 'customer')
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-primary-600">{{ $userStats['total_bookings'] ?? 0 }}</div>
+                                    <div class="text-xs text-gray-600">حجوزاتي</div>
+                                </div>
+                                <div class="w-px h-8 bg-orange-200"></div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-green-600">{{ $userStats['completion_rate'] ?? 0 }}%</div>
+                                    <div class="text-xs text-gray-600">مكتملة</div>
+                                </div>
+                            @elseif($userType === 'merchant')
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-primary-600">{{ $userStats['total_services'] ?? 0 }}</div>
+                                    <div class="text-xs text-gray-600">خدماتي</div>
+                                </div>
+                                <div class="w-px h-8 bg-orange-200"></div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-green-600">{{ $userStats['pending_bookings'] ?? 0 }}</div>
+                                    <div class="text-xs text-gray-600">في الانتظار</div>
+                                </div>
+                            @else
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-primary-600">{{ number_format($siteStats['total_services'] ?? 0) }}</div>
+                                    <div class="text-xs text-gray-600">الخدمات</div>
+                                </div>
+                                <div class="w-px h-8 bg-orange-200"></div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-green-600">{{ $siteStats['completion_rate'] ?? 0 }}%</div>
+                                    <div class="text-xs text-gray-600">الإنجاز</div>
+                                </div>
+                            @endif
                         </div>
                         
                         <!-- Navigation Items -->
-                        @auth
+                        @auth('customer')
+                        <div class="flex items-center space-x-4 space-x-reverse">
+                            
+                            <!-- Shopping Cart (Customer Only) -->
+                            <div class="relative">
+                                <a href="{{ route('customer.cart.index') }}" class="relative p-3 bg-orange-50 rounded-xl hover:bg-orange-100 
+                                             transition-colors duration-200 group">
+                                    <i class="fas fa-shopping-cart text-primary-500 group-hover:text-primary-600"></i>
+                                    @if($cartStats['items'] > 0)
+                                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 text-white 
+                                                   text-xs rounded-full flex items-center justify-center animate-bounce">{{ $cartStats['items'] }}</span>
+                                    @endif
+                                </a>
+                            </div>
+                            
+                            <!-- Notifications -->
+                            <div class="relative">
+                                <button class="relative p-3 bg-orange-50 rounded-xl hover:bg-orange-100 
+                                             transition-colors duration-200 group">
+                                    <i class="fas fa-bell text-primary-500 group-hover:text-primary-600"></i>
+                                    @if($notificationCount > 0)
+                                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
+                                                   text-xs rounded-full flex items-center justify-center animate-bounce">{{ $notificationCount > 9 ? '9+' : $notificationCount }}</span>
+                                    @endif
+                                </button>
+                            </div>
+                        @elseif(Auth::check())
                         <div class="flex items-center space-x-4 space-x-reverse">
                             
                             <!-- Notifications -->
@@ -103,8 +151,10 @@
                                 <button class="relative p-3 bg-orange-50 rounded-xl hover:bg-orange-100 
                                              transition-colors duration-200 group">
                                     <i class="fas fa-bell text-primary-500 group-hover:text-primary-600"></i>
-                                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
-                                               text-xs rounded-full flex items-center justify-center animate-bounce">3</span>
+                                    @if($notificationCount > 0)
+                                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
+                                                   text-xs rounded-full flex items-center justify-center animate-bounce">{{ $notificationCount > 9 ? '9+' : $notificationCount }}</span>
+                                    @endif
                                 </button>
                             </div>
                             
@@ -118,13 +168,28 @@
                                 <button class="flex items-center space-x-3 space-x-reverse bg-gradient-soft 
                                              px-4 py-2 rounded-xl hover:bg-gradient-warm transition-all duration-300 
                                              shadow-md hover:shadow-lg">
+                                    @php
+                                        $user = Auth::guard('customer')->check() ? Auth::guard('customer')->user() : Auth::user();
+                                        $userName = $user->name ?? 'مستخدم';
+                                        $userTypeLabel = match($userType) {
+                                            'customer' => 'عميل',
+                                            'merchant' => 'تاجر', 
+                                            'admin' => 'مدير',
+                                            default => 'مستخدم'
+                                        };
+                                    @endphp
                                     <div class="w-10 h-10 bg-gradient-fire rounded-full flex items-center justify-center 
                                                text-white font-bold shadow-md">
-                                        {{ substr(auth()->user()->name, 0, 1) }}
+                                        {{ substr($userName, 0, 1) }}
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-sm font-semibold text-gray-800">{{ auth()->user()->name }}</div>
-                                        <div class="text-xs text-gray-600">{{ __('app.' . (auth()->user()->role ?? 'user')) }}</div>
+                                        <div class="text-sm font-semibold text-gray-800">{{ $userName }}</div>
+                                        <div class="text-xs text-gray-600">{{ $userTypeLabel }}</div>
+                                        @if($userType === 'customer' && isset($userStats['favorite_services']))
+                                            <div class="text-xs text-primary-500">{{ $userStats['favorite_services'] }} مفضلة</div>
+                                        @elseif($userType === 'merchant' && isset($userStats['total_revenue']))
+                                            <div class="text-xs text-green-600">{{ number_format($userStats['total_revenue']) }} ريال</div>
+                                        @endif
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 group-hover:text-gray-600"></i>
                                 </button>
@@ -134,20 +199,51 @@
                                            opacity-0 invisible group-hover:opacity-100 group-hover:visible 
                                            transition-all duration-200 z-50">
                                     <div class="py-2">
-                                        <a href="{{ dashboard_route() }}" 
-                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                  hover:text-primary-600 transition-colors">
-                                            <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
-                                            لوحة التحكم
-                                        </a>
-                                        <a href="{{ route('profile.edit') }}" 
-                                           class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
-                                                  hover:text-primary-600 transition-colors">
-                                            <i class="fas fa-user-edit ml-3 text-primary-500"></i>
-                                            الملف الشخصي
-                                        </a>
+                                        @if($userType === 'customer')
+                                            <a href="{{ route('customer.dashboard') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                      hover:text-primary-600 transition-colors">
+                                                <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
+                                                لوحة التحكم
+                                            </a>
+                                            <a href="{{ route('customer.bookings.index') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                      hover:text-primary-600 transition-colors">
+                                                <i class="fas fa-calendar-alt ml-3 text-primary-500"></i>
+                                                حجوزاتي
+                                            </a>
+                                            <a href="{{ route('customer.favorites.index') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                      hover:text-primary-600 transition-colors">
+                                                <i class="fas fa-heart ml-3 text-primary-500"></i>
+                                                المفضلة
+                                            </a>
+                                            <a href="{{ route('customer.profile.show') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                      hover:text-primary-600 transition-colors">
+                                                <i class="fas fa-user-edit ml-3 text-primary-500"></i>
+                                                الملف الشخصي
+                                            </a>
+                                        @else
+                                            <a href="{{ dashboard_route() }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                      hover:text-primary-600 transition-colors">
+                                                <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
+                                                لوحة التحكم
+                                            </a>
+                                            <a href="{{ route('profile.edit') }}" 
+                                               class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 
+                                                      hover:text-primary-600 transition-colors">
+                                                <i class="fas fa-user-edit ml-3 text-primary-500"></i>
+                                                الملف الشخصي
+                                            </a>
+                                        @endif
                                         <hr class="my-2 border-gray-100">
-                                        <form method="POST" action="{{ route('logout') }}" class="block">
+                                        @if($userType === 'customer')
+                                            <form method="POST" action="{{ route('customer.logout') }}" class="block">
+                                        @else
+                                            <form method="POST" action="{{ route('logout') }}" class="block">
+                                        @endif
                                             @csrf
                                             <button type="submit" 
                                                     class="flex items-center w-full px-4 py-3 text-red-600 
@@ -186,37 +282,62 @@
                 </div>
             </div>
             
-            <!-- � Mobile Menu -->
+            <!-- Mobile Menu -->
             <div class="mobile-menu hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
                 <div class="px-4 py-6 space-y-4">
-                    @auth
+                    @if(Auth::guard('customer')->check() || Auth::check())
                     <div class="flex items-center space-x-4 space-x-reverse p-4 bg-gradient-soft rounded-xl">
                         <div class="w-12 h-12 bg-gradient-fire rounded-full flex items-center justify-center 
                                    text-white font-bold">
-                            {{ substr(auth()->user()->name, 0, 1) }}
+                            {{ substr($userName ?? 'U', 0, 1) }}
                         </div>
                         <div>
-                            <div class="font-semibold text-gray-800">{{ auth()->user()->name }}</div>
-                            <div class="text-sm text-gray-600">المدير</div>
+                            <div class="font-semibold text-gray-800">{{ $userName ?? 'مستخدم' }}</div>
+                            <div class="text-sm text-gray-600">{{ $userTypeLabel ?? 'مستخدم' }}</div>
                         </div>
                     </div>
                     
                     <nav class="space-y-2">
-                        <a href="{{ dashboard_route() }}" 
-                           class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
-                                  hover:text-primary-600 rounded-lg transition-colors">
-                            <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
-                            لوحة التحكم
-                        </a>
-                        <a href="{{ route('profile.edit') }}" 
-                           class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
-                                  hover:text-primary-600 rounded-lg transition-colors">
-                            <i class="fas fa-user-edit ml-3 text-primary-500"></i>
-                            الملف الشخصي
-                        </a>
+                        @if($userType === 'customer')
+                            <a href="{{ route('customer.dashboard') }}" 
+                               class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
+                                      hover:text-primary-600 rounded-lg transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
+                                لوحة التحكم
+                            </a>
+                            <a href="{{ route('customer.services.index') }}" 
+                               class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
+                                      hover:text-primary-600 rounded-lg transition-colors">
+                                <i class="fas fa-concierge-bell ml-3 text-primary-500"></i>
+                                الخدمات
+                            </a>
+                            <a href="{{ route('customer.bookings.index') }}" 
+                               class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
+                                      hover:text-primary-600 rounded-lg transition-colors">
+                                <i class="fas fa-calendar-alt ml-3 text-primary-500"></i>
+                                حجوزاتي
+                            </a>
+                        @else
+                            <a href="{{ dashboard_route() }}" 
+                               class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
+                                      hover:text-primary-600 rounded-lg transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3 text-primary-500"></i>
+                                لوحة التحكم
+                            </a>
+                            <a href="{{ route('profile.edit') }}" 
+                               class="flex items-center p-3 text-gray-700 hover:bg-orange-50 
+                                      hover:text-primary-600 rounded-lg transition-colors">
+                                <i class="fas fa-user-edit ml-3 text-primary-500"></i>
+                                الملف الشخصي
+                            </a>
+                        @endif
                     </nav>
                     
-                    <form method="POST" action="{{ route('logout') }}">
+                    @if($userType === 'customer')
+                        <form method="POST" action="{{ route('customer.logout') }}">
+                    @else
+                        <form method="POST" action="{{ route('logout') }}">
+                    @endif
                         @csrf
                         <button type="submit" 
                                 class="flex items-center w-full p-3 text-red-600 hover:bg-red-50 
@@ -324,54 +445,115 @@
                         </div>
                     </div>
                     
-                    <!-- Quick Links -->
+                    <!-- Statistics -->
                     <div>
-                        <h4 class="text-xl font-bold mb-6">روابط سريعة</h4>
-                        <ul class="space-y-3">
-                            <li><a href="{{ route('home') }}" class="text-orange-100 hover:text-white transition-colors flex items-center">
-                                <i class="fas fa-home ml-2"></i> الرئيسية
-                            </a></li>
-                            <li><a href="{{ dashboard_route() }}" class="text-orange-100 hover:text-white transition-colors flex items-center">
-                                <i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم
-                            </a></li>
-                            <li><a href="#" class="text-orange-100 hover:text-white transition-colors flex items-center">
-                                <i class="fas fa-headset ml-2"></i> الدعم الفني
-                            </a></li>
-                            <li><a href="#" class="text-orange-100 hover:text-white transition-colors flex items-center">
-                                <i class="fas fa-file-contract ml-2"></i> الشروط والأحكام
-                            </a></li>
-                        </ul>
+                        <h4 class="text-xl font-bold mb-6">إحصائيات المنصة</h4>
+                        <div class="space-y-4">
+                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-orange-100">الخدمات النشطة</span>
+                                    <span class="font-bold text-white">{{ number_format($siteStats['total_services'] ?? 0) }}</span>
+                                </div>
+                            </div>
+                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-orange-100">إجمالي الحجوزات</span>
+                                    <span class="font-bold text-white">{{ number_format($siteStats['total_bookings'] ?? 0) }}</span>
+                                </div>
+                            </div>
+                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-orange-100">العملاء</span>
+                                    <span class="font-bold text-white">{{ number_format($siteStats['total_customers'] ?? 0) }}</span>
+                                </div>
+                            </div>
+                            <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-orange-100">التجار</span>
+                                    <span class="font-bold text-white">{{ number_format($siteStats['total_merchants'] ?? 0) }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
-                    <!-- Contact Info -->
+                    <!-- Quick Links & Contact -->
                     <div>
-                        <h4 class="text-xl font-bold mb-6">تواصل معنا</h4>
-                        <div class="space-y-3">
-                            <div class="flex items-center text-orange-100">
-                                <i class="fas fa-envelope ml-3"></i>
-                                <span>support@fbr-m.com</span>
+                        <h4 class="text-xl font-bold mb-6">روابط وتواصل</h4>
+                        <div class="space-y-4">
+                            <!-- Quick Links -->
+                            <div class="mb-6">
+                                <ul class="space-y-2">
+                                    <li><a href="{{ route('home') }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
+                                        <i class="fas fa-home ml-2 w-4"></i> الرئيسية
+                                    </a></li>
+                                    @if($userType === 'customer')
+                                        <li><a href="{{ route('customer.services.index') }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
+                                            <i class="fas fa-concierge-bell ml-2 w-4"></i> الخدمات
+                                        </a></li>
+                                        <li><a href="{{ route('customer.dashboard') }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
+                                            <i class="fas fa-tachometer-alt ml-2 w-4"></i> لوحة التحكم
+                                        </a></li>
+                                    @else
+                                        <li><a href="{{ dashboard_route() }}" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
+                                            <i class="fas fa-tachometer-alt ml-2 w-4"></i> لوحة التحكم
+                                        </a></li>
+                                    @endif
+                                    <li><a href="#" class="text-orange-100 hover:text-white transition-colors flex items-center text-sm">
+                                        <i class="fas fa-headset ml-2 w-4"></i> الدعم الفني
+                                    </a></li>
+                                </ul>
                             </div>
-                            <div class="flex items-center text-orange-100">
-                                <i class="fas fa-phone ml-3"></i>
-                                <span>+966 50 123 4567</span>
-                            </div>
-                            <div class="flex items-center text-orange-100">
-                                <i class="fas fa-map-marker-alt ml-3"></i>
-                                <span>الرياض، المملكة العربية السعودية</span>
+                            
+                            <!-- Contact Info -->
+                            <div class="space-y-2">
+                                <div class="flex items-center text-orange-100 text-sm">
+                                    <i class="fas fa-envelope ml-2 w-4"></i>
+                                    <span>support@fbr-m.com</span>
+                                </div>
+                                <div class="flex items-center text-orange-100 text-sm">
+                                    <i class="fas fa-phone ml-2 w-4"></i>
+                                    <span>+966 50 123 4567</span>
+                                </div>
+                                <div class="flex items-center text-orange-100 text-sm">
+                                    <i class="fas fa-map-marker-alt ml-2 w-4"></i>
+                                    <span>الرياض، السعودية</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Bottom Bar -->
-                <div class="border-t border-white border-opacity-20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-orange-100 text-sm">
-                        © {{ date('Y') }} تذاكر FBR-M. جميع الحقوق محفوظة.
-                    </p>
-                    <div class="flex items-center space-x-6 space-x-reverse mt-4 md:mt-0">
-                        <span class="text-orange-100 text-sm">صُنع بـ</span>
-                        <i class="fas fa-heart text-red-400 mx-2 animate-pulse"></i>
-                        <span class="text-orange-100 text-sm">في السعودية</span>
+                <div class="border-t border-white border-opacity-20 mt-12 pt-8">
+                    <!-- Performance Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-white">{{ $siteStats['completion_rate'] ?? 0 }}%</div>
+                            <div class="text-sm text-orange-100">معدل الإنجاز</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-white">{{ $siteStats['active_bookings_today'] ?? 0 }}</div>
+                            <div class="text-sm text-orange-100">حجوزات اليوم</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-white">{{ number_format(($siteStats['total_revenue'] ?? 0) / 1000, 1) }}K</div>
+                            <div class="text-sm text-orange-100">إجمالي الإيرادات</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-white">99.9%</div>
+                            <div class="text-sm text-orange-100">وقت التشغيل</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p class="text-orange-100 text-sm">
+                            © {{ date('Y') }} تذاكر FBR-M. جميع الحقوق محفوظة. | آخر تحديث: {{ now()->format('d/m/Y H:i') }}
+                        </p>
+                        <div class="flex items-center space-x-6 space-x-reverse mt-4 md:mt-0">
+                            <span class="text-orange-100 text-sm">صُنع بـ</span>
+                            <i class="fas fa-heart text-red-400 mx-2 animate-pulse"></i>
+                            <span class="text-orange-100 text-sm">في السعودية</span>
+                        </div>
                     </div>
                 </div>
             </div>

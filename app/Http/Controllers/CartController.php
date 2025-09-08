@@ -14,11 +14,23 @@ use Illuminate\Support\Facades\Validator;
 class CartController extends Controller
 {
     /**
-     * Get user's cart contents
+     * Display the cart page
+     */
+    public function show(Request $request)
+    {
+        if ($request->expectsJson() || $request->ajax()) {
+            return $this->index($request);
+        }
+        
+        return view('customer.cart.index');
+    }
+
+    /**
+     * Get user's cart contents (JSON API)
      */
     public function index(Request $request): JsonResponse
     {
-        $userId = Auth::id();
+        $userId = Auth::guard('customer')->check() ? Auth::guard('customer')->id() : Auth::id();
         $sessionId = $request->session()->getId();
 
         $cartData = Cart::getCartTotal($userId, $sessionId);

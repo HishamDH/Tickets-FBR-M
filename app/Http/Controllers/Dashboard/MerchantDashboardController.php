@@ -128,7 +128,7 @@ class MerchantDashboardController extends Controller
         $user = Auth::user();
         $merchant = $user->merchant;
 
-        $query = $merchant->bookings()->with(['service', 'customer']);
+        $query = $user->merchantBookings()->with(['service', 'customer']);
 
         // فلترة حسب الحالة
         if ($request->has('status') && $request->status != '') {
@@ -164,7 +164,7 @@ class MerchantDashboardController extends Controller
         $user = Auth::user();
         $merchant = $user->merchant;
 
-        $booking = $merchant->bookings()
+        $booking = $user->merchantBookings()
             ->with(['service', 'customer'])
             ->findOrFail($bookingId);
 
@@ -184,7 +184,7 @@ class MerchantDashboardController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
-        $booking = $merchant->bookings()->findOrFail($bookingId);
+        $booking = $user->merchantBookings()->findOrFail($bookingId);
 
         $booking->update([
             'status' => $request->status,
@@ -206,7 +206,7 @@ class MerchantDashboardController extends Controller
         $endDate = $request->get('end_date', Carbon::now()->endOfMonth());
 
         // إيرادات يومية
-        $dailyRevenue = $merchant->bookings()
+        $dailyRevenue = $user->merchantBookings()
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as bookings_count'),
@@ -263,7 +263,7 @@ class MerchantDashboardController extends Controller
         // هذا يتطلب إضافة tracking للمشاهدات في المستقبل
 
         // أوقات الذروة للحجوزات
-        $peakHours = $merchant->bookings()
+        $peakHours = $user->merchantBookings()
             ->select(
                 DB::raw('HOUR(booking_time) as hour'),
                 DB::raw('COUNT(*) as bookings_count')
@@ -273,7 +273,7 @@ class MerchantDashboardController extends Controller
             ->get();
 
         // أيام الأسبوع الأكثر حجزاً
-        $peakDays = $merchant->bookings()
+        $peakDays = $user->merchantBookings()
             ->select(
                 DB::raw('DAYOFWEEK(booking_date) as day_of_week'),
                 DB::raw('COUNT(*) as bookings_count')
@@ -283,22 +283,22 @@ class MerchantDashboardController extends Controller
             ->get();
 
         // متوسط قيمة الحجز
-        $averageBookingValue = $merchant->bookings()
+        $averageBookingValue = $user->merchantBookings()
             ->where('payment_status', 'paid')
             ->avg('total_amount');
 
         // معدل الإلغاء
-        $totalBookings = $merchant->bookings()->count();
-        $cancelledBookings = $merchant->bookings()->where('status', 'cancelled')->count();
+        $totalBookings = $user->merchantBookings()->count();
+        $cancelledBookings = $user->merchantBookings()->where('status', 'cancelled')->count();
         $cancellationRate = $totalBookings > 0 ? ($cancelledBookings / $totalBookings) * 100 : 0;
 
         // نمو الحجوزات (مقارنة بالشهر الماضي)
-        $currentMonthBookings = $merchant->bookings()
+        $currentMonthBookings = $user->merchantBookings()
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->count();
 
-        $lastMonthBookings = $merchant->bookings()
+        $lastMonthBookings = $user->merchantBookings()
             ->whereMonth('created_at', Carbon::now()->subMonth()->month)
             ->whereYear('created_at', Carbon::now()->subMonth()->year)
             ->count();
